@@ -1,6 +1,5 @@
 package com.fireball1725.graves.tileentity;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
 import net.minecraft.entity.item.EntityItem;

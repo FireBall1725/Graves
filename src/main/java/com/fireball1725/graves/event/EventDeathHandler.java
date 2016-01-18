@@ -4,10 +4,6 @@ import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
-import com.google.common.collect.ImmutableMap;
-import net.minecraft.block.Block;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -15,7 +11,6 @@ import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.Collection;
 import java.util.List;
 
 public class EventDeathHandler {
@@ -46,7 +41,6 @@ public class EventDeathHandler {
         for (EntityItem item : itemsList) {
             LogHelper.info(">>> " + item.toString());
         }
-
 
 
         world.setBlockState(event.entityPlayer.getPosition(), Blocks.BLOCK_GRAVESTONE.block.getDefaultState());

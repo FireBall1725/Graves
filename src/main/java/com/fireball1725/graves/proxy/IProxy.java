@@ -4,7 +4,10 @@ import java.io.File;
 
 public interface IProxy {
     void registerBlocks();
+
     void registerItems();
+
     void registerEvents();
+
     void registerConfiguration(File configFile);
 }

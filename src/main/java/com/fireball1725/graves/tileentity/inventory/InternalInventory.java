@@ -14,9 +14,9 @@ import java.util.Iterator;
 public class InternalInventory implements IInventory, Iterable<ItemStack> {
     protected final int size;
     protected final ItemStack[] inventory;
+    public boolean enableClientEvents = false;
     protected IInventoryHandler inventoryHandler;
     protected int maxSize;
-    public boolean enableClientEvents = false;
 
     public InternalInventory(IInventoryHandler inventory, int size) {
         this.size = size;

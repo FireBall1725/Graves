@@ -1,6 +1,5 @@
 package com.fireball1725.graves;
 
-import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.proxy.IProxy;
@@ -16,8 +15,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
-import org.apache.commons.lang3.time.StopWatch;
-import scala.collection.parallel.ParIterableLike;
 
 import java.util.concurrent.TimeUnit;
 

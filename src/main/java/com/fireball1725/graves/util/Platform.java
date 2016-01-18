@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 public class Platform {
     /**
      * Check if the code is running on the server instance
+     *
      * @return True if running on the server
      */
     public static boolean isServer() {
@@ -16,6 +17,7 @@ public class Platform {
 
     /**
      * Check if the code is running on the client instance
+     *
      * @return True if running on the client
      */
     public static boolean isClient() {
@@ -24,6 +26,7 @@ public class Platform {
 
     /**
      * Compare two ItemStacks to see if they are the same
+     *
      * @param itemStack1 ItemStack 1 to compare
      * @param itemStack2 ItemStack 2 to compare
      * @return True is they are the same

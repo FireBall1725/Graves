@@ -2,13 +2,13 @@
 {
   "modid": "graves",
   "name": "Graves Mod",
-  "description": "",
+  "description": "Provides grave stones with your items in it upon death",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["FireBall1725"],
-  "credits": "The Forge and FML guys, for making this example",
+  "credits": "",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

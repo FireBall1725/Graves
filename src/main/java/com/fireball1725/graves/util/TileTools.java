@@ -7,9 +7,10 @@ import net.minecraft.world.IBlockAccess;
 public class TileTools {
     /**
      * Gets tile entity at @BlockPos location
-     * @param world World
+     *
+     * @param world    World
      * @param blockPos Block Position
-     * @param tClass Class of Tile Entity
+     * @param tClass   Class of Tile Entity
      * @param <T>
      * @return Null is not the Tile Entity or the instance of the Tile Entity
      */

@@ -1,16 +1,14 @@
 package com.fireball1725.graves.block;
 
 import com.fireball1725.graves.helpers.LogHelper;
-import com.fireball1725.graves.reference.ModInfo;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public enum  Blocks {
-    BLOCK_GRAVESTONE("gravestone", new BlockGraveStone()),
-    ;
+public enum Blocks {
+    BLOCK_GRAVESTONE("gravestone", new BlockGraveStone()),;
 
     private static boolean registered = false;
     public final Block block;
