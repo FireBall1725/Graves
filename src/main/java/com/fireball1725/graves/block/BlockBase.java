@@ -31,8 +31,8 @@ public class BlockBase extends BlockContainer {
         setStepSound(Block.soundTypeStone);
         setHardness(2.2F);
         setResistance(5.0F);
-        setHarvestLevel("pickaxe", 0);
-        setLightOpacity(15);
+        //setHarvestLevel("pickaxe", 0);
+        //setLightOpacity(15);
 
     }
 
@@ -130,5 +130,10 @@ public class BlockBase extends BlockContainer {
             TileEntityBase tileEntityBase = TileTools.getTileEntity(world, blockPos, TileEntityBase.class);
             tileEntityBase.setCustomName(itemStack.getDisplayName());
         }
+    }
+
+    @Override
+    public int getRenderType() {
+        return 3;
     }
 }
