@@ -1,0 +1,15 @@
+/*
+!/.gitignore
+!/.gitmodules
+!/src
+!/gradle
+!/gradlew
+!/gradlew.bat
+!/README.md
+!/License.txt
+!/build.gradle
+!/build.properties
+!/build.bat
+!/build.sh
+!/gradle.properties
+.DS_Store
