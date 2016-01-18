@@ -1,4 +1,4 @@
-//apply plugin: 'curseforge'
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 apply from: 'gradle/scripts/dependencies.gradle'
 apply from: 'gradle/scripts/artifacts.gradle'
@@ -16,7 +16,7 @@ buildscript {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
     }
 }
-apply plugin: 'net.minecraftforge.gradle.forge'
+
 
 configurations.all {
     resolutionStrategy.cacheDynamicVersionsFor 7200, 'hours'
@@ -75,10 +75,10 @@ processResources
     }
 }
 
-curse {
-    apiKey = curseApiKey
-    releaseType = curseReleaseType
-    projectId = "240877"
-    changelog = file("build/libs/changelog.txt").text
-    addGameVersion minecraft_version
-}
+//curse {
+//    apiKey = curseApiKey
+//    releaseType = curseReleaseType
+//    projectId = "240877"
+//    changelog = file("build/libs/changelog.txt").text
+//    addGameVersion minecraft_version
+//}
