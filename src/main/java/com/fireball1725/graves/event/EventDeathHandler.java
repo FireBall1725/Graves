@@ -38,9 +38,9 @@ public class EventDeathHandler {
         if (itemsList.isEmpty())
             return;
 
-        for (EntityItem item : itemsList) {
-            LogHelper.info(">>> " + item.toString());
-        }
+        //for (EntityItem item : itemsList) {
+        //    LogHelper.info(">>> " + item.toString());
+        //}
 
 
         world.setBlockState(event.entityPlayer.getPosition(), Blocks.BLOCK_GRAVESTONE.block.getDefaultState());
