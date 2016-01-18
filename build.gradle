@@ -1,4 +1,4 @@
-apply plugin: 'curseforge'
+//apply plugin: 'curseforge'
 
 apply from: 'gradle/scripts/dependencies.gradle'
 apply from: 'gradle/scripts/artifacts.gradle'
