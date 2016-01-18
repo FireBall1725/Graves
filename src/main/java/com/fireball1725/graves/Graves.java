@@ -1,15 +1,23 @@
 package com.fireball1725.graves;
 
+import com.fireball1725.graves.block.BlockGraveStone;
+import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.proxy.IProxy;
 import com.fireball1725.graves.reference.ModInfo;
 import com.google.common.base.Stopwatch;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.commons.lang3.time.StopWatch;
+import scala.collection.parallel.ParIterableLike;
 
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +51,11 @@ public class Graves {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        if (event.getSide() == Side.CLIENT) {
+            RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
 
+            renderItem.getItemModelMesher().register(Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block), 0, new ModelResourceLocation(ModInfo.MOD_ID + ":" + "gravestone", "inventory"));
+        }
     }
 
     @Mod.EventHandler
