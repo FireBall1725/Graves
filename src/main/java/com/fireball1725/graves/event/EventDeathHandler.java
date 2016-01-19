@@ -2,9 +2,11 @@ package com.fireball1725.graves.event;
 
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.helpers.LogHelper;
+import com.fireball1725.graves.helpers.SafeBlockReplacer;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
@@ -43,9 +45,12 @@ public class EventDeathHandler {
         //}
 
 
-        world.setBlockState(event.entityPlayer.getPosition(), Blocks.BLOCK_GRAVESTONE.block.getDefaultState());
-        TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, event.entityPlayer.getPosition(), TileEntityGraveStone.class);
+        BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition());
+
+        world.setBlockState(safePos, Blocks.BLOCK_GRAVESTONE.block.getDefaultState());
+        TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
         graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
+
 
 
         event.drops.clear();
