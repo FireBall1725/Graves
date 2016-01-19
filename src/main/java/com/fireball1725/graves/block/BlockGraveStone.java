@@ -21,11 +21,17 @@ public class BlockGraveStone extends BlockBase {
 
     @Override
     public boolean canEntityDestroy(IBlockAccess world, BlockPos pos, Entity entity) {
-        return false;
-    }
+		return false;
+	}
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
         return null;
     }
+
+	@Override
+	public int getRenderType()
+	{
+		return 3;
+	}
 }

@@ -1,5 +1,19 @@
 {
-	"variants": {
-		"normal": { "model": "graves:gravestone" }
-	}
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "minecraft:stone_diorite_smooth": "minecraft:stone_diorite_smooth.png"
+    },
+    "model": "graves:gravestone.obj"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "transform": "forge:default-block"
+      }
+    ]
+  }
 }
