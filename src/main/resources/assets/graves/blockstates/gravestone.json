@@ -19,11 +19,8 @@
       }
     ],
     "haslid": {
-      "false": {
-        "model": "graves:gravestone_lid.obj"
-      },
+      "false": {},
       "true": {
-        "model": "graves:gravestone_lid.obj",
         "submodel": "graves:gravestone_lid.obj"
       }
     },

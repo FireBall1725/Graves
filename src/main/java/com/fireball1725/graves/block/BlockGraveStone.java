@@ -1,5 +1,6 @@
 package com.fireball1725.graves.block;
 
+import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -8,6 +9,7 @@ import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
@@ -20,8 +22,8 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockGraveStone extends BlockBase {
-	public static final PropertyDirection FACING = PropertyDirection.create("FACING", EnumFacing.Plane.HORIZONTAL);
-	public static final PropertyBool HASLID = PropertyBool.create("haslid");
+	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyBool HASLID = PropertyBool.create("hasLid");
 
     public BlockGraveStone() {
         super(Material.cloth);
@@ -45,6 +47,26 @@ public class BlockGraveStone extends BlockBase {
 	public int getRenderType()
 	{
 		return 3;
+	}
+
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
+	{
+		LogHelper.info("activated lid");
+		if(getActualState(state, worldIn, pos).getValue(HASLID))
+		{
+			LogHelper.info("has lid");
+			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			if(tileEntity != null && tileEntity instanceof TileEntityGraveStone)
+			{
+				LogHelper.info("found tileEntity");
+				TileEntityGraveStone graveStone = (TileEntityGraveStone) tileEntity;
+				graveStone.setHasLid(false);
+				worldIn.setBlockState(pos, state.withProperty(HASLID, false));
+			}
+		}
+
+		return false;
 	}
 
 	@Override
@@ -79,6 +101,7 @@ public class BlockGraveStone extends BlockBase {
 	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
 	{
+		super.setBlockBoundsBasedOnState(worldIn, pos);
 		IBlockState actualState = getActualState(worldIn.getBlockState(pos), worldIn, pos);
 		if(actualState.getValue(HASLID))
 		{
@@ -89,6 +112,7 @@ public class BlockGraveStone extends BlockBase {
 	@Override
 	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
 	{
+		super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 		//		list.clear();
 		IBlockState actualState = getActualState(worldIn.getBlockState(pos), worldIn, pos);
 		if(actualState.getValue(HASLID))

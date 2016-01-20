@@ -79,4 +79,9 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
 	{
 		return hasLid;
 	}
+
+	public void setHasLid(boolean hasLid)
+	{
+		this.hasLid = hasLid;
+	}
 }
