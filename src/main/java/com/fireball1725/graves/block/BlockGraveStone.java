@@ -118,41 +118,33 @@ public class BlockGraveStone extends BlockBase {
 	}
 
 	@Override
-	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
-	{
-		setBlockBoundsBasedOnState(worldIn, pos);
-		super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-	}
-
-	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
 	{
+		super.setBlockBoundsBasedOnState(worldIn, pos);
 		IBlockState actualState = getActualState(worldIn.getBlockState(pos), worldIn, pos);
-		float x1 = 0, y1 = -1, z1 = 0, x2 = 1, y2, z2 = 1;
-		y2 = actualState.getValue(HASLID) ? .15f : 0f;
-		switch(actualState.getValue(FACING))
+		if(actualState.getValue(HASLID))
 		{
-			case NORTH:
-				z2 = -1f;
-				z1 = 1f;
-				break;
-			case SOUTH:
-				z2 = 2f;
-				break;
-			case WEST:
-				x2 = -1f;
-				x1 = 1f;
-				break;
-			case EAST:
-				x2 = 2f;
-				break;
+			//			setBlockBounds(pos.getX(), pos.getY() - 1f, pos.getZ(), 2f, 1.25f, 1);
 		}
-		setBlockBounds(x1, y1, z1, x2, y2, z2);
 	}
 
 	@Override
+	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
+	{
+		super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+		//		list.clear();
+		IBlockState actualState = getActualState(worldIn.getBlockState(pos), worldIn, pos);
+		if(actualState.getValue(HASLID))
+		{
+			//			list.add()
+			//			setBlockBounds(pos.getX(), pos.getY() - 1f, pos.getZ(), pos.getX() + 2f, pos.getY() + .25f, pos.getZ() + 1);
+		}
+	}
+
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
 	{
 		return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
 	}
+
+
 }

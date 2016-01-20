@@ -9,20 +9,22 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 public class TileEntityGraveStone extends TileEntityInventoryBase {
-	protected boolean hasLid = true;
-	private InternalInventory internalInventory = new InternalInventory(this, 100);
-	private UUID playerUUID = null;
+    protected boolean hasLid = true;
+    private InternalInventory internalInventory = new InternalInventory(this, 100);
+    private String playerName = "";
 
     public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player) {
+        this.playerName = player.getDisplayName().getFormattedText();
+
         int i = 0;
         for (EntityItem item : itemsList) {
             internalInventory.setInventorySlotContents(i, item.getEntityItem());
@@ -30,12 +32,28 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         }
     }
 
+    @Override
+    public void readFromNBT(NBTTagCompound nbtTagCompound) {
+        super.readFromNBT(nbtTagCompound);
+
+        this.hasLid = nbtTagCompound.getBoolean("hasLid");
+        this.playerName = nbtTagCompound.getString("playerName");
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound nbtTagCompound) {
+        super.writeToNBT(nbtTagCompound);
+
+        nbtTagCompound.setBoolean("hasLid", this.hasLid);
+        nbtTagCompound.setString("playerName", this.playerName);
+    }
+
     public void breakBlocks() {
         int x = pos.getX();
         int y = pos.getY();
         int z = pos.getZ();
 
-        Block block = null;
+        Block block;
 
         block = worldObj.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
         if (block != null) {
@@ -95,16 +113,17 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         return null;
     }
 
-	public boolean getHasLid()
-	{
-		return hasLid;
-	}
+    public boolean getHasLid() {
+        return hasLid;
+    }
 
-	public void setHasLid(boolean hasLid)
-	{
-		this.hasLid = hasLid;
-		worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockGraveStone.HASLID, false));
-		worldObj.markBlockForUpdate(pos);
-	}
+    public void setHasLid(boolean hasLid) {
+        this.hasLid = hasLid;
+        worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockGraveStone.HASLID, false));
+        worldObj.markBlockForUpdate(pos);
+    }
 
+    public String getPlayerName() {
+        return this.playerName;
+    }
 }

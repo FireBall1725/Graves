@@ -53,6 +53,8 @@ public class Graves {
 
             renderItem.getItemModelMesher().register(Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block), 0, new ModelResourceLocation(ModInfo.MOD_ID + ":" + "gravestone", "inventory"));
         }
+
+        proxy.registerRenderers();
     }
 
     @Mod.EventHandler
