@@ -10,15 +10,14 @@ import net.minecraftforge.client.model.obj.OBJLoader;
 public class ClientProxy extends CommonProxy {
     // Client side only
 
-	@Override
-	public void registerBlocks()
-	{
-		super.registerBlocks();
+    @Override
+    public void registerBlocks() {
+        super.registerBlocks();
 
-		OBJLoader.instance.addDomain(ModInfo.MOD_ID);
-		Item graveItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block);
-		ModelLoader.setCustomModelResourceLocation(graveItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":gravestone", "inventory"));
-	}
+        OBJLoader.instance.addDomain(ModInfo.MOD_ID);
+        Item graveItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block);
+        ModelLoader.setCustomModelResourceLocation(graveItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":gravestone", "inventory"));
+    }
 
 
 }

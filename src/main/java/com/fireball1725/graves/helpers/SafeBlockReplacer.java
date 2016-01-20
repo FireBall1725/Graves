@@ -1,6 +1,5 @@
 package com.fireball1725.graves.helpers;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockPos;
