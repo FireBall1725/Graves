@@ -1,6 +1,5 @@
 package com.fireball1725.graves.block;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.material.Material;
@@ -48,21 +47,21 @@ public class BlockGraveStone extends BlockBase {
         return 3;
     }
 
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (worldIn.isRemote) {
-            return true;
-        }
-        if (getActualState(state, worldIn, pos).getValue(HASLID)) {
-            TileEntityGraveStone tileEntityGraveStone = TileTools.getTileEntity(worldIn, pos, TileEntityGraveStone.class);
-            if (tileEntityGraveStone != null) {
-                worldIn.setBlockState(pos, state.withProperty(BlockGraveStone.HASLID, false));
-                worldIn.markBlockForUpdate(pos);
-                LogHelper.info("activated and changed 21:32:11");
-            }
-        }
-        return false;
-    }
+//    @Override
+//    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
+//        if (worldIn.isRemote) {
+//            return true;
+//        }
+//        if (getActualState(state, worldIn, pos).getValue(HASLID)) {
+//            TileEntityGraveStone tileEntityGraveStone = TileTools.getTileEntity(worldIn, pos, TileEntityGraveStone.class);
+//            if (tileEntityGraveStone != null) {
+//                worldIn.setBlockState(pos, state.withProperty(BlockGraveStone.HASLID, false));
+//                worldIn.markBlockForUpdate(pos);
+//                LogHelper.info("activated and changed 21:32:11");
+//            }
+//        }
+//        return false;
+//    }
 
     @Override
     public boolean canSilkHarvest(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
