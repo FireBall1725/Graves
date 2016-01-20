@@ -1,8 +1,6 @@
 package com.fireball1725.graves.block;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
-import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -48,23 +46,6 @@ public class BlockGraveStone extends BlockBase {
 	public int getRenderType()
 	{
 		return 3;
-	}
-
-	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
-	{
-		if(worldIn.isRemote)
-		{ return true; }
-		if(getActualState(state, worldIn, pos).getValue(HASLID))
-		{
-            TileEntityGraveStone tileEntityGraveStone = TileTools.getTileEntity(worldIn, pos, TileEntityGraveStone.class);
-			if (tileEntityGraveStone != null) {
-				worldIn.setBlockState(pos, state.withProperty(BlockGraveStone.HASLID, false));
-				worldIn.markBlockForUpdate(pos);
-				LogHelper.info("activated and changed 21:32:11");
-			}
-		}
-		return false;
 	}
 
     @Override
@@ -120,27 +101,7 @@ public class BlockGraveStone extends BlockBase {
 	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
 	{
-		IBlockState actualState = getActualState(worldIn.getBlockState(pos), worldIn, pos);
-		float x1 = 0, y1 = -1, z1 = 0, x2 = 1, y2, z2 = 1;
-		switch(actualState.getValue(FACING))
-		{
-			case NORTH:
-				z1 = 1f;
-				z2 = -1f;
-				break;
-			case SOUTH:
-				z2 = 2f;
-				break;
-			case WEST:
-				x1 = 1f;
-				x2 = -1f;
-				break;
-			case EAST:
-				x2 = 2f;
-				break;
-		}
-		y2 = actualState.getValue(HASLID) ? .15f : 0f;
-		setBlockBounds(x1, y1, z1, x2, y2, z2);
+		setBlockBounds(0, 0, 0, 1, .1425f, 1);
 	}
 
 	@Override

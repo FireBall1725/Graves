@@ -8,7 +8,8 @@ import net.minecraft.util.StatCollector;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public enum Blocks {
-    BLOCK_GRAVESTONE("gravestone", new BlockGraveStone()),;
+	BLOCK_GRAVESTONE("gravestone", new BlockGraveStone()),
+	BLOCK_GRAVESTONE_SLAVE("gravestone_slave", new BlockGraveSlave());
 
     private static boolean registered = false;
     public final Block block;
