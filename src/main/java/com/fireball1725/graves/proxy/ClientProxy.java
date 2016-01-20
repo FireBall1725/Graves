@@ -1,9 +1,7 @@
 package com.fireball1725.graves.proxy;
 
-import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.client.render.TileEntityGraveStoneRenderer;
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -11,7 +9,6 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
 public class ClientProxy extends CommonProxy {
     // Client side only
@@ -28,6 +25,5 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerRenderers() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGraveStone.class, new TileEntityGraveStoneRenderer());
-        LogHelper.info(">>> Registered...");
     }
 }

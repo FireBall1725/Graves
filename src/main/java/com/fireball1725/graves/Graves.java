@@ -20,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 @Mod(modid = ModInfo.MOD_ID, name = ModInfo.MOD_NAME, certificateFingerprint = ModInfo.FINGERPRINT, dependencies = ModInfo.DEPENDENCIES, version = ModInfo.VERSION_BUILD)
 public class Graves {
-    public static int blockGraveStoneRendererID = -1;
-
     @Mod.Instance(ModInfo.MOD_ID)
     public static Graves instance;
 
