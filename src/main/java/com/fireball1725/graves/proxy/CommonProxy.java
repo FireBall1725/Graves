@@ -1,6 +1,7 @@
 package com.fireball1725.graves.proxy;
 
 import com.fireball1725.graves.block.Blocks;
+import com.fireball1725.graves.event.EventBlockBreak;
 import com.fireball1725.graves.event.EventDeathHandler;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -20,6 +21,7 @@ public abstract class CommonProxy implements IProxy {
     @Override
     public void registerEvents() {
         MinecraftForge.EVENT_BUS.register(new EventDeathHandler());
+        MinecraftForge.EVENT_BUS.register(new EventBlockBreak());
     }
 
     @Override

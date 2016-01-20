@@ -2,6 +2,7 @@ package com.fireball1725.graves.block;
 
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
+import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -52,24 +53,41 @@ public class BlockGraveStone extends BlockBase {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		LogHelper.info("activated lid");
 		if(getActualState(state, worldIn, pos).getValue(HASLID))
 		{
-			LogHelper.info("has lid");
-			TileEntity tileEntity = worldIn.getTileEntity(pos);
-			if(tileEntity != null && tileEntity instanceof TileEntityGraveStone)
-			{
-				LogHelper.info("found tileEntity");
-				TileEntityGraveStone graveStone = (TileEntityGraveStone) tileEntity;
-				graveStone.setHasLid(false);
+            TileEntityGraveStone tileEntityGraveStone = TileTools.getTileEntity(worldIn, pos, TileEntityGraveStone.class);
+			if (tileEntityGraveStone != null) {
+				tileEntityGraveStone.setHasLid(false);
 				worldIn.setBlockState(pos, state.withProperty(HASLID, false));
+                tileEntityGraveStone.markForUpdate();
 			}
 		}
 
 		return false;
 	}
 
-	@Override
+    @Override
+    public boolean canSilkHarvest(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
+        return false;
+    }
+
+//    @Override
+//    public void breakBlock(World world, BlockPos blockPos, IBlockState blockState) {
+//        TileEntityGraveStone tileEntityGraveStone = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
+//        if (tileEntityGraveStone != null) {
+//            LogHelper.info(">>> S " + tileEntityGraveStone.getHasLid());
+//            if (tileEntityGraveStone.getHasLid()) {
+//                tileEntityGraveStone.setHasLid(false);
+//                world.setBlockState(blockPos, blockState.withProperty(HASLID, false));
+//                tileEntityGraveStone.markForUpdate();
+//                LogHelper.info(">>> E " + tileEntityGraveStone.getHasLid());
+//            } else {
+//                super.breakBlock(world, blockPos, blockState);
+//            }
+//        }
+//    }
+
+    @Override
 	protected BlockState createBlockState()
 	{
 		return new BlockState(this, HASLID, FACING);
@@ -82,7 +100,7 @@ public class BlockGraveStone extends BlockBase {
 		if(tileEntity != null && tileEntity instanceof TileEntityGraveStone)
 		{
 			TileEntityGraveStone graveStone = (TileEntityGraveStone) tileEntity;
-			return state.withProperty(HASLID, graveStone.hasLid());
+			return state.withProperty(HASLID, graveStone.getHasLid());
 		}
 		return state.withProperty(HASLID, false);
 	}
