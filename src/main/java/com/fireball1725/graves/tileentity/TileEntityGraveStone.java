@@ -1,5 +1,6 @@
 package com.fireball1725.graves.tileentity;
 
+import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
 import net.minecraft.block.Block;
@@ -102,6 +103,8 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
 	public void setHasLid(boolean hasLid)
 	{
 		this.hasLid = hasLid;
+		worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockGraveStone.HASLID, false));
+		worldObj.markBlockForUpdate(pos);
 	}
 
 }

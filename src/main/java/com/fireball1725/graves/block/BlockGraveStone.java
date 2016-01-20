@@ -53,16 +53,17 @@ public class BlockGraveStone extends BlockBase {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
+		if(worldIn.isRemote)
+		{ return true; }
 		if(getActualState(state, worldIn, pos).getValue(HASLID))
 		{
             TileEntityGraveStone tileEntityGraveStone = TileTools.getTileEntity(worldIn, pos, TileEntityGraveStone.class);
 			if (tileEntityGraveStone != null) {
-				tileEntityGraveStone.setHasLid(false);
-				worldIn.setBlockState(pos, state.withProperty(HASLID, false));
-                tileEntityGraveStone.markForUpdate();
+				worldIn.setBlockState(pos, state.withProperty(BlockGraveStone.HASLID, false));
+				worldIn.markBlockForUpdate(pos);
+				LogHelper.info("activated and changed 21:32:11");
 			}
 		}
-
 		return false;
 	}
 
