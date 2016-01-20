@@ -2,14 +2,18 @@ package com.fireball1725.graves.tileentity;
 
 import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 public class TileEntityGraveStone extends TileEntityInventoryBase {
@@ -22,6 +26,21 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         for (EntityItem item : itemsList) {
             internalInventory.setInventorySlotContents(i, item.getEntityItem());
             i++;
+        }
+    }
+
+    public void breakBlocks() {
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+
+        Block block = null;
+
+        block = worldObj.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
+        if (block != null) {
+            Item block1 = block.getItemDropped(worldObj.getBlockState(new BlockPos(x, y - 1, z)), new Random(1), 0);
+            worldObj.setBlockToAir(new BlockPos(x, y - 1, z));
+            internalInventory.setInventorySlotContents(80, new ItemStack(block1));
         }
     }
 
@@ -75,7 +94,7 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         return null;
     }
 
-	public boolean hasLid()
+	public boolean getHasLid()
 	{
 		return hasLid;
 	}
@@ -84,4 +103,5 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
 	{
 		this.hasLid = hasLid;
 	}
+
 }
