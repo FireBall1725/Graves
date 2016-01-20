@@ -27,7 +27,7 @@ public class BlockGraveStone extends BlockBase {
     public BlockGraveStone() {
         super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(HASLID, true).withProperty(FACING, EnumFacing.NORTH));
-		this.setHardness(0.5F);
+		this.setHardness(10F);
 		this.setResistance(10000.0F);
 		this.setTileEntity(TileEntityGraveStone.class);
     }
@@ -99,16 +99,26 @@ public class BlockGraveStone extends BlockBase {
 	}
 
 	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
+	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
 	{
-		setBlockBounds(0, 0, 0, 1, .1425f, 1);
+		IBlockState actualState = getActualState(state, worldIn, pos);
+		boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
+		if(hasLid)
+		{
+			setBlockBounds(0, 0, 0, 1, .1425f, 1);
+			super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+		}
+		else
+		{
+			setBlockBounds(0, 0, 0, 0, 0, 0);
+		}
+		super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 	}
 
 	@Override
-	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
+	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
 	{
-		setBlockBoundsBasedOnState(worldIn, pos);
-		super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+		return AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1).offset(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
@@ -116,5 +126,9 @@ public class BlockGraveStone extends BlockBase {
 		return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
 	}
 
-
+	@Override
+	public boolean isOpaqueCube()
+	{
+		return false;
+	}
 }

@@ -1,10 +1,9 @@
 package com.fireball1725.graves.tileentity;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
 
-public class TileEntityGraveSlave extends TileEntity
+public class TileEntityGraveSlave extends TileEntityBase
 {
 	protected BlockPos masterBlock;
 
@@ -29,7 +28,7 @@ public class TileEntityGraveSlave extends TileEntity
 		super.readFromNBT(compound);
 		if(compound.hasKey("masterBlock"))
 		{
-			compound.setLong("masterBlock", masterBlock.toLong());
+			masterBlock = BlockPos.fromLong(compound.getLong("masterBlock"));
 		}
 	}
 
@@ -39,7 +38,7 @@ public class TileEntityGraveSlave extends TileEntity
 		super.writeToNBT(compound);
 		if(masterBlock != null)
 		{
-			masterBlock = BlockPos.fromLong(compound.getLong("masterBlock"));
+			compound.setLong("masterBlock", masterBlock.toLong());
 		}
 	}
 }

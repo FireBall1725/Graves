@@ -2,6 +2,7 @@ package com.fireball1725.graves.tileentity;
 
 import com.fireball1725.graves.util.ItemStackSrc;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -139,4 +140,9 @@ public class TileEntityBase extends TileEntity {
             this.customName = null;
         }
     }
+
+	public IBlockState getBlockState()
+	{
+		return worldObj.getBlockState(pos);
+	}
 }
