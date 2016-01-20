@@ -10,7 +10,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class EventBlockBreak {
     @SubscribeEvent
     public void onBreakBlock(BlockEvent.BreakEvent event) {
-        TileEntityGraveStone graveStone = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveStone.class);
+		if(event.getPlayer().capabilities.isCreativeMode)
+		{ return; }
+		TileEntityGraveStone graveStone = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveStone.class);
         if (graveStone != null) {
 			if(event.state.getBlock().getActualState(event.state, event.world, event.pos).getValue(BlockGraveStone.HASLID))
 			{
