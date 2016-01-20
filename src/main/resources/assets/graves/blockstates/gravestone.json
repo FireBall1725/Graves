@@ -2,7 +2,9 @@
   "forge_marker": 1,
   "defaults": {
     "textures": {
-      "minecraft:stone_diorite_smooth": "minecraft:stone_diorite_smooth.png"
+      "#inside": "minecraft:blocks/wool_colored_red",
+      "#box": "minecraft:blocks/stone_andesite_smooth",
+      "#headstone": "minecraft:blocks/stone_diorite_smooth"
     },
     "model": "graves:gravestone.obj"
   },
@@ -12,8 +14,30 @@
     ],
     "inventory": [
       {
+        "submodel": "graves:gravestone_lid.obj",
         "transform": "forge:default-block"
       }
-    ]
+    ],
+    "haslid": {
+      "false": {
+        "model": "graves:gravestone_lid.obj"
+      },
+      "true": {
+        "model": "graves:gravestone_lid.obj",
+        "submodel": "graves:gravestone_lid.obj"
+      }
+    },
+    "facing": {
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "west": {
+        "y": 270
+      },
+      "east": {
+        "y": 90
+      }
+    }
   }
 }

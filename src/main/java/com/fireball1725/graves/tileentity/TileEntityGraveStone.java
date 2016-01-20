@@ -13,8 +13,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class TileEntityGraveStone extends TileEntityInventoryBase {
-    private InternalInventory internalInventory = new InternalInventory(this, 100);
-    private UUID playerUUID = null;
+	protected boolean hasLid = true;
+	private InternalInventory internalInventory = new InternalInventory(this, 100);
+	private UUID playerUUID = null;
 
     public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player) {
         int i = 0;
@@ -73,4 +74,9 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     public IChatComponent getDisplayName() {
         return null;
     }
+
+	public boolean hasLid()
+	{
+		return hasLid;
+	}
 }
