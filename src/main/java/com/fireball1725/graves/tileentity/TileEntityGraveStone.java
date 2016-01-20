@@ -123,4 +123,7 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         worldObj.markBlockForUpdate(pos);
     }
 
+    public String getPlayerName() {
+        return this.playerName;
+    }
 }

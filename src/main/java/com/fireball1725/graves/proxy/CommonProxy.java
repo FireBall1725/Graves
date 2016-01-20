@@ -28,4 +28,9 @@ public abstract class CommonProxy implements IProxy {
     public void registerConfiguration(File configFile) {
 
     }
+
+    @Override
+    public void registerRenderers() {
+        /* Client Side Only */
+    }
 }

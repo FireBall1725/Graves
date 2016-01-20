@@ -10,4 +10,6 @@ public interface IProxy {
     void registerEvents();
 
     void registerConfiguration(File configFile);
+
+    void registerRenderers();
 }
