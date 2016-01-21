@@ -14,24 +14,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.Explosion;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 import java.util.List;
 import java.util.Random;
 
-public class BlockGraveSlave extends BlockBase
-{
-	public BlockGraveSlave()
-	{
-		super(Material.cloth);
-		setStepSound(Block.soundTypeStone);
-		setHardness(1F);
-		setResistance(10000.0F);
-		setTileEntity(TileEntityGraveSlave.class);
-	}
 public class BlockGraveSlave extends BlockBase {
     public BlockGraveSlave() {
         super(Material.cloth);
