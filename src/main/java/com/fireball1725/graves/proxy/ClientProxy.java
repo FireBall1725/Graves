@@ -18,9 +18,11 @@ public class ClientProxy extends CommonProxy {
         super.registerBlocks();
 
         OBJLoader.instance.addDomain(ModInfo.MOD_ID);
-        Item graveItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block);
-        ModelLoader.setCustomModelResourceLocation(graveItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":gravestone", "inventory"));
-    }
+		Item graveItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block);
+		ModelLoader.setCustomModelResourceLocation(graveItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":gravestone", "inventory"));
+		Item headstoneItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVE_HEADSTONE.block);
+		ModelLoader.setCustomModelResourceLocation(headstoneItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":headstone", "inventory"));
+	}
 
     @Override
     public void registerRenderers() {
