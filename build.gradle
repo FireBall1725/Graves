@@ -31,7 +31,7 @@ targetCompatibility = JavaVersion.VERSION_1_6
 
 ext {
     curseApiKey = ""
-    curseReleaseType = "beta"
+    curseReleaseType = "alpha"
 }
 
 version = minecraft_version + "-" + "b" + cibuild + "-universal"
