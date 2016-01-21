@@ -100,5 +100,6 @@ curseforge {
         id = "240877"
         changelog = file("build/libs/changelog.txt")
         addGameVersion minecraft_version
+        addArtifact devJar
     }
 }
