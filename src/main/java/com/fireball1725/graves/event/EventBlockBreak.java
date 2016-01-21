@@ -20,7 +20,7 @@ public class EventBlockBreak {
 				graveStone.setHasLid(false);
                 graveStone.markDirty();
                 graveStone.markForUpdate();
-				LogHelper.info(">>> breaking lid");
+				//LogHelper.info(">>> breaking lid");
 				event.setCanceled(true);
 				return;
 			}
@@ -38,7 +38,7 @@ public class EventBlockBreak {
 			BlockPos masterBlock = graveSlave.getMasterBlock();
 			if(event.world.getTileEntity(masterBlock) == null)
 			{ return; }
-			LogHelper.info(">>> Master Pos: " + masterBlock.toString());
+			//LogHelper.info(">>> Master Pos: " + masterBlock.toString());
 			MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(event.world, masterBlock, event.world.getBlockState(masterBlock), event.getPlayer()));
 			graveSlave.markDirty();
 			graveSlave.markForUpdate();
