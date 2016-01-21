@@ -27,7 +27,7 @@ public class BlockGraveStone extends BlockBase {
     public BlockGraveStone() {
         super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(HASLID, true).withProperty(FACING, EnumFacing.NORTH));
-		this.setHardness(10F);
+		this.setHardness(1.0F);
 		this.setResistance(10000.0F);
 		this.setTileEntity(TileEntityGraveStone.class);
     }

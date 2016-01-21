@@ -1,8 +1,10 @@
 package com.fireball1725.graves.client.render;
 
 import com.fireball1725.graves.block.BlockGraveStone;
+import com.fireball1725.graves.helpers.OpenGLHelper;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -28,15 +30,13 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer
 		{
 			this.saveBoundTexture();
 
-			int[][] savedGLState = modifyGLState(new int[] {GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
+			int[][] savedGLState = OpenGLHelper.modifyGLState(new int[] {GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
 			TileEntityHeadStone headStone = (TileEntityHeadStone) te;
 
-			mc.getTextureManager().bindTexture(new ResourceLocation("minecraft", "textures/font/ascii.png"));
 			renderTextOnHeadstone(headStone.getPlayerName(), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, .125f, -.275f, -.001f, 0.02f, 0);
 			renderMultiLineTextOnHeadstone(headStone.getEulogy(), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, 0f, -1.225f, .03f, 0.02f, 0);
 
-			this.restoreGlState(savedGLState);
-			this.loadBoundTexture();
+			OpenGLHelper.restoreGLState(savedGLState);
 		}
 	}
 

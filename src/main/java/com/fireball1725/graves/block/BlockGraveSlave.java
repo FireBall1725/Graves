@@ -24,8 +24,8 @@ public class BlockGraveSlave extends BlockBase
 	{
 		super(Material.cloth);
 		setStepSound(Block.soundTypeStone);
-		setHardness(2.2F);
-		setResistance(5.0F);
+		setHardness(1.0F);
+		setResistance(10000.0F);
 		setTileEntity(TileEntityGraveSlave.class);
 	}
 
