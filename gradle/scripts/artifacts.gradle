@@ -1,7 +1,12 @@
+task sourceJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
 task devJar(type: Jar) {
 
     from(sourceSets.main.output) {
-        include "graves/**"
+        include "graves/**/*"
         include "assets/**"
         include 'mcmod.info'
     }
@@ -11,6 +16,7 @@ task devJar(type: Jar) {
 
 artifacts {
     archives devJar
+    archives sourceJar
 }
 
 jar {
