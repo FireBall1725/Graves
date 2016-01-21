@@ -15,12 +15,12 @@ public class TileEntityHeadStone extends TileEntityBase
 		super();
 	}
 
-	public String getPlayerName()
+	public String getHeadstoneText()
 	{
 		return this.playerName;
 	}
 
-	public void setPlayerName(String playerName)
+	public void setHeadstoneText(String playerName)
 	{
 		this.playerName = playerName;
 	}

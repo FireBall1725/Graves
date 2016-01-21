@@ -31,19 +31,14 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer
 			int[][] savedGLState = OpenGLHelper.modifyGLState(new int[] {GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
 			TileEntityHeadStone headStone = (TileEntityHeadStone) te;
 
-			renderTextOnHeadstone(headStone.getPlayerName(), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, .25f, -.7f, .0365f, 0.015f, 0);
+			renderTextOnHeadstone(headStone.getHeadstoneText().split("\\\\n"), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), false);
 
 			OpenGLHelper.restoreGLState(savedGLState);
 		}
 	}
 
-	public void renderTextOnHeadstone(String text, EnumFacing orientation, double x, double y, double z, float xOffset, float yOffset, float zOffset, float scale, int color)
+	public void renderTextOnHeadstone(String[] text, EnumFacing orientation, double x, double y, double z, float xOffset, float yOffset, float zOffset, float scale, int color, boolean shadow)
 	{
-		int stringWidth = mc.fontRendererObj.getStringWidth(text);
-		if(stringWidth == 0)
-		{ stringWidth = 1; }
-		float center = .5f / (float) stringWidth;
-
 		int rotationIndex = 0;
 		switch(orientation)
 		{
@@ -73,18 +68,30 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer
 		GlStateManager.rotate(90f * rotationIndex, 0f, 1f, 0f);
 
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(xOffset, yOffset, zOffset - 1);
+		GlStateManager.translate(.5 + xOffset, -.815f + yOffset, zOffset - 1);
 
 		GlStateManager.pushMatrix();
-		GlStateManager.scale(center, center, 0);
+		GlStateManager.scale(scale, scale, 0);
 
 		GlStateManager.pushMatrix();
-		//		GlStateManager.disableLighting();
+		GlStateManager.disableDepth();
+		int i = 0;
+		for(String s : text)
+		{
+			int stringWidth = mc.fontRendererObj.getStringWidth(s);
+			if(stringWidth == 0)
+			{ stringWidth = 1; }
+			int xCenter = stringWidth / 2;
+			int yCenter = mc.fontRendererObj.FONT_HEIGHT / 2;
+			if(shadow)
+			{
+				mc.fontRendererObj.drawString(s, -xCenter - 1, -yCenter + 1 + (renderFont.FONT_HEIGHT * i + 2), (color & 16579836) >> 2 | color & -16777216);
+			}
+			mc.fontRendererObj.drawString(s, -xCenter, -yCenter + (renderFont.FONT_HEIGHT * i + 2), color);
 
-		mc.fontRendererObj.drawString(text, 0, 0, Color.white.hashCode());
-
-		//		GlStateManager.enableLighting();
-
+			i++;
+		}
+		GlStateManager.enableDepth();
 		GlStateManager.popMatrix();
 
 		GlStateManager.popMatrix();

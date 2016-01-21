@@ -1,18 +1,26 @@
 package com.fireball1725.graves.block;
 
+import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
+import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,9 +32,9 @@ public class BlockHeadStone extends BlockBase
 
 	protected BlockHeadStone()
 	{
-		super(Material.rock);
+		super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		this.setHardness(10F);
+		setHardness(1F);
 		this.setResistance(10000.0F);
 		this.setTileEntity(TileEntityHeadStone.class);
 	}
@@ -35,6 +43,43 @@ public class BlockHeadStone extends BlockBase
 	public int getRenderType()
 	{
 		return 3;
+	}
+
+	@Override
+	public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+	{
+		return willHarvest || super.removedByPlayer(world, pos, player, false);
+	}
+
+	@Override
+	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
+	{
+		LogHelper.info(">>> getting drops");
+		TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
+		if(headStone != null)
+		{
+			LogHelper.info(">>> setting text");
+			ItemStack itemStack = new ItemStack(this);
+			itemStack.setTagCompound(new NBTTagCompound());
+			itemStack.getTagCompound().setString("text", headStone.getHeadstoneText());
+			return new ArrayList<ItemStack>()
+			{{add(itemStack);}};
+		}
+		return super.getDrops(world, pos, state, fortune);
+	}
+
+	@Override
+	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te)
+	{
+		super.harvestBlock(world, player, pos, state, te);
+		world.setBlockToAir(pos);
+	}
+
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
+	{
+		playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ);
 	}
 
 	@Override
@@ -87,6 +132,21 @@ public class BlockHeadStone extends BlockBase
 	public int getMetaFromState(IBlockState state)
 	{
 		return state.getValue(FACING).getHorizontalIndex();
+	}
+
+	@Override
+	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack)
+	{
+		super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
+
+		TileEntityHeadStone headStone = TileTools.getTileEntity(world, blockPos, TileEntityHeadStone.class);
+		if(headStone != null)
+		{
+			if(itemStack.hasTagCompound())
+			{
+				headStone.setHeadstoneText(itemStack.getTagCompound().getString("text"));
+			}
+		}
 	}
 
 	@Override

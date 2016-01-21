@@ -8,10 +8,13 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -24,7 +27,7 @@ public class BlockGraveSlave extends BlockBase
 	{
 		super(Material.cloth);
 		setStepSound(Block.soundTypeStone);
-		setHardness(1.0F);
+		setHardness(1F);
 		setResistance(10000.0F);
 		setTileEntity(TileEntityGraveSlave.class);
 	}
@@ -33,6 +36,15 @@ public class BlockGraveSlave extends BlockBase
 	public int getRenderType()
 	{
 		return -1;
+	}
+
+	@Override
+	public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos, EntityPlayer player)
+	{
+		TileEntityGraveSlave slave = TileTools.getTileEntity(world, pos, TileEntityGraveSlave.class);
+		if(slave == null)
+		{ return null; }
+		return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(target, world, slave.getMasterBlock(), player);
 	}
 
 	@Override
@@ -51,6 +63,21 @@ public class BlockGraveSlave extends BlockBase
 	}
 
 	@Override
+	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
+	{
+		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
+		if(graveSlave != null && graveSlave.getMasterBlock().getY() > pos.getY())
+		{
+			setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
+		}
+		else
+		{
+			setBlockBounds(0, 0, 0, 1, .1425f, 1);
+		}
+		//		super.setBlockBoundsBasedOnState(worldIn, pos);
+	}
+
+	@Override
 	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
 	{
 		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
@@ -64,7 +91,8 @@ public class BlockGraveSlave extends BlockBase
 				boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
 				if(worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone)
 				{
-					setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
+					setBlockBounds(0f, 0f, 0f, 1f, 0.01f, 1f);
+					super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 				}
 				else
 				{
@@ -75,9 +103,9 @@ public class BlockGraveSlave extends BlockBase
 					}
 					else
 					{
-						setBlockBounds(0, 0, 0, 0, 0, 0);
+						setBlockBounds(0, 0, 0, .000001f, .000001f, .000001f);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 					}
-					super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 				}
 			}
 		}

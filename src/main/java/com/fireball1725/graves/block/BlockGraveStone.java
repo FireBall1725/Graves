@@ -1,6 +1,7 @@
 package com.fireball1725.graves.block;
 
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
+import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -10,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -27,7 +29,7 @@ public class BlockGraveStone extends BlockBase {
     public BlockGraveStone() {
         super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(HASLID, true).withProperty(FACING, EnumFacing.NORTH));
-		this.setHardness(1.0F);
+		setHardness(1F);
 		this.setResistance(10000.0F);
 		this.setTileEntity(TileEntityGraveStone.class);
     }
@@ -52,22 +54,6 @@ public class BlockGraveStone extends BlockBase {
     public boolean canSilkHarvest(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
         return false;
     }
-
-//    @Override
-//    public void breakBlock(World world, BlockPos blockPos, IBlockState blockState) {
-//        TileEntityGraveStone tileEntityGraveStone = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
-//        if (tileEntityGraveStone != null) {
-//            LogHelper.info(">>> S " + tileEntityGraveStone.getHasLid());
-//            if (tileEntityGraveStone.getHasLid()) {
-//                tileEntityGraveStone.setHasLid(false);
-//                world.setBlockState(blockPos, blockState.withProperty(HASLID, false));
-//                tileEntityGraveStone.markForUpdate();
-//                LogHelper.info(">>> E " + tileEntityGraveStone.getHasLid());
-//            } else {
-//                super.breakBlock(world, blockPos, blockState);
-//            }
-//        }
-//    }
 
     @Override
 	protected BlockState createBlockState()
@@ -99,6 +85,12 @@ public class BlockGraveStone extends BlockBase {
 	}
 
 	@Override
+	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
+	{
+		setBlockBounds(0, 0, 0, 1, .1425f, 1);
+	}
+
+	@Override
 	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
 	{
 		IBlockState actualState = getActualState(state, worldIn, pos);
@@ -125,6 +117,15 @@ public class BlockGraveStone extends BlockBase {
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
 	{
 		return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+	}
+
+	@Override
+	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack)
+	{
+		super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
+
+		TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
+		graveStoneTileEntity.breakBlocks();
 	}
 
 	@Override

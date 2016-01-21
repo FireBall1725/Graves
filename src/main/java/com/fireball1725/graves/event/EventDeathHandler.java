@@ -5,7 +5,6 @@ import com.fireball1725.graves.block.BlockHeadStone;
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.helpers.SafeBlockReplacer;
-import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
@@ -66,30 +65,10 @@ public class EventDeathHandler {
 		TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
 		if(tileEntityHeadStone != null)
 		{
-			tileEntityHeadStone.setPlayerName(event.entityPlayer.getDisplayName().getFormattedText());
+			tileEntityHeadStone.setHeadstoneText(event.entityPlayer.getDisplayName().getFormattedText());
 			tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
 		}
 		// End of adding headstone
-
-		// Adding slaves
-		TileEntityGraveSlave tileEntityGraveSlave;
-		state = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
-
-		world.setBlockState(safePos.down(), state);
-
-		tileEntityGraveSlave = TileTools.getTileEntity(world, safePos.down(), TileEntityGraveSlave.class);
-		tileEntityGraveSlave.setMasterBlock(safePos);
-
-		world.setBlockState(safePos.offset(facing), state);
-
-		tileEntityGraveSlave = TileTools.getTileEntity(world, safePos.offset(facing), TileEntityGraveSlave.class);
-		tileEntityGraveSlave.setMasterBlock(safePos);
-
-		world.setBlockState(safePos.down().offset(facing), state);
-
-		tileEntityGraveSlave = TileTools.getTileEntity(world, safePos.down().offset(facing), TileEntityGraveSlave.class);
-		tileEntityGraveSlave.setMasterBlock(safePos);
-		// End of adding slaves
 
         event.drops.clear();
     }
