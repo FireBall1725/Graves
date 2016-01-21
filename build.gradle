@@ -51,7 +51,9 @@ if (hasProperty("teamcity")) {
 minecraft {
     version = minecraft_version + "-" + forge_version
 
-    replace "@version@", project.version
+    replaceIn "ModInfo.java"
+
+    replace "@VERSION@", project.version
     replace "@MCVERSION@", minecraft_version
 
     runDir = "run"
