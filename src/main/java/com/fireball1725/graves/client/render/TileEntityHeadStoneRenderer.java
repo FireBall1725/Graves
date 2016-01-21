@@ -10,32 +10,29 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer
-{
-	public static TileEntityHeadStoneRenderer _instance = null;
+public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
+    public static TileEntityHeadStoneRenderer _instance = null;
 
-	public static TileEntityHeadStoneRenderer instance()
-	{
-		if(_instance == null)
-		{ _instance = new TileEntityHeadStoneRenderer(); }
-		return _instance;
-	}
+    public static TileEntityHeadStoneRenderer instance() {
+        if (_instance == null) {
+            _instance = new TileEntityHeadStoneRenderer();
+        }
+        return _instance;
+    }
 
-	@Override
-	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage)
-	{
-		if(te instanceof TileEntityHeadStone)
-		{
-			this.saveBoundTexture();
+    @Override
+    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
+        if (te instanceof TileEntityHeadStone) {
+            this.saveBoundTexture();
 
-			int[][] savedGLState = OpenGLHelper.modifyGLState(new int[] {GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
-			TileEntityHeadStone headStone = (TileEntityHeadStone) te;
+            int[][] savedGLState = OpenGLHelper.modifyGLState(new int[]{GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
+            TileEntityHeadStone headStone = (TileEntityHeadStone) te;
 
 			renderTextOnHeadstone(headStone.getHeadstoneText().split("\\\\n"), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), false);
 
-			OpenGLHelper.restoreGLState(savedGLState);
-		}
-	}
+            OpenGLHelper.restoreGLState(savedGLState);
+        }
+    }
 
 	public void renderTextOnHeadstone(String[] text, EnumFacing orientation, double x, double y, double z, float xOffset, float yOffset, float zOffset, float scale, int color, boolean shadow)
 	{

@@ -15,6 +15,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -31,12 +32,19 @@ public class BlockGraveSlave extends BlockBase
 		setResistance(10000.0F);
 		setTileEntity(TileEntityGraveSlave.class);
 	}
+public class BlockGraveSlave extends BlockBase {
+    public BlockGraveSlave() {
+        super(Material.cloth);
+        setStepSound(Block.soundTypeStone);
+        setHardness(1.0F);
+        setResistance(10000.0F);
+        setTileEntity(TileEntityGraveSlave.class);
+    }
 
-	@Override
-	public int getRenderType()
-	{
-		return -1;
-	}
+    @Override
+    public int getRenderType() {
+        return -1;
+    }
 
 	@Override
 	public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos, EntityPlayer player)
@@ -111,45 +119,43 @@ public class BlockGraveSlave extends BlockBase
 		}
 	}
 
-	@Override
-	public boolean addLandingEffects(WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles)
-	{
-		return super.addLandingEffects(worldObj, blockPosition, iblockstate, entity, numberOfParticles);
-	}
+    @Override
+    public boolean addLandingEffects(WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
+        return super.addLandingEffects(worldObj, blockPosition, iblockstate, entity, numberOfParticles);
+    }
 
-	@Override
-	public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer)
-	{
-		return super.addHitEffects(worldObj, target, effectRenderer);
-	}
+    @Override
+    public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) {
+        return super.addHitEffects(worldObj, target, effectRenderer);
+    }
 
-	@Override
-	public boolean addDestroyEffects(World world, BlockPos pos, EffectRenderer effectRenderer)
-	{
-		return super.addDestroyEffects(world, pos, effectRenderer);
-	}
+    @Override
+    public boolean addDestroyEffects(World world, BlockPos pos, EffectRenderer effectRenderer) {
+        return super.addDestroyEffects(world, pos, effectRenderer);
+    }
 
-	@Override
-	public boolean isOpaqueCube()
-	{
-		return false;
-	}
+    @Override
+    public boolean isOpaqueCube() {
+        return false;
+    }
 
-	@Override
-	public boolean isFullBlock()
-	{
-		return false;
-	}
+    @Override
+    public boolean isFullBlock() {
+        return false;
+    }
 
-	@Override
-	public boolean isFullCube()
-	{
-		return false;
-	}
+    @Override
+    public boolean isFullCube() {
+        return false;
+    }
 
-	@Override
-	public Item getItemDropped(IBlockState state, Random rand, int fortune)
-	{
-		return null;
-	}
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return null;
+    }
+
+    @Override
+    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
+
+    }
 }

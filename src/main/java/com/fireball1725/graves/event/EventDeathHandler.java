@@ -52,13 +52,13 @@ public class EventDeathHandler {
 
         BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition());
 
-		EnumFacing facing = event.entityPlayer.getHorizontalFacing();
-		IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
-		world.setBlockState(safePos, state);
+        EnumFacing facing = event.entityPlayer.getHorizontalFacing();
+        IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
+        world.setBlockState(safePos, state);
 
-		TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
-		graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
-		graveStoneTileEntity.breakBlocks();
+        TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
+        graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
+        graveStoneTileEntity.breakBlocks();
 
 		// Adding Headstone
 		world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
