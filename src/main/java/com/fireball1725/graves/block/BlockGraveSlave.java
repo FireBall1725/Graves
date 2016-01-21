@@ -12,6 +12,7 @@ import net.minecraft.item.Item;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -123,5 +124,10 @@ public class BlockGraveSlave extends BlockBase
 	public Item getItemDropped(IBlockState state, Random rand, int fortune)
 	{
 		return null;
+	}
+
+	@Override
+	public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
+
 	}
 }
