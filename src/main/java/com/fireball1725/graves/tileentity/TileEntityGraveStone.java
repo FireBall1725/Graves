@@ -20,8 +20,7 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     protected boolean hasLid = true;
     private InternalInventory internalInventory = new InternalInventory(this, 100);
 
-	public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player)
-	{
+    public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player) {
 
         int i = 0;
         for (EntityItem item : itemsList) {
@@ -45,24 +44,23 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     }
 
     public void breakBlocks() {
-		IBlockState masterState = worldObj.getBlockState(pos);
-		Block block1, block2;
-		block1 = worldObj.getBlockState(pos.down()).getBlock();
-		block2 = worldObj.getBlockState(pos.down().offset(masterState.getValue(BlockGraveStone.FACING))).getBlock();
+        IBlockState masterState = worldObj.getBlockState(pos);
+        Block block1, block2;
+        block1 = worldObj.getBlockState(pos.down()).getBlock();
+        block2 = worldObj.getBlockState(pos.down().offset(masterState.getValue(BlockGraveStone.FACING))).getBlock();
 
-		if(block1 != null && block2 != null)
-		{
-			IBlockState state1, state2;
-			state1 = worldObj.getBlockState(pos.down());
-			state2 = worldObj.getBlockState(pos.down().offset(masterState.getValue(BlockGraveStone.FACING)));
+        if (block1 != null && block2 != null) {
+            IBlockState state1, state2;
+            state1 = worldObj.getBlockState(pos.down());
+            state2 = worldObj.getBlockState(pos.down().offset(masterState.getValue(BlockGraveStone.FACING)));
 
-			ItemStack item1 = new ItemStack(block1.getItemDropped(state1, new Random(1), 0), 1, block1.damageDropped(state1));
-			ItemStack item2 = new ItemStack(block2.getItemDropped(state2, new Random(1), 0), 1, block2.damageDropped(state2));
-			worldObj.setBlockToAir(pos.down());
-			worldObj.setBlockToAir(pos.down().offset(masterState.getValue(BlockGraveStone.FACING)));
-			internalInventory.setInventorySlotContents(80, item1);
-			internalInventory.setInventorySlotContents(81, item2);
-		}
+            ItemStack item1 = new ItemStack(block1.getItemDropped(state1, new Random(1), 0), 1, block1.damageDropped(state1));
+            ItemStack item2 = new ItemStack(block2.getItemDropped(state2, new Random(1), 0), 1, block2.damageDropped(state2));
+            worldObj.setBlockToAir(pos.down());
+            worldObj.setBlockToAir(pos.down().offset(masterState.getValue(BlockGraveStone.FACING)));
+            internalInventory.setInventorySlotContents(80, item1);
+            internalInventory.setInventorySlotContents(81, item2);
+        }
     }
 
     @Override
