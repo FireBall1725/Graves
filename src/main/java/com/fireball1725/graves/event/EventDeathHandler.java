@@ -1,11 +1,13 @@
 package com.fireball1725.graves.event;
 
 import com.fireball1725.graves.block.BlockGraveStone;
+import com.fireball1725.graves.block.BlockHeadStone;
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.helpers.SafeBlockReplacer;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
+import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -58,6 +60,16 @@ public class EventDeathHandler {
 		TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
 		graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
 		graveStoneTileEntity.breakBlocks();
+
+		// Adding Headstone
+		world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
+		TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
+		if(tileEntityHeadStone != null)
+		{
+			tileEntityHeadStone.setPlayerName(event.entityPlayer.getDisplayName().getFormattedText());
+			tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
+		}
+		// End of adding headstone
 
 		// Adding slaves
 		TileEntityGraveSlave tileEntityGraveSlave;

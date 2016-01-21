@@ -121,6 +121,7 @@ public class BlockGraveStone extends BlockBase {
 		return AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1).offset(pos.getX(), pos.getY(), pos.getZ());
 	}
 
+	@Override
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
 	{
 		return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());

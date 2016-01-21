@@ -20,10 +20,9 @@ import java.util.Random;
 public class TileEntityGraveStone extends TileEntityInventoryBase {
     protected boolean hasLid = true;
     private InternalInventory internalInventory = new InternalInventory(this, 100);
-    private String playerName = "";
 
-    public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player) {
-        this.playerName = player.getDisplayName().getFormattedText();
+	public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player)
+	{
 
         int i = 0;
         for (EntityItem item : itemsList) {
@@ -37,7 +36,6 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         super.readFromNBT(nbtTagCompound);
 
         this.hasLid = nbtTagCompound.getBoolean("hasLid");
-        this.playerName = nbtTagCompound.getString("playerName");
     }
 
     @Override
@@ -45,7 +43,6 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         super.writeToNBT(nbtTagCompound);
 
         nbtTagCompound.setBoolean("hasLid", this.hasLid);
-        nbtTagCompound.setString("playerName", this.playerName);
     }
 
     public void breakBlocks() {
@@ -121,9 +118,5 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         this.hasLid = hasLid;
         worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockGraveStone.HASLID, false));
         worldObj.markBlockForUpdate(pos);
-    }
-
-    public String getPlayerName() {
-        return this.playerName;
     }
 }
