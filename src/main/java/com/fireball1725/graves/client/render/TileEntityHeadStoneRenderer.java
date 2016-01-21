@@ -28,14 +28,12 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer
 		{
 			this.saveBoundTexture();
 
-			int[][] savedGLState = modifyGLState(new int[] {GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
+			int[][] savedGLState = OpenGLHelper.modifyGLState(new int[] {GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
 			TileEntityHeadStone headStone = (TileEntityHeadStone) te;
 
-			mc.getTextureManager().bindTexture(new ResourceLocation("minecraft", "textures/font/ascii.png"));
 			renderTextOnHeadstone(headStone.getPlayerName(), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, .25f, -.7f, .0365f, 0.015f, 0);
 
-			this.restoreGlState(savedGLState);
-			this.loadBoundTexture();
+			OpenGLHelper.restoreGLState(savedGLState);
 		}
 	}
 
