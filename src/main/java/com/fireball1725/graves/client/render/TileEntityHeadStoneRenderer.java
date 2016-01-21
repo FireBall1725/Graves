@@ -32,8 +32,7 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer
 			TileEntityHeadStone headStone = (TileEntityHeadStone) te;
 
 			mc.getTextureManager().bindTexture(new ResourceLocation("minecraft", "textures/font/ascii.png"));
-			renderTextOnHeadstone(headStone.getPlayerName(), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, .125f, -.275f, -.001f, 0.02f, 0);
-			renderMultiLineTextOnHeadstone(headStone.getEulogy(), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, 0f, -1.225f, .03f, 0.02f, 0);
+			renderTextOnHeadstone(headStone.getPlayerName(), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, .25f, -.7f, .0365f, 0.015f, 0);
 
 			this.restoreGlState(savedGLState);
 			this.loadBoundTexture();
@@ -104,7 +103,7 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer
 		int stringWidth = mc.fontRendererObj.getStringWidth(text);
 		if(stringWidth == 0)
 		{ stringWidth = 1; }
-		float center = .75f / (float) stringWidth;
+		float center = .5f / (float) stringWidth;
 
 		int rotationIndex = 0;
 		switch(orientation)

@@ -4,13 +4,12 @@ import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 
@@ -46,18 +45,24 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     }
 
     public void breakBlocks() {
-        int x = pos.getX();
-        int y = pos.getY();
-        int z = pos.getZ();
+		IBlockState masterState = worldObj.getBlockState(pos);
+		Block block1, block2;
+		block1 = worldObj.getBlockState(pos.down()).getBlock();
+		block2 = worldObj.getBlockState(pos.down().offset(masterState.getValue(BlockGraveStone.FACING))).getBlock();
 
-        Block block;
+		if(block1 != null && block2 != null)
+		{
+			IBlockState state1, state2;
+			state1 = worldObj.getBlockState(pos.down());
+			state2 = worldObj.getBlockState(pos.down().offset(masterState.getValue(BlockGraveStone.FACING)));
 
-        block = worldObj.getBlockState(new BlockPos(x, y - 1, z)).getBlock();
-        if (block != null) {
-            Item block1 = block.getItemDropped(worldObj.getBlockState(new BlockPos(x, y - 1, z)), new Random(1), 0);
-            worldObj.setBlockToAir(new BlockPos(x, y - 1, z));
-            internalInventory.setInventorySlotContents(80, new ItemStack(block1));
-        }
+			ItemStack item1 = new ItemStack(block1.getItemDropped(state1, new Random(1), 0), 1, block1.damageDropped(state1));
+			ItemStack item2 = new ItemStack(block2.getItemDropped(state2, new Random(1), 0), 1, block2.damageDropped(state2));
+			worldObj.setBlockToAir(pos.down());
+			worldObj.setBlockToAir(pos.down().offset(masterState.getValue(BlockGraveStone.FACING)));
+			internalInventory.setInventorySlotContents(80, item1);
+			internalInventory.setInventorySlotContents(81, item2);
+		}
     }
 
     @Override

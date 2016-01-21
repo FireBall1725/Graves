@@ -111,8 +111,8 @@ public class BlockGraveStone extends BlockBase {
 		else
 		{
 			setBlockBounds(0, 0, 0, 0, 0, 0);
+			super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 		}
-		super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 	}
 
 	@Override
@@ -129,6 +129,18 @@ public class BlockGraveStone extends BlockBase {
 
 	@Override
 	public boolean isOpaqueCube()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean isFullBlock()
+	{
+		return false;
+	}
+
+	@Override
+	public boolean isFullCube()
 	{
 		return false;
 	}
