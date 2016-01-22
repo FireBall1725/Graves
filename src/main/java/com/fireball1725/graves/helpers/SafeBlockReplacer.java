@@ -33,6 +33,12 @@ public class SafeBlockReplacer {
         int y = blockPos.getY();
         int z = blockPos.getZ();
 
+        if (y <= 0)
+            y = 1;
+
+        if (y > 256)
+            y = 256;
+
         boolean placeGrave = true;
 
         if (!CheckBlock(world, new BlockPos(x, y, z), true))
