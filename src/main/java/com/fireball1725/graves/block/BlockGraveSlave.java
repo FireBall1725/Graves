@@ -36,78 +36,61 @@ public class BlockGraveSlave extends BlockBase {
         return -1;
     }
 
-	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos, EntityPlayer player)
-	{
-		TileEntityGraveSlave slave = TileTools.getTileEntity(world, pos, TileEntityGraveSlave.class);
-		if(slave == null)
-		{ return null; }
-		return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(target, world, slave.getMasterBlock(), player);
-	}
+    @Override
+    public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos, EntityPlayer player) {
+        TileEntityGraveSlave slave = TileTools.getTileEntity(world, pos, TileEntityGraveSlave.class);
+        if (slave == null) {
+            return null;
+        }
+        return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(target, world, slave.getMasterBlock(), player);
+    }
 
-	@Override
-	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
-	{
-		AxisAlignedBB selectionBox;
-		if(worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone)
-		{
-			selectionBox = AxisAlignedBB.fromBounds(0f, 0f, 0f, 1f, 1f, 1f);
-		}
-		else
-		{
-			selectionBox = AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1);
-		}
-		return selectionBox.offset(pos.getX(), pos.getY(), pos.getZ());
-	}
+    @Override
+    public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
+        AxisAlignedBB selectionBox;
+        if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone) {
+            selectionBox = AxisAlignedBB.fromBounds(0f, 0f, 0f, 1f, 1f, 1f);
+        } else {
+            selectionBox = AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1);
+        }
+        return selectionBox.offset(pos.getX(), pos.getY(), pos.getZ());
+    }
 
-	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
-	{
-		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-		if(graveSlave != null && graveSlave.getMasterBlock().getY() > pos.getY())
-		{
-			setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
-		}
-		else
-		{
-			setBlockBounds(0, 0, 0, 1, .1425f, 1);
-		}
-		//		super.setBlockBoundsBasedOnState(worldIn, pos);
-	}
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
+        TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
+        if (graveSlave != null && graveSlave.getMasterBlock().getY() > pos.getY()) {
+            setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
+        } else {
+            setBlockBounds(0, 0, 0, 1, .1425f, 1);
+        }
+        //		super.setBlockBoundsBasedOnState(worldIn, pos);
+    }
 
-	@Override
-	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
-	{
-		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-		if(graveSlave != null)
-		{
-			IBlockState masterState = worldIn.getBlockState(graveSlave.getMasterBlock());
-			IBlockState actualState = masterState.getBlock().getActualState(masterState, worldIn, graveSlave.getMasterBlock());
-			//			LogHelper.info(">>> " + actualState);
-			if(masterState.getBlock() instanceof BlockGraveStone)
-			{
-				boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
-				if(worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone)
-				{
-					setBlockBounds(0f, 0f, 0f, 1f, 0.01f, 1f);
-					super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-				}
-				else
-				{
-					if(hasLid)
-					{
-						setBlockBounds(0, 0, 0, 1, .1425f, 1);
-						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-					}
-					else
-					{
-						setBlockBounds(0, 0, 0, .000001f, .000001f, .000001f);
-						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-					}
-				}
-			}
-		}
-	}
+    @Override
+    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
+        TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
+        if (graveSlave != null) {
+            IBlockState masterState = worldIn.getBlockState(graveSlave.getMasterBlock());
+            IBlockState actualState = masterState.getBlock().getActualState(masterState, worldIn, graveSlave.getMasterBlock());
+            //			LogHelper.info(">>> " + actualState);
+            if (masterState.getBlock() instanceof BlockGraveStone) {
+                boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
+                if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone) {
+                    setBlockBounds(0f, 0f, 0f, 1f, 0.01f, 1f);
+                    super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+                } else {
+                    if (hasLid) {
+                        setBlockBounds(0, 0, 0, 1, .1425f, 1);
+                        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+                    } else {
+                        setBlockBounds(0, 0, 0, .000001f, .000001f, .000001f);
+                        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     public boolean addLandingEffects(WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {

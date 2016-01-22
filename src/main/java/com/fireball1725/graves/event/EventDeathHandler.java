@@ -60,15 +60,14 @@ public class EventDeathHandler {
         graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
         graveStoneTileEntity.breakBlocks();
 
-		// Adding Headstone
-		world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
-		TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
-		if(tileEntityHeadStone != null)
-		{
-			tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
-			//tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
-		}
-		// End of adding headstone
+        // Adding Headstone
+        world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
+        TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
+        if (tileEntityHeadStone != null) {
+            tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
+            //tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
+        }
+        // End of adding headstone
 
         event.drops.clear();
     }

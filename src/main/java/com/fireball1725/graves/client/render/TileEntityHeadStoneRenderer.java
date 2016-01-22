@@ -28,75 +28,72 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
             int[][] savedGLState = OpenGLHelper.modifyGLState(new int[]{GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
             TileEntityHeadStone headStone = (TileEntityHeadStone) te;
 
-			renderTextOnHeadstone(headStone.getCustomName().split("\\\\n"), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), false);
+            renderTextOnHeadstone(headStone.getCustomName().split("\\\\n"), headStone.getBlockState().getValue(BlockGraveStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), false);
 
             OpenGLHelper.restoreGLState(savedGLState);
         }
     }
 
-	public void renderTextOnHeadstone(String[] text, EnumFacing orientation, double x, double y, double z, float xOffset, float yOffset, float zOffset, float scale, int color, boolean shadow)
-	{
-		int rotationIndex = 0;
-		switch(orientation)
-		{
-			case NORTH:
-				xOffset -= 1;
-				zOffset += 1;
-				rotationIndex = 2;
-				break;
-			case SOUTH:
-				rotationIndex = 0;
-				break;
-			case WEST:
-				zOffset += 1;
-				rotationIndex = 1;
-				break;
-			case EAST:
-				xOffset -= 1;
-				rotationIndex = 3;
-				break;
-		}
+    public void renderTextOnHeadstone(String[] text, EnumFacing orientation, double x, double y, double z, float xOffset, float yOffset, float zOffset, float scale, int color, boolean shadow) {
+        int rotationIndex = 0;
+        switch (orientation) {
+            case NORTH:
+                xOffset -= 1;
+                zOffset += 1;
+                rotationIndex = 2;
+                break;
+            case SOUTH:
+                rotationIndex = 0;
+                break;
+            case WEST:
+                zOffset += 1;
+                rotationIndex = 1;
+                break;
+            case EAST:
+                xOffset -= 1;
+                rotationIndex = 3;
+                break;
+        }
 
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(x, y, z);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x, y, z);
 
-		GlStateManager.pushMatrix();
-		GlStateManager.rotate(180f, 1f, 0f, 0f);
-		GlStateManager.rotate(90f * rotationIndex, 0f, 1f, 0f);
+        GlStateManager.pushMatrix();
+        GlStateManager.rotate(180f, 1f, 0f, 0f);
+        GlStateManager.rotate(90f * rotationIndex, 0f, 1f, 0f);
 
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(.5 + xOffset, -.815f + yOffset, zOffset - 1);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(.5 + xOffset, -.815f + yOffset, zOffset - 1);
 
-		GlStateManager.pushMatrix();
-		GlStateManager.scale(scale, scale, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, 0);
 
-		GlStateManager.pushMatrix();
-		GlStateManager.disableDepth();
-		int i = 0;
-		for(String s : text)
-		{
-			int stringWidth = mc.fontRendererObj.getStringWidth(s);
-			if(stringWidth == 0)
-			{ stringWidth = 1; }
-			int xCenter = stringWidth / 2;
-			int yCenter = mc.fontRendererObj.FONT_HEIGHT / 2;
-			if(shadow)
-			{
-				mc.fontRendererObj.drawString(s, -xCenter - 1, -yCenter + 1 + (renderFont.FONT_HEIGHT * i + 2), (color & 16579836) >> 2 | color & -16777216);
-			}
-			mc.fontRendererObj.drawString(s, -xCenter, -yCenter + (renderFont.FONT_HEIGHT * i + 2), color);
+        GlStateManager.pushMatrix();
+        GlStateManager.disableDepth();
+        int i = 0;
+        for (String s : text) {
+            int stringWidth = mc.fontRendererObj.getStringWidth(s);
+            if (stringWidth == 0) {
+                stringWidth = 1;
+            }
+            int xCenter = stringWidth / 2;
+            int yCenter = mc.fontRendererObj.FONT_HEIGHT / 2;
+            if (shadow) {
+                mc.fontRendererObj.drawString(s, -xCenter - 1, -yCenter + 1 + (renderFont.FONT_HEIGHT * i + 2), (color & 16579836) >> 2 | color & -16777216);
+            }
+            mc.fontRendererObj.drawString(s, -xCenter, -yCenter + (renderFont.FONT_HEIGHT * i + 2), color);
 
-			i++;
-		}
-		GlStateManager.enableDepth();
-		GlStateManager.popMatrix();
+            i++;
+        }
+        GlStateManager.enableDepth();
+        GlStateManager.popMatrix();
 
-		GlStateManager.popMatrix();
+        GlStateManager.popMatrix();
 
-		GlStateManager.popMatrix();
+        GlStateManager.popMatrix();
 
-		GlStateManager.popMatrix();
+        GlStateManager.popMatrix();
 
-		GlStateManager.popMatrix();
-	}
+        GlStateManager.popMatrix();
+    }
 }

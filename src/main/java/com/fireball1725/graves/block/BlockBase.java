@@ -1,6 +1,5 @@
 package com.fireball1725.graves.block;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.tileentity.TileEntityBase;
 import com.fireball1725.graves.util.TileTools;

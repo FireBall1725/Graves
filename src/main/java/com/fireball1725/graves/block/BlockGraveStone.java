@@ -29,10 +29,10 @@ public class BlockGraveStone extends BlockBase {
 
     public BlockGraveStone() {
         super(Material.cloth);
-		setDefaultState(blockState.getBaseState().withProperty(HASLID, true).withProperty(FACING, EnumFacing.NORTH));
-		setHardness(1F);
-		this.setResistance(10000F);
-		this.setTileEntity(TileEntityGraveStone.class);
+        setDefaultState(blockState.getBaseState().withProperty(HASLID, true).withProperty(FACING, EnumFacing.NORTH));
+        setHardness(1F);
+        this.setResistance(10000F);
+        this.setTileEntity(TileEntityGraveStone.class);
     }
 
     @Override
@@ -79,48 +79,41 @@ public class BlockGraveStone extends BlockBase {
         return state.getValue(FACING).getIndex();
     }
 
-	@Override
-	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
-	{
-		setBlockBounds(0, 0, 0, 1, .1425f, 1);
-	}
+    @Override
+    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
+        setBlockBounds(0, 0, 0, 1, .1425f, 1);
+    }
 
-	@Override
-	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
-	{
-		IBlockState actualState = getActualState(state, worldIn, pos);
-		boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
-		if(hasLid)
-		{
-			setBlockBounds(0, 0, 0, 1, .1425f, 1);
-			super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-		}
-		else
-		{
-			setBlockBounds(0, 0, 0, 0, 0, 0);
-			super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-		}
-	}
+    @Override
+    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
+        IBlockState actualState = getActualState(state, worldIn, pos);
+        boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
+        if (hasLid) {
+            setBlockBounds(0, 0, 0, 1, .1425f, 1);
+            super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+        } else {
+            setBlockBounds(0, 0, 0, 0, 0, 0);
+            super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+        }
+    }
 
     @Override
     public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
         return AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1).offset(pos.getX(), pos.getY(), pos.getZ());
     }
 
-	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-	{
-		return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
-	}
+    @Override
+    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+        return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+    }
 
-	@Override
-	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack)
-	{
-		super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack) {
+        super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
 
-		TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
-		graveStoneTileEntity.breakBlocks();
-	}
+        TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
+        graveStoneTileEntity.breakBlocks();
+    }
 
     @Override
     public boolean isOpaqueCube() {

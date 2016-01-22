@@ -48,9 +48,9 @@ public class Graves {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-		PacketHandler.init();
-		NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
-		proxy.registerRenderers();
+        PacketHandler.init();
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, new GuiHandler());
+        proxy.registerRenderers();
     }
 
     @Mod.EventHandler

@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -26,66 +25,58 @@ import java.util.List;
 public class BlockHeadStone extends BlockBase {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
-	protected BlockHeadStone()
-	{
-		super(Material.rock);
-		this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		this.setHardness(1.5F);
-		this.setResistance(10.0F);
-		this.setHarvestLevel("pickaxe", 0);
-		this.setTileEntity(TileEntityHeadStone.class);
-	}
+    protected BlockHeadStone() {
+        super(Material.rock);
+        this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+        this.setHardness(1.5F);
+        this.setResistance(10.0F);
+        this.setHarvestLevel("pickaxe", 0);
+        this.setTileEntity(TileEntityHeadStone.class);
+    }
 
     @Override
     public int getRenderType() {
         return 3;
     }
 
-	@Override
-	public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
-	{
-		return willHarvest || super.removedByPlayer(world, pos, player, false);
-	}
+    @Override
+    public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        return willHarvest || super.removedByPlayer(world, pos, player, false);
+    }
 
-	@Override
-	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
-	{
-		TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
-		if(headStone != null && headStone.getCustomName() != "")
-		{
-			final ItemStack itemStack = new ItemStack(this);
-			itemStack.setStackDisplayName(headStone.getCustomName());
+    @Override
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
+        if (headStone != null && headStone.getCustomName() != "") {
+            final ItemStack itemStack = new ItemStack(this);
+            itemStack.setStackDisplayName(headStone.getCustomName());
 
-			ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
-			drops.add(itemStack);
+            ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
+            drops.add(itemStack);
 
-			return drops;
-		}
-		return super.getDrops(world, pos, state, fortune);
-	}
+            return drops;
+        }
+        return super.getDrops(world, pos, state, fortune);
+    }
 
-	@Override
-	public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te)
-	{
-		super.harvestBlock(world, player, pos, state, te);
-		world.setBlockToAir(pos);
-	}
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te) {
+        super.harvestBlock(world, player, pos, state, te);
+        world.setBlockToAir(pos);
+    }
 
-	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
-	{
-		if(playerIn.capabilities.isCreativeMode)
-		{
-			playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
-		}
-		return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ);
-	}
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
+        if (playerIn.capabilities.isCreativeMode) {
+            playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+        }
+        return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ);
+    }
 
-	@Override
-	protected BlockState createBlockState()
-	{
-		return new BlockState(this, FACING);
-	}
+    @Override
+    protected BlockState createBlockState() {
+        return new BlockState(this, FACING);
+    }
 
     @Override
     public boolean isOpaqueCube() {
@@ -122,11 +113,10 @@ public class BlockHeadStone extends BlockBase {
         super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
     }
 
-	@Override
-	public int getMetaFromState(IBlockState state)
-	{
-		return state.getValue(FACING).getHorizontalIndex();
-	}
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(FACING).getHorizontalIndex();
+    }
 
 
     @Override
