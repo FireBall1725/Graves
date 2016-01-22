@@ -1,7 +1,6 @@
 package com.fireball1725.graves.block;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.material.Material;
@@ -53,11 +52,9 @@ public class BlockHeadStone extends BlockBase {
 	@Override
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 	{
-		LogHelper.info(">>> getting drops");
 		TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
 		if(headStone != null)
 		{
-			LogHelper.info(">>> setting text");
 			ItemStack itemStack = new ItemStack(this);
 			itemStack.setTagCompound(new NBTTagCompound());
 			itemStack.getTagCompound().setString("text", headStone.getHeadstoneText());
@@ -77,7 +74,10 @@ public class BlockHeadStone extends BlockBase {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		if(playerIn.capabilities.isCreativeMode)
+		{
+			playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		}
 		return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ);
 	}
 
