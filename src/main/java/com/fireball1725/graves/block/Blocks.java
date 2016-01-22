@@ -1,6 +1,8 @@
 package com.fireball1725.graves.block;
 
+import com.fireball1725.graves.creativetab.ModCreativeTabs;
 import com.fireball1725.graves.helpers.LogHelper;
+import com.fireball1725.graves.item.ItemHeadStone;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
@@ -10,7 +12,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public enum Blocks {
     BLOCK_GRAVESTONE("gravestone", new BlockGraveStone()),
     BLOCK_GRAVESTONE_SLAVE("gravestone_slave", new BlockGraveSlave()),
-    BLOCK_GRAVE_HEADSTONE("headstone", new BlockHeadStone());
+    BLOCK_GRAVE_HEADSTONE("headstone", new BlockHeadStone(), ItemHeadStone.class, ModCreativeTabs.tabGraves);
 
     private static boolean registered = false;
     public final Block block;

@@ -12,4 +12,6 @@ public interface IProxy {
     void registerConfiguration(File configFile);
 
     void registerRenderers();
+
+    void registerRecipes();
 }

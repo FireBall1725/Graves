@@ -46,7 +46,7 @@ public class MessageSetHeadstoneName implements IMessage
 			TileEntityHeadStone headStone = TileTools.getTileEntity(ctx.getServerHandler().playerEntity.worldObj, message.pos, TileEntityHeadStone.class);
 			if(headStone != null)
 			{
-				headStone.setHeadstoneText(message.playerName);
+				headStone.setCustomName(message.playerName);
 				headStone.markForUpdate();
 			}
 			return null;

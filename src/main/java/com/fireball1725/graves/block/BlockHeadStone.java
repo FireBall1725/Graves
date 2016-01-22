@@ -23,18 +23,16 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by FusionLord on 1/20/2016.
- */
 public class BlockHeadStone extends BlockBase {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
 	protected BlockHeadStone()
 	{
-		super(Material.cloth);
-		setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-		setHardness(1F);
-		this.setResistance(10000.0F);
+		super(Material.rock);
+		this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		this.setHardness(1.5F);
+		this.setResistance(10.0F);
+		this.setHarvestLevel("pickaxe", 0);
 		this.setTileEntity(TileEntityHeadStone.class);
 	}
 
@@ -53,13 +51,15 @@ public class BlockHeadStone extends BlockBase {
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 	{
 		TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
-		if(headStone != null)
+		if(headStone != null && headStone.getCustomName() != "")
 		{
-			ItemStack itemStack = new ItemStack(this);
-			itemStack.setTagCompound(new NBTTagCompound());
-			itemStack.getTagCompound().setString("text", headStone.getHeadstoneText());
-			return new ArrayList<ItemStack>()
-			{{add(itemStack);}};
+			final ItemStack itemStack = new ItemStack(this);
+			itemStack.setStackDisplayName(headStone.getCustomName());
+
+			ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
+			drops.add(itemStack);
+
+			return drops;
 		}
 		return super.getDrops(world, pos, state, fortune);
 	}
@@ -128,20 +128,6 @@ public class BlockHeadStone extends BlockBase {
 		return state.getValue(FACING).getHorizontalIndex();
 	}
 
-	@Override
-	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack)
-	{
-		super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
-
-		TileEntityHeadStone headStone = TileTools.getTileEntity(world, blockPos, TileEntityHeadStone.class);
-		if(headStone != null)
-		{
-			if(itemStack.hasTagCompound())
-			{
-				headStone.setHeadstoneText(itemStack.getTagCompound().getString("text"));
-			}
-		}
-	}
 
     @Override
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {

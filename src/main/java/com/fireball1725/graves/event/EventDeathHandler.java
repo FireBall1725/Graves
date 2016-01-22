@@ -65,8 +65,8 @@ public class EventDeathHandler {
 		TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
 		if(tileEntityHeadStone != null)
 		{
-			tileEntityHeadStone.setHeadstoneText(event.entityPlayer.getDisplayName().getFormattedText());
-			tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
+			tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
+			//tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
 		}
 		// End of adding headstone
 

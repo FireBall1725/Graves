@@ -1,5 +1,6 @@
 package com.fireball1725.graves.block;
 
+import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.tileentity.TileEntityBase;
 import com.fireball1725.graves.util.TileTools;
@@ -32,8 +33,6 @@ public class BlockBase extends BlockContainer {
         setHardness(2.2F);
         setResistance(5.0F);
         //setHarvestLevel("pickaxe", 0);
-        //setLightOpacity(15);
-
     }
 
     @Override

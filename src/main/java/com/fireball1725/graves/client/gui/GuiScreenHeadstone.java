@@ -29,7 +29,7 @@ public class GuiScreenHeadstone extends GuiScreen
 		super.initGui();
 		this.width = 176;
 		this.height = 69;
-		name = headStone.getHeadstoneText();
+		name = headStone.getCustomName();
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class GuiScreenHeadstone extends GuiScreen
 					name = name + Character.toString(typedChar);
 				}
 		}
-		headStone.setHeadstoneText(name);
+		headStone.setCustomName(name);
 	}
 
 	@Override

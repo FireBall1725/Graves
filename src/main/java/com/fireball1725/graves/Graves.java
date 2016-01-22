@@ -40,6 +40,9 @@ public class Graves {
         // Register Events
         proxy.registerEvents();
 
+        // Register Crafting Recipes
+        proxy.registerRecipes();
+
         LogHelper.info("Pre Initalization ( ended after " + stopWatch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
     }
 
