@@ -25,15 +25,14 @@ public class ClientProxy extends CommonProxy {
         ModelLoader.setCustomModelResourceLocation(headstoneItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":headstone", "inventory"));
     }
 
-	@Override
-	public void registerEntities()
-	{
-		super.registerEntities();
-		Entities.registerEntitiesRenderers();
-	}
+    @Override
+    public void registerEntities() {
+        super.registerEntities();
+        Entities.registerEntitiesRenderers();
+    }
 
-	@Override
-	public void registerRenderers() {
+    @Override
+    public void registerRenderers() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHeadStone.class, TileEntityHeadStoneRenderer.instance());
     }
 }

@@ -59,9 +59,8 @@ public class BlockGraveSlave extends BlockBase {
     @Override
     public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
         TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-		if(graveSlave != null && graveSlave.getMasterBlock() != null && graveSlave.getMasterBlock().getY() > pos.getY())
-		{
-			setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
+        if (graveSlave != null && graveSlave.getMasterBlock() != null && graveSlave.getMasterBlock().getY() > pos.getY()) {
+            setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
         } else {
             setBlockBounds(0, 0, 0, 1, .1425f, 1);
         }

@@ -37,8 +37,8 @@ public class Graves {
         // Register Items
         proxy.registerItems();
 
-		// Register Entities
-		proxy.registerEntities();
+        // Register Entities
+        proxy.registerEntities();
 
         // Register Events
         proxy.registerEvents();

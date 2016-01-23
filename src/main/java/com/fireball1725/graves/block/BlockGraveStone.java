@@ -113,10 +113,10 @@ public class BlockGraveStone extends BlockBase {
 
         TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
         graveStoneTileEntity.breakBlocks();
-		graveStoneTileEntity.setPlayerProfile(((EntityPlayer) placer).getGameProfile());
-	}
+        graveStoneTileEntity.setPlayerProfile(((EntityPlayer) placer).getGameProfile());
+    }
 
-	@Override
+    @Override
     public boolean isOpaqueCube() {
         return false;
     }

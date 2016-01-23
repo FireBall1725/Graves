@@ -10,6 +10,7 @@ import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.GameRules;
@@ -45,6 +46,11 @@ public class EventDeathHandler {
         if (itemsList.isEmpty())
             return;
 
+        NBTTagCompound nbtTagCompound = event.entityPlayer.getEntityData();
+        if (nbtTagCompound.hasKey("MasterGrave")) {
+            LogHelper.info(">>> HAS GRAVE KEY!");
+        }
+
         //for (EntityItem item : itemsList) {
         //    LogHelper.info(">>> " + item.toString());
         //}
@@ -59,7 +65,7 @@ public class EventDeathHandler {
         TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
         graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
         graveStoneTileEntity.breakBlocks();
-		graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
+        graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
 
         // Adding Headstone
         world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));

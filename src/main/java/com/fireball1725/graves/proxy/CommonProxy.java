@@ -21,14 +21,13 @@ public abstract class CommonProxy implements IProxy {
 
     }
 
-	@Override
-	public void registerEntities()
-	{
-		Entities.registerEntities();
-	}
+    @Override
+    public void registerEntities() {
+        Entities.registerEntities();
+    }
 
-	@Override
-	public void registerEvents() {
+    @Override
+    public void registerEvents() {
         MinecraftForge.EVENT_BUS.register(new EventDeathHandler());
         MinecraftForge.EVENT_BUS.register(new EventBlockBreak());
     }
@@ -46,9 +45,9 @@ public abstract class CommonProxy implements IProxy {
     @Override
     public void registerRecipes() {
         // Headstone
-		GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE_HEADSTONE.block), " x ",
-				"xzx",
-				"xxx",
-				'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 4), 'z', new ItemStack(net.minecraft.init.Blocks.stone, 1, 6));
-	}
+        GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE_HEADSTONE.block), " x ",
+                "xzx",
+                "xxx",
+                'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 4), 'z', new ItemStack(net.minecraft.init.Blocks.stone, 1, 6));
+    }
 }
