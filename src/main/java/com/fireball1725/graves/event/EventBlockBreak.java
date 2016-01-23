@@ -1,6 +1,8 @@
 package com.fireball1725.graves.event;
 
 import com.fireball1725.graves.block.BlockGraveStone;
+import com.fireball1725.graves.entity.EntityPlayerZombie;
+import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
@@ -18,7 +20,13 @@ public class EventBlockBreak {
                 graveStone.setHasLid(false);
                 graveStone.markDirty();
                 graveStone.markForUpdate();
-                //LogHelper.info(">>> breaking lid");
+
+				EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
+				playerZombie.setPlayerProfile(graveStone.getPlayerProfile());
+				playerZombie.setLocationAndAngles(event.pos.getX(), event.pos.down().getY(), event.pos.getZ(), graveStone.getBlockState().getValue(BlockGraveStone.FACING).getHorizontalIndex() * 90f, 0f);
+				event.world.spawnEntityInWorld(playerZombie);
+				LogHelper.info("spawning a PlayerZombie");
+
                 event.setCanceled(true);
                 return;
             } else {

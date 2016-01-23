@@ -59,6 +59,7 @@ public class EventDeathHandler {
         TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
         graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
         graveStoneTileEntity.breakBlocks();
+		graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
 
         // Adding Headstone
         world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));

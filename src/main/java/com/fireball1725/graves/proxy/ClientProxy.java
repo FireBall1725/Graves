@@ -2,6 +2,7 @@ package com.fireball1725.graves.proxy;
 
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.client.render.TileEntityHeadStoneRenderer;
+import com.fireball1725.graves.entity.Entities;
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import net.minecraft.client.resources.model.ModelResourceLocation;
@@ -24,8 +25,15 @@ public class ClientProxy extends CommonProxy {
         ModelLoader.setCustomModelResourceLocation(headstoneItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":headstone", "inventory"));
     }
 
-    @Override
-    public void registerRenderers() {
+	@Override
+	public void registerEntities()
+	{
+		super.registerEntities();
+		Entities.registerEntitiesRenderers();
+	}
+
+	@Override
+	public void registerRenderers() {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHeadStone.class, TileEntityHeadStoneRenderer.instance());
     }
 }

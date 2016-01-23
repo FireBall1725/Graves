@@ -1,6 +1,7 @@
 package com.fireball1725.graves.proxy;
 
 import com.fireball1725.graves.block.Blocks;
+import com.fireball1725.graves.entity.Entities;
 import com.fireball1725.graves.event.EventBlockBreak;
 import com.fireball1725.graves.event.EventDeathHandler;
 import net.minecraft.item.ItemStack;
@@ -20,8 +21,14 @@ public abstract class CommonProxy implements IProxy {
 
     }
 
-    @Override
-    public void registerEvents() {
+	@Override
+	public void registerEntities()
+	{
+		Entities.registerEntities();
+	}
+
+	@Override
+	public void registerEvents() {
         MinecraftForge.EVENT_BUS.register(new EventDeathHandler());
         MinecraftForge.EVENT_BUS.register(new EventBlockBreak());
     }
@@ -39,11 +46,9 @@ public abstract class CommonProxy implements IProxy {
     @Override
     public void registerRecipes() {
         // Headstone
-        GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE_HEADSTONE.block), new Object[]{
-                " x ",
-                "xxx",
-                "xxx",
-                'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 5)
-        });
-    }
+		GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE_HEADSTONE.block), " x ",
+				"xzx",
+				"xxx",
+				'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 4), 'z', new ItemStack(net.minecraft.init.Blocks.stone, 1, 6));
+	}
 }

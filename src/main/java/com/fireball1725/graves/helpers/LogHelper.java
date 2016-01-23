@@ -34,7 +34,7 @@ public class LogHelper {
     }
 
     public static void info(Object object) {
-		log(Level.INFO, ">>> " + object);
+		log(Level.INFO, object);
 	}
 
     public static void off(Object object) {

@@ -5,6 +5,7 @@ import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
 import com.fireball1725.graves.util.TileTools;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
@@ -12,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 
@@ -21,8 +23,10 @@ import java.util.Random;
 public class TileEntityGraveStone extends TileEntityInventoryBase {
     protected boolean hasLid = true;
     private InternalInventory internalInventory = new InternalInventory(this, 100);
+	private GameProfile playerProfile;
 
-    public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player) {
+	public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player)
+	{
 
         int i = 0;
         for (EntityItem item : itemsList) {
@@ -31,19 +35,46 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         }
     }
 
+	public boolean getHasLid()
+	{
+		return hasLid;
+	}
+
+	public void setHasLid(boolean hasLid)
+	{
+		this.hasLid = hasLid;
+		worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockGraveStone.HASLID, false));
+		worldObj.markBlockForUpdate(pos);
+	}
+
+	public GameProfile getPlayerProfile()
+	{
+		return playerProfile;
+	}
+
+	public void setPlayerProfile(GameProfile playerProfile)
+	{
+		this.playerProfile = playerProfile;
+	}
+
     @Override
     public void readFromNBT(NBTTagCompound nbtTagCompound) {
         super.readFromNBT(nbtTagCompound);
 
         this.hasLid = nbtTagCompound.getBoolean("hasLid");
-    }
+		this.playerProfile = NBTUtil.readGameProfileFromNBT(nbtTagCompound.getCompoundTag("playerProfile"));
+	}
 
     @Override
     public void writeToNBT(NBTTagCompound nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
 
         nbtTagCompound.setBoolean("hasLid", this.hasLid);
-    }
+
+		NBTTagCompound profileTag = new NBTTagCompound();
+		NBTUtil.writeGameProfile(profileTag, playerProfile);
+		nbtTagCompound.setTag("playerProfile", profileTag);
+	}
 
     public void breakBlocks() {
         IBlockState masterState = worldObj.getBlockState(pos);
@@ -75,17 +106,18 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
         tileEntityGraveSlave = TileTools.getTileEntity(worldObj, pos.down(), TileEntityGraveSlave.class);
         tileEntityGraveSlave.setMasterBlock(pos);
 
-        worldObj.setBlockState(pos.offset(facing), state);
-
-        tileEntityGraveSlave = TileTools.getTileEntity(worldObj, pos.offset(facing), TileEntityGraveSlave.class);
-        tileEntityGraveSlave.setMasterBlock(pos);
-
         worldObj.setBlockState(pos.down().offset(facing), state);
 
         tileEntityGraveSlave = TileTools.getTileEntity(worldObj, pos.down().offset(facing), TileEntityGraveSlave.class);
         tileEntityGraveSlave.setMasterBlock(pos);
-        // End of adding slaves
-    }
+
+		worldObj.setBlockState(pos.offset(facing), state);
+
+		tileEntityGraveSlave = TileTools.getTileEntity(worldObj, pos.offset(facing), TileEntityGraveSlave.class);
+		tileEntityGraveSlave.setMasterBlock(pos);
+		// End of adding slaves
+
+	}
 
     @Override
     public IInventory getInternalInventory() {
@@ -135,15 +167,5 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     @Override
     public IChatComponent getDisplayName() {
         return null;
-    }
-
-    public boolean getHasLid() {
-        return hasLid;
-    }
-
-    public void setHasLid(boolean hasLid) {
-        this.hasLid = hasLid;
-        worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockGraveStone.HASLID, false));
-        worldObj.markBlockForUpdate(pos);
     }
 }

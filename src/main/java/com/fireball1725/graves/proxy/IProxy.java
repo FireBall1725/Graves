@@ -7,6 +7,8 @@ public interface IProxy {
 
     void registerItems();
 
+	void registerEntities();
+
     void registerEvents();
 
     void registerConfiguration(File configFile);

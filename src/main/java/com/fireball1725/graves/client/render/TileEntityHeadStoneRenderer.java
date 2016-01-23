@@ -27,10 +27,7 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
 
             int[][] savedGLState = OpenGLHelper.modifyGLState(new int[]{GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
             TileEntityHeadStone headStone = (TileEntityHeadStone) te;
-			if(headStone.hasCustomName())
-			{
-				renderTextOnHeadstone(headStone.getCustomName().split("\\\\n"), headStone.getBlockState().getValue(BlockHeadStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), false);
-			}
+			renderTextOnHeadstone(headStone.getCustomName().split("\\\\n"), headStone.getBlockState().getValue(BlockHeadStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), true);
 
             OpenGLHelper.restoreGLState(savedGLState);
         }
@@ -68,10 +65,9 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
         GlStateManager.translate(.5 + xOffset, -.815f + yOffset, zOffset - 1);
 
         GlStateManager.pushMatrix();
-        GlStateManager.scale(scale, scale, 0);
+		GlStateManager.scale(scale, scale, scale);
 
         GlStateManager.pushMatrix();
-        GlStateManager.disableDepth();
         int i = 0;
         for (String s : text) {
             int stringWidth = mc.fontRendererObj.getStringWidth(s);
@@ -82,12 +78,12 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
             int yCenter = mc.fontRendererObj.FONT_HEIGHT / 2;
             if (shadow) {
                 mc.fontRendererObj.drawString(s, -xCenter - 1, -yCenter + 1 + (renderFont.FONT_HEIGHT * i + 2), (color & 16579836) >> 2 | color & -16777216);
-            }
+				GlStateManager.translate(0f, 0f, -.001f);
+			}
             mc.fontRendererObj.drawString(s, -xCenter, -yCenter + (renderFont.FONT_HEIGHT * i + 2), color);
 
             i++;
         }
-        GlStateManager.enableDepth();
         GlStateManager.popMatrix();
 
         GlStateManager.popMatrix();
