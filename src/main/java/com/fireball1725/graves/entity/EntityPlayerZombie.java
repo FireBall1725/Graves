@@ -15,6 +15,16 @@ public class EntityPlayerZombie extends EntityPigZombie
 		super(worldIn);
 	}
 
+	public GameProfile getPlayerProfile()
+	{
+		return playerProfile;
+	}
+
+	public void setPlayerProfile(GameProfile playerProfile)
+	{
+		this.playerProfile = playerProfile;
+	}
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbtTagCompound)
 	{
