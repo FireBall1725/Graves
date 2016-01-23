@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
  */
 public enum Entities// implements <E extends Entity>
 {
-	PLAYERZOMBIE(EntityPlayerZombie.class, "playerzombie", 64, 16, true, RenderPlayerZombie.class);
+	PLAYERZOMBIE(EntityPlayerZombie.class, "playerzombie", 64, 1, true, RenderPlayerZombie.class);
 
 	private final Class entityClass;
 	private final Class renderClass;

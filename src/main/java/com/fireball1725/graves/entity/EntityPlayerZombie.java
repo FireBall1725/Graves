@@ -1,6 +1,7 @@
 package com.fireball1725.graves.entity;
 
 import com.fireball1725.graves.helpers.IDeadPlayerEntity;
+import com.fireball1725.graves.helpers.LogHelper;
 import com.google.common.base.Predicate;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.enchantment.Enchantment;
@@ -48,8 +49,7 @@ public class EntityPlayerZombie extends EntityMob implements IRangedAttackMob, I
 		super(world);
 		((PathNavigateGround) getNavigator()).setBreakDoors(true);
 		tasks.addTask(0, new EntityAISwimming(this));
-		if (world.getDifficulty() == EnumDifficulty.HARD)
-			tasks.addTask(1, new EntityAIOpenDoor(this, true));
+		tasks.addTask(1, new EntityAIOpenDoor(this, true));
 		tasks.addTask(2, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0D, false));
 		tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 		tasks.addTask(6, new EntityAIMoveThroughVillage(this, 1.0D, false));
@@ -61,15 +61,30 @@ public class EntityPlayerZombie extends EntityMob implements IRangedAttackMob, I
 
 			@Override
 			public boolean apply(EntityPlayer input) {
-				return !input.getName().equals(getUsername());
+				return input.getName().equals(getUsername());
 			}
 		}));
+
 		setSize(0.6F, 1.8F);
 	}
 
 	@Override
 	public boolean canPickUpLoot() {
 		return true;
+	}
+
+	@Override
+	protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+		Entity entity = damageSrc.getEntity();
+		if (entity instanceof EntityPlayer) {
+			EntityPlayer player = (EntityPlayer)entity;
+
+			if (!player.getName().equals(this.getName())) {
+				damageAmount = 0;
+			}
+		}
+
+		super.damageEntity(damageSrc, damageAmount);
 	}
 
 	@Override
@@ -116,9 +131,9 @@ public class EntityPlayerZombie extends EntityMob implements IRangedAttackMob, I
 	@Override
 	protected void applyEntityAttributes() {
 		super.applyEntityAttributes();
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(40.0);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.24);
-		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4.0);
+		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(100.0);
+		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.40);
+		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(6.0);
 	}
 
 	@Override
@@ -217,6 +232,12 @@ public class EntityPlayerZombie extends EntityMob implements IRangedAttackMob, I
 
 		if (rand.nextFloat() < additionalDifficulty * 0.1F)
 			tasks.addTask(1, breakDoorAI);
+
+		this.setCurrentItemOrArmor(0, new ItemStack(Items.diamond_sword));
+		this.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_boots));
+		this.setCurrentItemOrArmor(2, new ItemStack(Items.diamond_leggings));
+		this.setCurrentItemOrArmor(3, new ItemStack(Items.diamond_chestplate));
+		this.setCurrentItemOrArmor(4, new ItemStack(Items.diamond_helmet));
 
 		return null;
 	}
@@ -418,5 +439,11 @@ public class EntityPlayerZombie extends EntityMob implements IRangedAttackMob, I
 		super.setSize(width, height);
 		dataWatcher.updateObject(WIDTH, this.width);
 		dataWatcher.updateObject(HEIGHT, this.height);
+	}
+
+	@Override
+	public void onKillEntity(EntityLivingBase entityLivingIn) {
+		super.onKillEntity(entityLivingIn);
+		LogHelper.info(">>> onKillEntity");
 	}
 }
