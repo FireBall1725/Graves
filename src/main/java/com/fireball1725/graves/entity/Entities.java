@@ -1,7 +1,7 @@
 package com.fireball1725.graves.entity;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.client.render.entity.PlayerZombieRender;
+import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
 import com.fireball1725.graves.helpers.LogHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
  */
 public enum Entities// implements <E extends Entity>
 {
-	PLAYERZOMBIE(EntityPlayerZombie.class, "playerzombie", 64, 16, true, PlayerZombieRender.class);
+	PLAYERZOMBIE(EntityPlayerZombie.class, "playerzombie", 64, 16, true, RenderPlayerZombie.class);
 
 	private final Class entityClass;
 	private final Class renderClass;
