@@ -2,7 +2,9 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.matthewprenger.cursegradle'
 
 apply from: 'gradle/scripts/dependencies.gradle'
+apply from: 'gradle/scripts/integration.gradle'
 apply from: 'gradle/scripts/artifacts.gradle'
+apply from: 'gradle/scripts/optional.gradle'
 
 // For those who want the bleeding edge
 buildscript {
