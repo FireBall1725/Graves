@@ -3,7 +3,7 @@ package com.fireball1725.graves.proxy;
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.client.render.TileEntityHeadStoneRenderer;
 import com.fireball1725.graves.client.render.entity.EntityRenderers;
-import com.fireball1725.graves.client.render.entity.PlayerZombieRender;
+import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
 import com.fireball1725.graves.entity.EntityPlayerZombie;
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
@@ -31,7 +31,7 @@ public class ClientProxy extends CommonProxy {
 	public void registerEntities()
 	{
 		super.registerEntities();
-		EntityRenderers.registerEntityRenderer(EntityPlayerZombie.class, PlayerZombieRender.class);
+		EntityRenderers.registerEntityRenderer(EntityPlayerZombie.class, RenderPlayerZombie.class);
 	}
 
 	@Override
