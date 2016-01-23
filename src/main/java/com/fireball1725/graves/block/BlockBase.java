@@ -32,6 +32,8 @@ public class BlockBase extends BlockContainer {
         setHardness(2.2F);
         setResistance(5.0F);
         //setHarvestLevel("pickaxe", 0);
+
+
     }
 
     @Override
