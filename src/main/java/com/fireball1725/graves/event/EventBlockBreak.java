@@ -6,7 +6,10 @@ import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -22,10 +25,16 @@ public class EventBlockBreak {
                 graveStone.markForUpdate();
 
 				EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
-				playerZombie.setPlayerProfile(graveStone.getPlayerProfile());
+
+                playerZombie.setUsername(graveStone.getPlayerProfile().getName());
+                playerZombie.setProfile(graveStone.getPlayerProfile());
+
+                playerZombie.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_sword));
+
 				playerZombie.setLocationAndAngles(event.pos.getX(), event.pos.down().getY(), event.pos.getZ(), graveStone.getBlockState().getValue(BlockGraveStone.FACING).getHorizontalIndex() * 90f, 0f);
 				event.world.spawnEntityInWorld(playerZombie);
-				LogHelper.info("spawning a PlayerZombie");
+
+				LogHelper.info(">>> Spawning a PlayerZombie");
 
                 event.setCanceled(true);
                 return;

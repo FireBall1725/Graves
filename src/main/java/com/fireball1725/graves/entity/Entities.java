@@ -1,6 +1,10 @@
 package com.fireball1725.graves.entity;
 
 import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
+import com.fireball1725.graves.helpers.LogHelper;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
@@ -21,6 +25,7 @@ public enum Entities
 		this.trackingRange = trackingRange;
 		this.updateFrequency = updateFrequency;
 		this.sendsVelocityUpdates = sendsVelocityUpdates;
+		this.renderClass = renderClass;
 	}
 
 	public static void registerEntities()
