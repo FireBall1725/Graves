@@ -5,6 +5,7 @@ import com.fireball1725.graves.entity.EntityPlayerZombie;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,20 +22,25 @@ public class EventBlockBreak {
                 graveStone.markDirty();
                 graveStone.markForUpdate();
 
-                EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
+                //todo: change this to RNG!
+                boolean spawnPlayerZombie = false;
 
-                playerZombie.setUsername(graveStone.getPlayerProfile().getName());
-                playerZombie.setProfile(graveStone.getPlayerProfile());
+                if (spawnPlayerZombie) {
+                    EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
 
-                playerZombie.setLocationAndAngles(event.pos.getX(), event.pos.down().getY(), event.pos.getZ(), graveStone.getBlockState().getValue(BlockGraveStone.FACING).getHorizontalIndex() * 90f, 0f);
-                playerZombie.onInitialSpawn(event.world.getDifficultyForLocation(new BlockPos(playerZombie)), null);
+                    playerZombie.setUsername(graveStone.getPlayerProfile().getName());
+                    playerZombie.setProfile(graveStone.getPlayerProfile());
 
-                playerZombie.setPlayer(event.getPlayer());
+                    playerZombie.setLocationAndAngles(event.pos.getX(), event.pos.down().getY(), event.pos.getZ(), graveStone.getBlockState().getValue(BlockGraveStone.FACING).getHorizontalIndex() * 90f, 0f);
+                    playerZombie.onInitialSpawn(event.world.getDifficultyForLocation(new BlockPos(playerZombie)), null);
 
-                NBTTagCompound nbtTagCompound = event.getPlayer().getEntityData();
-                nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
+                    playerZombie.setPlayer(event.getPlayer());
 
-                event.world.spawnEntityInWorld(playerZombie);
+                    NBTTagCompound nbtTagCompound = event.getPlayer().getEntityData();
+                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
+
+                    event.world.spawnEntityInWorld(playerZombie);
+                }
 
                 event.setCanceled(true);
                 return;

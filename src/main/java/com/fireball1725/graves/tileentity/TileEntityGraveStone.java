@@ -22,15 +22,32 @@ import java.util.Random;
 
 public class TileEntityGraveStone extends TileEntityInventoryBase {
     protected boolean hasLid = true;
-    private InternalInventory internalInventory = new InternalInventory(this, 100);
+    private InternalInventory internalInventory = new InternalInventory(this, 500);
     private GameProfile playerProfile;
 
-    public void setGraveItems(List<EntityItem> itemsList, EntityPlayer player) {
+    public void setGraveItems(List<EntityItem> itemsList) {
 
         int i = 0;
         for (EntityItem item : itemsList) {
             internalInventory.setInventorySlotContents(i, item.getEntityItem());
             i++;
+        }
+    }
+
+    public void addGraveItems(List<EntityItem> itemList) {
+
+        for (EntityItem item : itemList) {
+            boolean foundSlot = false;
+            int i = 0;
+
+            while (!foundSlot) {
+                i++;
+                ItemStack itemStack = internalInventory.getStackInSlot(i);
+                if (itemStack != null)
+                    foundSlot = true;
+            }
+
+            internalInventory.setInventorySlotContents(i, item.getEntityItem());
         }
     }
 

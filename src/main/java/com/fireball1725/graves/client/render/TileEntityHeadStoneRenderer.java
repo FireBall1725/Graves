@@ -28,6 +28,7 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
             int[][] savedGLState = OpenGLHelper.modifyGLState(new int[]{GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
             TileEntityHeadStone headStone = (TileEntityHeadStone) te;
             renderTextOnHeadstone(headStone.getCustomName().split("\\\\n"), headStone.getBlockState().getValue(BlockHeadStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), true);
+            //todo: try catch this code...
 
             OpenGLHelper.restoreGLState(savedGLState);
         }
