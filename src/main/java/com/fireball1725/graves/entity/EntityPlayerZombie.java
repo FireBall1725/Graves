@@ -1,6 +1,7 @@
 package com.fireball1725.graves.entity;
 
 import com.fireball1725.graves.helpers.IDeadPlayerEntity;
+import com.fireball1725.graves.helpers.LogHelper;
 import com.google.common.base.Predicate;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.enchantment.Enchantment;
@@ -9,14 +10,12 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.boss.IBossDisplayData;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.*;
 import net.minecraft.world.DifficultyInstance;
@@ -33,7 +32,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     private static final int CHILD = 14;
     private static final int WIDTH = 16;
     private static final int HEIGHT = 17;
-    private static List<String> names = new LinkedList<String>();
     private final EntityAIBreakDoor breakDoorAI = new EntityAIBreakDoor(this);
     private final EntityAIArrowAttack arrowAI = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
     private double prevCapeX, prevCapeY, prevCapeZ;
@@ -44,31 +42,27 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     public EntityPlayerZombie(World world) {
         super(world);
 
-        //this.noClip = true;
+        this.noClip = true;
         this.isImmuneToFire = true;
         this.moveHelper = new PlayerZombieMoveHelper();
 
-        ((PathNavigateGround) getNavigator()).setBreakDoors(true);
         tasks.addTask(3, new AIPlayerZombieRandomFly());
         tasks.addTask(4, new AIPlayerZombieAttackTarget());
-        //tasks.addTask(0, new EntityAISwimming(this));
-        //tasks.addTask(1, new EntityAIOpenDoor(this, true));
+
+        tasks.addTask(1, new EntityAIOpenDoor(this, true));
         tasks.addTask(2, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0D, false));
-        //tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-        //tasks.addTask(5, new AIRandomFly(this));
-        //tasks.addTask(6, new EntityAIMoveThroughVillage(this, 1.0D, false));
-        //tasks.addTask(7, new EntityAIWander(this, 1.0D));
-        //tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        //tasks.addTask(8, new EntityAILookIdle(this));
-        //this.targetTasks.addTask(1, new EntityAIFindEntityNearestPlayer(this));
-        //targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
+        tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
+
+        tasks.addTask(7, new EntityAIWander(this, 1.0D));
+        tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
+
+        targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 0, true, false, new Predicate<EntityPlayer>() {
             @Override
             public boolean apply(EntityPlayer input) {
                 return input.getName().equals(getUsername());
             }
         }));
-        targetTasks.addTask(3, new EntityAIFindEntityNearestPlayer(this));
 
         setSize(0.6F, 1.8F);
     }
@@ -255,10 +249,10 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         //this.setCurrentItemOrArmor(3, new ItemStack(Items.diamond_chestplate));
         //this.setCurrentItemOrArmor(4, new ItemStack(Items.diamond_helmet));
 
+        //this.setCurrentItemOrArmor(0, new ItemStack(Items.bow));
+
         return null;
     }
-
-	/* RENDERING */
 
     @Override
     protected void despawnEntity() {
@@ -266,8 +260,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         if (isDead && ridingEntity != null)
             ridingEntity.setDead();
     }
-
-	/* SAVE AND LOAD */
 
     @Override
     public double getYOffset() {
@@ -282,8 +274,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         if (!StringUtils.isBlank(username))
             nbt.setString("Username", username);
     }
-
-	/* ATTACK STUFF */
 
     @Override
     public void readEntityFromNBT(NBTTagCompound nbt) {
@@ -333,8 +323,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     private boolean hasBow() {
         return getHeldItem() != null && getHeldItem().getItem() instanceof ItemBow;
     }
-
-	/* USERNAME */
 
     private void setCombatAI() {
         if (hasBow())
@@ -400,8 +388,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         return profile;
     }
 
-    // IHumanEntity
-
     public void setProfile(GameProfile profile) {
         this.profile = profile;
     }
@@ -439,8 +425,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         return prevCapeZ + (capeZ - prevCapeZ) * partialTickTime - (prevPosZ + (posZ - prevPosZ) * partialTickTime);
     }
 
-    // Child stuff
-
     @Override
     public boolean isChild() {
         return getDataWatcher().getWatchableObjectByte(CHILD) == 1;
@@ -453,8 +437,7 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         dataWatcher.updateObject(HEIGHT, this.height);
     }
 
-    class PlayerZombieMoveTargetPos
-    {
+    class PlayerZombieMoveTargetPos {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
 
         public double posX;
@@ -468,67 +451,56 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         public double aimY;
         public double aimZ;
 
-        public PlayerZombieMoveTargetPos()
-        {
+        public PlayerZombieMoveTargetPos() {
             this(0, 0, 0);
         }
 
-        public PlayerZombieMoveTargetPos(double posX, double posY, double posZ)
-        {
+        public PlayerZombieMoveTargetPos(double posX, double posY, double posZ) {
             this.setTarget(posX, posY, posZ);
         }
 
-        public void setTarget(double posX, double posY, double posZ)
-        {
+        public void setTarget(double posX, double posY, double posZ) {
             this.posX = posX;
             this.posY = posY;
             this.posZ = posZ;
             this.refresh();
         }
 
-        public void refresh()
-        {
+        public void refresh() {
             this.distX = this.posX - this.playerZombie.posX;
             this.distY = this.posY - this.playerZombie.posY;
             this.distZ = this.posZ - this.playerZombie.posZ;
 
-            this.dist = (double)MathHelper.sqrt_double(this.distX * this.distX + this.distY * this.distY + this.distZ * this.distZ);
+            this.dist = (double) MathHelper.sqrt_double(this.distX * this.distX + this.distY * this.distY + this.distZ * this.distZ);
 
             // (aimX,aimY,aimZ) is a unit vector in the direction we want to go
-            if (this.dist == 0.0D)
-            {
+            if (this.dist == 0.0D) {
                 this.aimX = 0.0D;
                 this.aimY = 0.0D;
                 this.aimZ = 0.0D;
-            }
-            else
-            {
+            } else {
                 this.aimX = this.distX / this.dist;
                 this.aimY = this.distY / this.dist;
                 this.aimZ = this.distZ / this.dist;
             }
         }
 
-        public boolean isBoxBlocked(AxisAlignedBB box)
-        {
-            return !this.playerZombie.worldObj.getCollidingBoundingBoxes(this.playerZombie, box).isEmpty();
+        public boolean isBoxBlocked(AxisAlignedBB box) {
+            //return !this.playerZombie.worldObj.getCollidingBoundingBoxes(this.playerZombie, box).isEmpty();
+            return false;
         }
 
         // check nothing will collide with the playerZombie in the direction of aim, for howFar units (or until the destination - whichever is closer)
-        public boolean isPathClear(double howFar)
-        {
+        public boolean isPathClear(double howFar) {
             howFar = Math.min(howFar, this.dist);
             AxisAlignedBB box = this.playerZombie.getEntityBoundingBox();
-            for (double i = 0.5D; i < howFar; ++i)
-            {
+            for (double i = 0.5D; i < howFar; ++i) {
                 // check there's nothing in the way
-                if (this.isBoxBlocked(box.offset(this.aimX * i, this.aimY * i, this.aimZ * i)))
-                {
+                if (this.isBoxBlocked(box.offset(this.aimX * i, this.aimY * i, this.aimZ * i))) {
                     return false;
                 }
             }
-            if (this.isBoxBlocked(box.offset(this.aimX * howFar, this.aimY * howFar, this.aimZ * howFar)))
-            {
+            if (this.isBoxBlocked(box.offset(this.aimX * howFar, this.aimY * howFar, this.aimZ * howFar))) {
                 return false;
             }
             return true;
@@ -536,35 +508,27 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     }
 
-    class PlayerZombieMoveHelper extends EntityMoveHelper
-    {
-        // EntityMoveHelper has the boolean 'update' which is set to true when the target is changed, and set to false when a bearing is set
-        // So it means 'the target has changed but we're not yet heading for it'
-        // We'll re-use it here with a slightly different interpretation
-        // Here it will mean 'has a target and not yet arrived'
-
+    class PlayerZombieMoveHelper extends EntityMoveHelper {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
         private int courseChangeCooldown = 0;
         private double closeEnough = 0.3D;
         private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
 
-        public PlayerZombieMoveHelper()
-        {
+        public PlayerZombieMoveHelper() {
             super(EntityPlayerZombie.this);
         }
 
         @Override
-        public void setMoveTo(double x, double y, double z, double speedIn)
-        {
-            super.setMoveTo(x,y,z,speedIn);
+        public void setMoveTo(double x, double y, double z, double speedIn) {
+            super.setMoveTo(x, y, z, speedIn);
             this.targetPos.setTarget(x, y, z);
         }
 
         @Override
-        public void onUpdateMoveHelper()
-        {
-            // if we have arrived at the previous target, or we have no target to aim for, do nothing
-            if (!this.update) {return;}
+        public void onUpdateMoveHelper() {
+            if (!this.update) {
+                return;
+            }
 
             if (this.courseChangeCooldown-- > 0) {
                 // limit the rate at which we change course
@@ -582,108 +546,105 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
             this.playerZombie.motionZ += this.targetPos.aimZ * acceleration;
 
             // rotate to point at target
-            this.playerZombie.renderYawOffset = this.playerZombie.rotationYaw = -((float)Math.atan2(this.targetPos.distX, this.targetPos.distZ)) * 180.0F / (float)Math.PI;
+            this.playerZombie.renderYawOffset = this.playerZombie.rotationYaw = -((float) Math.atan2(this.targetPos.distX, this.targetPos.distZ)) * 180.0F / (float) Math.PI;
 
             // occasionally jerk to the side - makes them more difficult to hit
-            if (this.playerZombie.getRNG().nextInt(5)==0)
-            {
+            if (this.playerZombie.getRNG().nextInt(5) == 0) {
                 float strafeAmount = (this.playerZombie.getRNG().nextFloat() * 0.4F) - 0.2F;
-                this.playerZombie.motionX += (double)(strafeAmount * MathHelper.cos(this.playerZombie.rotationYaw * (float)Math.PI / 180.0F));
-                this.playerZombie.motionZ += (double)(strafeAmount * MathHelper.sin(this.playerZombie.rotationYaw * (float)Math.PI / 180.0F));
+                this.playerZombie.motionX += (double) (strafeAmount * MathHelper.cos(this.playerZombie.rotationYaw * (float) Math.PI / 180.0F));
+                this.playerZombie.motionZ += (double) (strafeAmount * MathHelper.sin(this.playerZombie.rotationYaw * (float) Math.PI / 180.0F));
             }
 
             // abandon this movement if we have reached the target or there is no longer a clear path to the target
-            if (!this.targetPos.isPathClear(5.0D))
-            {
-                //System.out.println("Abandoning move target - way is blocked" );
-                this.update = false;
+            if (!this.targetPos.isPathClear(5.0D)) {
+                //LogHelper.info(">>> Abandoning move target - way is blocked");
+                this.update = true;
             } else if (this.targetPos.dist < this.closeEnough) {
-                //System.out.println("Arrived (close enough) dist:"+this.targetPos.dist);
-                this.update = false;
+                //LogHelper.info(">>> Arrived (close enough) dist:" + this.targetPos.dist);
+                this.update = true;
             }
         }
 
     }
 
     // AI class for implementing the random flying behaviour
-    class AIPlayerZombieRandomFly extends EntityAIBase
-    {
+    class AIPlayerZombieRandomFly extends EntityAIBase {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
         private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
 
-        public AIPlayerZombieRandomFly()
-        {
+        public AIPlayerZombieRandomFly() {
             this.setMutexBits(1);
         }
 
         // should we choose a new random destination for the playerZombie to fly to?
         // yes, if the playerZombie doesn't already have a destination
         @Override
-        public boolean shouldExecute()
-        {
-            //System.out.println(this.playerZombie.getMoveHelper().isUpdating()?"has a move target":"no move target");
+        public boolean shouldExecute() {
+            //LogHelper.info(this.playerZombie.getMoveHelper().isUpdating() ? ">>> has a move target" : ">>> no move target");
             return !this.playerZombie.getMoveHelper().isUpdating();
         }
 
         @Override
-        public boolean continueExecuting() {return false;}
+        public boolean continueExecuting() {
+            return false;
+        }
 
         // choose a a new random destination for the playerZombie to fly to
         @Override
-        public void startExecuting()
-        {
+        public void startExecuting() {
             Random rand = this.playerZombie.getRNG();
             // pick a random nearby point and see if we can fly to it
-            if (this.tryGoingRandomDirection(rand, 6.0D)) {return;}
+            if (this.tryGoingRandomDirection(rand, 6.0D)) {
+                return;
+            }
             // pick a random closer point to fly to instead
-            if (this.tryGoingRandomDirection(rand, 2.0D)) {return;}
+            if (this.tryGoingRandomDirection(rand, 2.0D)) {
+                return;
+            }
             // try going straight along axes (try all 6 directions in random order)
             List<EnumFacing> directions = Arrays.asList(EnumFacing.values());
             Collections.shuffle(directions);
-            for (EnumFacing facing : directions)
-            {
-                if (this.tryGoingAlongAxis(rand, facing, 1.0D)) {return;}
+            for (EnumFacing facing : directions) {
+                if (this.tryGoingAlongAxis(rand, facing, 1.0D)) {
+                    return;
+                }
             }
         }
 
 
         // note y direction has a slight downward bias to stop them flying too high
-        public boolean tryGoingRandomDirection(Random rand, double maxDistance)
-        {
+        public boolean tryGoingRandomDirection(Random rand, double maxDistance) {
             double dirX = ((rand.nextDouble() * 2.0D - 1.0D) * maxDistance);
             double dirY = ((rand.nextDouble() * 2.0D - 1.1D) * maxDistance);
             double dirZ = ((rand.nextDouble() * 2.0D - 1.0D) * maxDistance);
             return this.tryGoing(dirX, dirY, dirZ);
         }
 
-        public boolean tryGoingAlongAxis(Random rand, EnumFacing facing, double maxDistance)
-        {
+        public boolean tryGoingAlongAxis(Random rand, EnumFacing facing, double maxDistance) {
             double dirX = 0.0D;
             double dirY = 0.0D;
             double dirZ = 0.0D;
-            switch (facing.getAxis())
-            {
+            switch (facing.getAxis()) {
                 case X:
                     dirX = rand.nextDouble() * facing.getAxisDirection().getOffset() * maxDistance;
                     break;
                 case Y:
                     dirY = rand.nextDouble() * facing.getAxisDirection().getOffset() * maxDistance;
                     break;
-                case Z: default:
-                dirZ = rand.nextDouble() * facing.getAxisDirection().getOffset() * maxDistance;
-                break;
+                case Z:
+                default:
+                    dirZ = rand.nextDouble() * facing.getAxisDirection().getOffset() * maxDistance;
+                    break;
             }
             return this.tryGoing(dirX, dirY, dirZ);
         }
 
-        public boolean tryGoing(double dirX, double dirY, double dirZ)
-        {
+        public boolean tryGoing(double dirX, double dirY, double dirZ) {
             //System.out.println("("+dirX+","+dirY+","+dirZ+")");
             this.targetPos.setTarget(this.playerZombie.posX + dirX, this.playerZombie.posY + dirY, this.playerZombie.posZ + dirZ);
-            //System.out.println("Testing random move target distance:"+this.targetPos.dist+" direction:("+this.targetPos.aimX+","+this.targetPos.aimY+","+this.targetPos.aimZ+")");
+            //LogHelper.info(">>> Testing random move target distance:" + this.targetPos.dist + " direction:(" + this.targetPos.aimX + "," + this.targetPos.aimY + "," + this.targetPos.aimZ + ")");
             boolean result = this.targetPos.isPathClear(5.0F);
-            if (result)
-            {
+            if (result) {
                 this.playerZombie.getMoveHelper().setMoveTo(this.targetPos.posX, this.targetPos.posY, this.targetPos.posZ, 1.0D);
             }
             return result;
@@ -692,57 +653,56 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
 
     // AI class for implementing the behaviour to target and attack players
-    class AIPlayerZombieAttackTarget extends EntityAIBase
-    {
+    class AIPlayerZombieAttackTarget extends EntityAIBase {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
         private int attackTick = 0;
         private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
 
-        public AIPlayerZombieAttackTarget()
-        {
+        public AIPlayerZombieAttackTarget() {
             this.setMutexBits(2);
         }
 
-        public boolean attackTargetExists()
-        {
+        public boolean attackTargetExists() {
             // see if there's actually a living attack target to aim for
             EntityLivingBase attackTarget = this.playerZombie.getAttackTarget();
             return (attackTarget != null && attackTarget.isEntityAlive());
         }
 
         @Override
-        public boolean shouldExecute()
-        {
+        public boolean shouldExecute() {
             // decrement time since last attack
-            if (this.attackTick > 0) {--this.attackTick;}
+            if (this.attackTick > 0) {
+                --this.attackTick;
+            }
 
             return this.attackTargetExists();
         }
 
         @Override
-        public boolean continueExecuting()
-        {
+        public boolean continueExecuting() {
             // decrement time since last attack
-            if (this.attackTick > 0) {--this.attackTick;}
+            if (this.attackTick > 0) {
+                --this.attackTick;
+            }
 
-            if (!this.attackTargetExists()) {return false;}
+            if (!this.attackTargetExists()) {
+                return false;
+            }
 
             // focus attack on target position
             EntityLivingBase attackTarget = this.playerZombie.getAttackTarget();
             this.targetPos.setTarget(attackTarget.posX, attackTarget.posY, attackTarget.posZ);
 
             // damage the target if it's in range, and it has been long enough since the last attack
-            double damageRange = (double)(this.playerZombie.width + attackTarget.width);
-            if (this.attackTick <= 0 && this.targetPos.dist < damageRange)
-            {
+            double damageRange = (double) (this.playerZombie.width + attackTarget.width);
+            if (this.attackTick <= 0 && this.targetPos.dist < damageRange) {
                 this.playerZombie.attackEntityAsMob(attackTarget);
                 this.attackTick = 16; // 16 ticks before next attack
             }
 
             // see if there's a straight path to the target, if there is, aim for it
-            if (this.targetPos.isPathClear(5.0D))
-            {
-                //System.out.println("Setting attack target");
+            if (this.targetPos.isPathClear(5.0D)) {
+                //LogHelper.info(">>> Setting attack target");
                 this.playerZombie.getMoveHelper().setMoveTo(attackTarget.posX, attackTarget.posY, attackTarget.posZ, 1.0D);
             }
             //System.out.println("dist:"+this.targetPos.dist+" damageRange:"+damageRange+" attackTick:"+attackTick);
