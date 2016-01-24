@@ -256,7 +256,7 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         /*
             25% > Nothing
             20% > Wooden Sword + Nothing
-            11% > Bow + Nothing
+            13% > Bow + Nothing
             10%> Wooden Sword + leather Armor
             10%> Bow + leather Armor
             6%> Iron Sword + Iron Armor
