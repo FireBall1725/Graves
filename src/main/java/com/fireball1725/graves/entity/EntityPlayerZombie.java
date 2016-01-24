@@ -216,7 +216,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
-        setUsername("FireBall1725");
         setEquipmentBasedOnDifficulty(difficulty);
         setEnchantmentBasedOnDifficulty(difficulty);
         setCombatAI();
