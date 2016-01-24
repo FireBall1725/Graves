@@ -45,9 +45,11 @@ public abstract class CommonProxy implements IProxy {
     @Override
     public void registerRecipes() {
         // Headstone
-        GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE_HEADSTONE.block), " x ",
+        GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE_HEADSTONE.block),
+                " x ",
                 "xzx",
                 "xxx",
-                'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 4), 'z', new ItemStack(net.minecraft.init.Blocks.stone, 1, 6));
+                'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 4),
+                'z', new ItemStack(net.minecraft.init.Blocks.stone, 1, 6));
     }
 }

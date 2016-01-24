@@ -1,7 +1,6 @@
 package com.fireball1725.graves.entity;
 
 import com.fireball1725.graves.helpers.IDeadPlayerEntity;
-import com.fireball1725.graves.helpers.LogHelper;
 import com.google.common.base.Predicate;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.enchantment.Enchantment;
@@ -89,8 +88,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
         super.damageEntity(damageSrc, damageAmount);
     }
-
-	/* ENTITY INIT */
 
     @Override
     public void onUpdate() {
@@ -243,43 +240,90 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         if (rand.nextFloat() < additionalDifficulty * 0.1F)
             tasks.addTask(1, breakDoorAI);
 
-        //this.setCurrentItemOrArmor(0, new ItemStack(Items.diamond_sword));
-        //this.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_boots));
-        //this.setCurrentItemOrArmor(2, new ItemStack(Items.diamond_leggings));
-        //this.setCurrentItemOrArmor(3, new ItemStack(Items.diamond_chestplate));
-        //this.setCurrentItemOrArmor(4, new ItemStack(Items.diamond_helmet));
+        Random random = new Random();
+        int rng = random.nextInt(100);
 
-        //this.setCurrentItemOrArmor(0, new ItemStack(Items.bow));
+        ItemStack slot0 = null;
+        ItemStack slot1 = null;
+        ItemStack slot2 = null;
+        ItemStack slot3 = null;
+        ItemStack slot4 = null;
 
-        //todo: do the RNG things!
-        // RNG for armor + things
-        /*
-            25% > Nothing
-            20% > Wooden Sword + Nothing
-            13% > Bow + Nothing
-            10%> Wooden Sword + leather Armor
-            10%> Bow + leather Armor
-            6%> Iron Sword + Iron Armor
-            6%> Bow + Iron Armor
-            3%> Gold Sword + Gold Armor
-            3%> Bow + Gold Armor
-            2% > Diamond Sword + Diamond Armor
-            2% > Bow + Diamond Armor
-         */
+        if (rng >= 0 && rng <= 25) {
 
-        /* Notes :
+        } else if (rng >= 26 && rng <= 45) {  // Wooden Sword + No Armor
+            slot0 = new ItemStack(Items.wooden_sword);
+        } else if (rng >= 46 && rng <= 58) {  // Bow + No Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.wooden_sword);
+        } else if (rng >= 59 && rng <= 68) {  // Wooden Sword + Leather Armor
+            slot0 = new ItemStack(Items.wooden_sword);
+            slot1 = new ItemStack(Items.leather_boots);
+            slot2 = new ItemStack(Items.leather_leggings);
+            slot3 = new ItemStack(Items.leather_chestplate);
+            slot4 = new ItemStack(Items.leather_helmet);
+        } else if (rng >= 69 && rng <= 78) {  // Bow + Leather Armor
+            slot0 = new ItemStack(Items.wooden_sword);
+            //slot0 = new ItemStack(Items.bow);
+            slot1 = new ItemStack(Items.leather_boots);
+            slot2 = new ItemStack(Items.leather_leggings);
+            slot3 = new ItemStack(Items.leather_chestplate);
+            slot4 = new ItemStack(Items.leather_helmet);
+        } else if (rng >= 79 && rng <= 84) {  // Iron Sword + Iron Armor
+            slot0 = new ItemStack(Items.iron_sword);
+            slot1 = new ItemStack(Items.iron_boots);
+            slot2 = new ItemStack(Items.iron_leggings);
+            slot3 = new ItemStack(Items.iron_chestplate);
+            slot4 = new ItemStack(Items.iron_helmet);
+        } else if (rng >= 85 && rng <= 90) {  // Bow + Iron Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.iron_sword);
+            slot1 = new ItemStack(Items.iron_boots);
+            slot2 = new ItemStack(Items.iron_leggings);
+            slot3 = new ItemStack(Items.iron_chestplate);
+            slot4 = new ItemStack(Items.iron_helmet);
+        } else if (rng >= 91 && rng <= 93) {  // Golden Sword + Gold Armor
+            slot0 = new ItemStack(Items.golden_sword);
+            slot1 = new ItemStack(Items.golden_boots);
+            slot2 = new ItemStack(Items.golden_leggings);
+            slot3 = new ItemStack(Items.golden_chestplate);
+            slot4 = new ItemStack(Items.golden_helmet);
+        } else if (rng >= 94 && rng <= 96) {  // Bow + Gold Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.golden_sword);
+            slot1 = new ItemStack(Items.golden_boots);
+            slot2 = new ItemStack(Items.golden_leggings);
+            slot3 = new ItemStack(Items.golden_chestplate);
+            slot4 = new ItemStack(Items.golden_helmet);
+        } else if (rng >= 97 && rng <= 98) {  // Diamond Sword + Diamond Armor
+            slot0 = new ItemStack(Items.diamond_sword);
+            slot1 = new ItemStack(Items.diamond_boots);
+            slot2 = new ItemStack(Items.diamond_leggings);
+            slot3 = new ItemStack(Items.diamond_chestplate);
+            slot4 = new ItemStack(Items.diamond_helmet);
+        } else if (rng >= 99 && rng <= 100) { // Bow + Diamond Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.diamond_sword);
+            slot1 = new ItemStack(Items.diamond_boots);
+            slot2 = new ItemStack(Items.diamond_leggings);
+            slot3 = new ItemStack(Items.diamond_chestplate);
+            slot4 = new ItemStack(Items.diamond_helmet);
+        }
 
-            RNG:
-            40% > Zombie Spawning
-            60% > No Zombie Spawning
+        if (slot0 != null)
+            this.setCurrentItemOrArmor(0, slot0);
 
+        if (slot1 != null)
+            this.setCurrentItemOrArmor(1, slot1);
 
-            Artifacts:
-            > 4x Artifacts, each one lowers the zombie spawning chance
+        if (slot2 != null)
+            this.setCurrentItemOrArmor(2, slot2);
 
+        if (slot3 != null)
+            this.setCurrentItemOrArmor(3, slot3);
 
-         */
-
+        if (slot4 != null)
+            this.setCurrentItemOrArmor(4, slot4);
 
         return null;
     }

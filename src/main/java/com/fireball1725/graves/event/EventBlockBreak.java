@@ -12,6 +12,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.Random;
+
 public class EventBlockBreak {
     @SubscribeEvent
     public void onBreakBlock(BlockEvent.BreakEvent event) {
@@ -22,8 +24,25 @@ public class EventBlockBreak {
                 graveStone.markDirty();
                 graveStone.markForUpdate();
 
-                //todo: change this to RNG!
                 boolean spawnPlayerZombie = false;
+
+                //todo: make if player has items, make the chance less
+                int spawnChance = 40;
+
+                /* Notes :
+
+                    Artifacts:
+                    > 4x Artifacts, each one lowers the zombie spawning chance
+
+                 */
+
+                if (spawnChance > 0) {
+                    Random random = new Random();
+                    int rng = random.nextInt(100);
+
+                    if (rng <= spawnChance)
+                        spawnPlayerZombie = true;
+                }
 
                 if (spawnPlayerZombie) {
                     EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
