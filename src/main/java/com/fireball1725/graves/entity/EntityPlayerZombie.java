@@ -243,13 +243,43 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         if (rand.nextFloat() < additionalDifficulty * 0.1F)
             tasks.addTask(1, breakDoorAI);
 
-        this.setCurrentItemOrArmor(0, new ItemStack(Items.diamond_sword));
-        this.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_boots));
-        this.setCurrentItemOrArmor(2, new ItemStack(Items.diamond_leggings));
-        this.setCurrentItemOrArmor(3, new ItemStack(Items.diamond_chestplate));
-        this.setCurrentItemOrArmor(4, new ItemStack(Items.diamond_helmet));
+        //this.setCurrentItemOrArmor(0, new ItemStack(Items.diamond_sword));
+        //this.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_boots));
+        //this.setCurrentItemOrArmor(2, new ItemStack(Items.diamond_leggings));
+        //this.setCurrentItemOrArmor(3, new ItemStack(Items.diamond_chestplate));
+        //this.setCurrentItemOrArmor(4, new ItemStack(Items.diamond_helmet));
 
         //this.setCurrentItemOrArmor(0, new ItemStack(Items.bow));
+
+        //todo: do the RNG things!
+        // RNG for armor + things
+        /*
+            25% > Nothing
+            20% > Wooden Sword + Nothing
+            11% > Bow + Nothing
+            10%> Wooden Sword + leather Armor
+            10%> Bow + leather Armor
+            6%> Iron Sword + Iron Armor
+            6%> Bow + Iron Armor
+            3%> Gold Sword + Gold Armor
+            3%> Bow + Gold Armor
+            2% > Diamond Sword + Diamond Armor
+            2% > Bow + Diamond Armor
+         */
+
+        /* Notes :
+
+            RNG:
+            40% > Zombie Spawning
+            60% > No Zombie Spawning
+
+
+            Artifacts:
+            > 4x Artifacts, each one lowers the zombie spawning chance
+
+
+         */
+
 
         return null;
     }
