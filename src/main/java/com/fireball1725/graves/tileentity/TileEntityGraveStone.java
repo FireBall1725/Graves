@@ -83,9 +83,11 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
 
         nbtTagCompound.setBoolean("hasLid", this.hasLid);
 
-        NBTTagCompound profileTag = new NBTTagCompound();
-        NBTUtil.writeGameProfile(profileTag, playerProfile);
-        nbtTagCompound.setTag("playerProfile", profileTag);
+        if (playerProfile != null) {
+            NBTTagCompound profileTag = new NBTTagCompound();
+            NBTUtil.writeGameProfile(profileTag, playerProfile);
+            nbtTagCompound.setTag("playerProfile", profileTag);
+        }
     }
 
     public void breakBlocks() {
