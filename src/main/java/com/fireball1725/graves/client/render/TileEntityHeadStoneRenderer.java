@@ -21,16 +21,20 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
     }
 
     @Override
-    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage) {
-        if (te instanceof TileEntityHeadStone) {
-            this.saveBoundTexture();
+    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage)
+	{
+		if(te instanceof TileEntityHeadStone)
+		{
+			if(te.getWorld().getBlockState(te.getPos()).getBlock() instanceof BlockHeadStone)
+			{
+				this.saveBoundTexture();
+				int[][] savedGLState = OpenGLHelper.modifyGLState(new int[] {GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
+				TileEntityHeadStone headStone = (TileEntityHeadStone) te;
+				renderTextOnHeadstone(headStone.getCustomName().split("\\\\n"), headStone.getWorld().getBlockState(te.getPos()).getValue(BlockHeadStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), true);
 
-            int[][] savedGLState = OpenGLHelper.modifyGLState(new int[]{GL11.GL_BLEND, GL11.GL_LIGHTING}, null);
-            TileEntityHeadStone headStone = (TileEntityHeadStone) te;
-			renderTextOnHeadstone(headStone.getCustomName().split("\\\\n"), headStone.getBlockState().getValue(BlockHeadStone.FACING), x, y, z, 0, 0, .0365f, 1f / 200f, Color.RED.hashCode(), true);
-
-            OpenGLHelper.restoreGLState(savedGLState);
-        }
+				OpenGLHelper.restoreGLState(savedGLState);
+			}
+		}
     }
 
     public void renderTextOnHeadstone(String[] text, EnumFacing orientation, double x, double y, double z, float xOffset, float yOffset, float zOffset, float scale, int color, boolean shadow) {

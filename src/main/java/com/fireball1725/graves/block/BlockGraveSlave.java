@@ -70,7 +70,7 @@ public class BlockGraveSlave extends BlockBase {
     @Override
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
         TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-        if (graveSlave != null) {
+        if (graveSlave != null && graveSlave.getMasterBlock() != null) {
             IBlockState masterState = worldIn.getBlockState(graveSlave.getMasterBlock());
             IBlockState actualState = masterState.getBlock().getActualState(masterState, worldIn, graveSlave.getMasterBlock());
             //			LogHelper.info(">>> " + actualState);
