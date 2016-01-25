@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.entity.layers.LayerArrow;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
+import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.item.ItemBow;
 import net.minecraft.util.ResourceLocation;
 
@@ -41,6 +42,7 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     @Override
     public void doRender(EntityPlayerZombie entity, double x, double y, double z, float f0, float partialTickTime) {
         setModel(entity);
+        BossStatus.setBossStatus(entity, true);
 
         if (entity.getHeldItem() != null && entity.getHeldItem().getItem() instanceof ItemBow)
             modelBipedMain.aimedBow = true;

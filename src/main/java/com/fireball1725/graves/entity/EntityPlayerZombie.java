@@ -139,11 +139,9 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
         getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(100.0);
-        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.40);
+        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.50);
         getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(6.0);
     }
-
-	/* SOUNDS */
 
     @Override
     protected void entityInit() {
@@ -176,8 +174,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     }
 
-	/* EQUIPAMENT AND ITEMS */
-
     @Override
     protected void addRandomDrop() {
 
@@ -202,8 +198,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         super.setCurrentItemOrArmor(slot, stack);
         setCombatAI();
     }
-
-	/* SPAWN AND DESPAWN */
 
     @Override
     public ItemStack getPickedResult(MovingObjectPosition target) {
