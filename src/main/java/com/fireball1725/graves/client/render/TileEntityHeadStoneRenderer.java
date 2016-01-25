@@ -69,7 +69,7 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
         GlStateManager.translate(.5 + xOffset, -.815f + yOffset, zOffset - 1);
 
         GlStateManager.pushMatrix();
-		GlStateManager.scale(scale, scale, scale);
+        GlStateManager.scale(scale, scale, scale);
 
         GlStateManager.pushMatrix();
         int i = 0;
@@ -82,8 +82,8 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
             int yCenter = mc.fontRendererObj.FONT_HEIGHT / 2;
             if (shadow) {
                 mc.fontRendererObj.drawString(s, -xCenter - 1, -yCenter + 1 + (renderFont.FONT_HEIGHT * i + 2), (color & 16579836) >> 2 | color & -16777216);
-				GlStateManager.translate(0f, 0f, -.001f);
-			}
+                GlStateManager.translate(0f, 0f, -.001f);
+            }
             mc.fontRendererObj.drawString(s, -xCenter, -yCenter + (renderFont.FONT_HEIGHT * i + 2), color);
 
             i++;

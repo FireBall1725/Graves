@@ -2,17 +2,17 @@ package com.fireball1725.graves.event;
 
 import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.entity.EntityPlayerZombie;
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
-import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.Random;
 
 public class EventBlockBreak {
     @SubscribeEvent
@@ -24,17 +24,42 @@ public class EventBlockBreak {
                 graveStone.markDirty();
                 graveStone.markForUpdate();
 
-				EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
+                boolean spawnPlayerZombie = false;
 
-                playerZombie.setUsername(graveStone.getPlayerProfile().getName());
-                playerZombie.setProfile(graveStone.getPlayerProfile());
+                //todo: make if player has items, make the chance less
+                int spawnChance = 40;
 
-                playerZombie.setCurrentItemOrArmor(1, new ItemStack(Items.diamond_sword));
+                /* Notes :
 
-				playerZombie.setLocationAndAngles(event.pos.getX(), event.pos.down().getY(), event.pos.getZ(), graveStone.getBlockState().getValue(BlockGraveStone.FACING).getHorizontalIndex() * 90f, 0f);
-				event.world.spawnEntityInWorld(playerZombie);
+                    Artifacts:
+                    > 4x Artifacts, each one lowers the zombie spawning chance
 
-				LogHelper.info(">>> Spawning a PlayerZombie");
+                 */
+
+                if (spawnChance > 0) {
+                    Random random = new Random();
+                    int rng = random.nextInt(100);
+
+                    if (rng <= spawnChance)
+                        spawnPlayerZombie = true;
+                }
+
+                if (spawnPlayerZombie) {
+                    EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
+
+                    playerZombie.setUsername(graveStone.getPlayerProfile().getName());
+                    playerZombie.setProfile(graveStone.getPlayerProfile());
+
+                    playerZombie.setLocationAndAngles(event.pos.getX(), event.pos.down().getY(), event.pos.getZ(), graveStone.getBlockState().getValue(BlockGraveStone.FACING).getHorizontalIndex() * 90f, 0f);
+                    playerZombie.onInitialSpawn(event.world.getDifficultyForLocation(new BlockPos(playerZombie)), null);
+
+                    playerZombie.setPlayer(event.getPlayer());
+
+                    NBTTagCompound nbtTagCompound = event.getPlayer().getEntityData();
+                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
+
+                    event.world.spawnEntityInWorld(playerZombie);
+                }
 
                 event.setCanceled(true);
                 return;
@@ -51,7 +76,6 @@ public class EventBlockBreak {
             if (event.world.getTileEntity(masterBlock) == null) {
                 return;
             }
-            //LogHelper.info(">>> Master Pos: " + masterBlock.toString());
             MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(event.world, masterBlock, event.world.getBlockState(masterBlock), event.getPlayer()));
             graveSlave.markDirty();
             graveSlave.markForUpdate();

@@ -7,7 +7,7 @@ public interface IProxy {
 
     void registerItems();
 
-	void registerEntities();
+    void registerEntities();
 
     void registerEvents();
 

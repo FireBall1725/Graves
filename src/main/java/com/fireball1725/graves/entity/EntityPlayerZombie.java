@@ -8,415 +8,780 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.*;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
-public class EntityPlayerZombie extends EntityMob implements IRangedAttackMob, IDeadPlayerEntity {
-	private double prevCapeX, prevCapeY, prevCapeZ;
-	private double capeX, capeY, capeZ;
+public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob, IDeadPlayerEntity, IBossDisplayData {
+    private static final int NAME = 13;
+    private static final int CHILD = 14;
+    private static final int WIDTH = 16;
+    private static final int HEIGHT = 17;
+    private final EntityAIBreakDoor breakDoorAI = new EntityAIBreakDoor(this);
+    private final EntityAIArrowAttack arrowAI = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
+    private double prevCapeX, prevCapeY, prevCapeZ;
+    private double capeX, capeY, capeZ;
+    private GameProfile profile;
+    private EntityPlayer player;
 
-	private GameProfile profile;
+    public EntityPlayerZombie(World world) {
+        super(world);
 
-	private final EntityAIBreakDoor breakDoorAI = new EntityAIBreakDoor(this);
-	private final EntityAIArrowAttack arrowAI = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
-	private static final int NAME = 13;
-	private static final int CHILD = 14;
-	private static final int WIDTH = 16;
-	private static final int HEIGHT = 17;
+        this.noClip = true;
+        this.isImmuneToFire = true;
+        this.moveHelper = new PlayerZombieMoveHelper();
 
-	public EntityPlayerZombie(World world) {
-		super(world);
-		((PathNavigateGround) getNavigator()).setBreakDoors(true);
-		tasks.addTask(0, new EntityAISwimming(this));
-		if (world.getDifficulty() == EnumDifficulty.HARD)
-			tasks.addTask(1, new EntityAIOpenDoor(this, true));
-		tasks.addTask(2, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0D, false));
-		tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-		tasks.addTask(6, new EntityAIMoveThroughVillage(this, 1.0D, false));
-		tasks.addTask(7, new EntityAIWander(this, 1.0D));
-		tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-		tasks.addTask(8, new EntityAILookIdle(this));
-		targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
-		targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 0, true, false, new Predicate<EntityPlayer>() {
+        tasks.addTask(3, new AIPlayerZombieRandomFly());
+        tasks.addTask(4, new AIPlayerZombieAttackTarget());
 
-			@Override
-			public boolean apply(EntityPlayer input) {
-				return !input.getName().equals(getUsername());
-			}
-		}));
-		setSize(0.6F, 1.8F);
-	}
+        tasks.addTask(1, new EntityAIOpenDoor(this, true));
+        tasks.addTask(2, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0D, false));
+        tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 
-	@Override
-	public boolean canPickUpLoot() {
-		return true;
-	}
+        tasks.addTask(7, new EntityAIWander(this, 1.0D));
+        tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
 
-	@Override
-	public void onUpdate() {
-		prevCapeX = capeX;
-		prevCapeY = capeY;
-		prevCapeZ = capeZ;
-		double x = posX - capeX;
-		double y = posY - capeY;
-		double z = posZ - capeZ;
-		double maxCapeAngle = 10.0;
+        targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
+        targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 0, true, false, new Predicate<EntityPlayer>() {
+            @Override
+            public boolean apply(EntityPlayer input) {
+                return input.getName().equals(getUsername());
+            }
+        }));
 
-		if (x > maxCapeAngle)
-			prevCapeX = capeX = posX;
-		if (z > maxCapeAngle)
-			prevCapeZ = capeZ = posZ;
-		if (y > maxCapeAngle)
-			prevCapeY = capeY = posY;
-		if (x < -maxCapeAngle)
-			prevCapeX = capeX = posX;
-		if (z < -maxCapeAngle)
-			prevCapeZ = capeZ = posZ;
-		if (y < -maxCapeAngle)
-			prevCapeY = capeY = posY;
+        setSize(0.6F, 1.8F);
+    }
 
-		capeX += x * 0.25;
-		capeZ += z * 0.25;
-		capeY += y * 0.25;
+    public void setPlayer(EntityPlayer player) {
+        this.player = player;
+    }
 
-		if (worldObj.isRemote) {
-			float w = dataWatcher.getWatchableObjectFloat(WIDTH);
-			if (w != width)
-				width = w;
-			float h = dataWatcher.getWatchableObjectFloat(HEIGHT);
-			if (h != height)
-				height = h;
-		}
+    @Override
+    public boolean canPickUpLoot() {
+        return true;
+    }
 
-		super.onUpdate();
-	}
+    @Override
+    protected void damageEntity(DamageSource damageSrc, float damageAmount) {
+        Entity entity = damageSrc.getEntity();
+        if (entity instanceof EntityPlayer) {
+            EntityPlayer player = (EntityPlayer) entity;
 
-	/* ENTITY INIT */
+            if (!player.getName().equals(this.getName())) {
+                damageAmount = 0;
+            }
+        }
 
-	@Override
-	protected void applyEntityAttributes() {
-		super.applyEntityAttributes();
-		getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(40.0);
-		getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.24);
-		getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4.0);
-	}
+        super.damageEntity(damageSrc, damageAmount);
+    }
 
-	@Override
-	protected void entityInit() {
-		super.entityInit();
-		getDataWatcher().addObject(NAME, "");
-		getDataWatcher().addObject(CHILD, (byte) 0);
-		getDataWatcher().addObject(WIDTH, width);
-		getDataWatcher().addObject(HEIGHT, height);
-	}
+    @Override
+    public void onUpdate() {
+        prevCapeX = capeX;
+        prevCapeY = capeY;
+        prevCapeZ = capeZ;
+        double x = posX - capeX;
+        double y = posY - capeY;
+        double z = posZ - capeZ;
+        double maxCapeAngle = 10.0;
+
+        if (x > maxCapeAngle)
+            prevCapeX = capeX = posX;
+        if (z > maxCapeAngle)
+            prevCapeZ = capeZ = posZ;
+        if (y > maxCapeAngle)
+            prevCapeY = capeY = posY;
+        if (x < -maxCapeAngle)
+            prevCapeX = capeX = posX;
+        if (z < -maxCapeAngle)
+            prevCapeZ = capeZ = posZ;
+        if (y < -maxCapeAngle)
+            prevCapeY = capeY = posY;
+
+        capeX += x * 0.25;
+        capeZ += z * 0.25;
+        capeY += y * 0.25;
+
+        if (worldObj.isRemote) {
+            float w = dataWatcher.getWatchableObjectFloat(WIDTH);
+            if (w != width)
+                width = w;
+            float h = dataWatcher.getWatchableObjectFloat(HEIGHT);
+            if (h != height)
+                height = h;
+        }
+
+        if (this.player != null) {
+            if (this.player.isDead) {
+                this.setDead();
+                return;
+            }
+        }
+
+        super.onUpdate();
+    }
+
+    @Override
+    protected void applyEntityAttributes() {
+        super.applyEntityAttributes();
+        getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(100.0);
+        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.40);
+        getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(6.0);
+    }
 
 	/* SOUNDS */
 
-	@Override
-	protected String getLivingSound() {
-		return null;
-	}
+    @Override
+    protected void entityInit() {
+        super.entityInit();
+        getDataWatcher().addObject(NAME, "");
+        getDataWatcher().addObject(CHILD, (byte) 0);
+        getDataWatcher().addObject(WIDTH, width);
+        getDataWatcher().addObject(HEIGHT, height);
+    }
 
-	@Override
-	protected String getHurtSound() {
-		return "game.hostile.hurt";
-	}
+    @Override
+    protected String getLivingSound() {
+        return null;
+    }
 
-	@Override
-	protected String getDeathSound() {
-		return "game.hostile.die";
-	}
+    @Override
+    protected String getHurtSound() {
+        return "game.hostile.hurt";
+    }
 
 	/* DROPS */
 
-	@Override
-	protected void dropFewItems(boolean recentHit, int looting) {
+    @Override
+    protected String getDeathSound() {
+        return "game.hostile.die";
+    }
 
-	}
+    @Override
+    protected void dropFewItems(boolean recentHit, int looting) {
 
-	@Override
-	protected void addRandomDrop() {
-
-	}
+    }
 
 	/* EQUIPAMENT AND ITEMS */
 
-	@Override
-	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-		super.setEquipmentBasedOnDifficulty(difficulty);
+    @Override
+    protected void addRandomDrop() {
 
-		if (rand.nextFloat() < (worldObj.getDifficulty() == EnumDifficulty.HARD ? 0.1F : 0.05F)) {
-			int i = rand.nextInt(3);
+    }
 
-			if (i == 0)
-				setCurrentItemOrArmor(0, new ItemStack(Items.stone_sword));
-			else if (i == 1)
-				setCurrentItemOrArmor(0, new ItemStack(Items.bow));
-		}
-	}
+    @Override
+    protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
+        super.setEquipmentBasedOnDifficulty(difficulty);
 
-	@Override
-	public void setCurrentItemOrArmor(int slot, ItemStack stack) {
-		super.setCurrentItemOrArmor(slot, stack);
-		setCombatAI();
-	}
+        if (rand.nextFloat() < (worldObj.getDifficulty() == EnumDifficulty.HARD ? 0.1F : 0.05F)) {
+            int i = rand.nextInt(3);
 
-	@Override
-	public ItemStack getPickedResult(MovingObjectPosition target) {
-		ItemStack stack = new ItemStack(Items.spawn_egg);
-		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setString("entity_name", EntityList.classToStringMapping.get(getClass()));
-		stack.setTagCompound(nbt);
-		return stack;
-	}
+            if (i == 0)
+                setCurrentItemOrArmor(0, new ItemStack(Items.stone_sword));
+            else if (i == 1)
+                setCurrentItemOrArmor(0, new ItemStack(Items.bow));
+        }
+    }
+
+    @Override
+    public void setCurrentItemOrArmor(int slot, ItemStack stack) {
+        super.setCurrentItemOrArmor(slot, stack);
+        setCombatAI();
+    }
 
 	/* SPAWN AND DESPAWN */
 
-	@Override
-	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
-		setUsername("FireBall1725");
-		setEquipmentBasedOnDifficulty(difficulty);
-		setEnchantmentBasedOnDifficulty(difficulty);
-		setCombatAI();
+    @Override
+    public ItemStack getPickedResult(MovingObjectPosition target) {
+        ItemStack stack = new ItemStack(Items.spawn_egg);
+        NBTTagCompound nbt = new NBTTagCompound();
+        nbt.setString("entity_name", EntityList.classToStringMapping.get(getClass()));
+        stack.setTagCompound(nbt);
+        return stack;
+    }
 
-		float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
-		getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 0.05, 0));
+    @Override
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
+        setEquipmentBasedOnDifficulty(difficulty);
+        setEnchantmentBasedOnDifficulty(difficulty);
+        setCombatAI();
 
-		double rangeBonus = rand.nextDouble() * 1.5 * additionalDifficulty;
-		if (rangeBonus > 1.0)
-			getEntityAttribute(SharedMonsterAttributes.followRange).applyModifier(new AttributeModifier("Range Bonus", rangeBonus, 2));
+        float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
+        getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 0.05, 0));
 
-		if (rand.nextFloat() < additionalDifficulty * 0.05F)
-			getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("Health Bonus", rand.nextDouble() * 3.0 + 1.0, 2));
+        double rangeBonus = rand.nextDouble() * 1.5 * additionalDifficulty;
+        if (rangeBonus > 1.0)
+            getEntityAttribute(SharedMonsterAttributes.followRange).applyModifier(new AttributeModifier("Range Bonus", rangeBonus, 2));
 
-		if (rand.nextFloat() < additionalDifficulty * 0.15F)
-			getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("Damage Bonus", rand.nextDouble() + 0.5, 2));
+        if (rand.nextFloat() < additionalDifficulty * 0.05F)
+            getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("Health Bonus", rand.nextDouble() * 3.0 + 1.0, 2));
 
-		if (rand.nextFloat() < additionalDifficulty * 0.2F)
-			getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("Speed Bonus", rand.nextDouble() * 2.0 * 0.24 + 0.01, 2));
+        if (rand.nextFloat() < additionalDifficulty * 0.15F)
+            getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("Damage Bonus", rand.nextDouble() + 0.5, 2));
 
-		if (rand.nextFloat() < additionalDifficulty * 0.1F)
-			tasks.addTask(1, breakDoorAI);
+        if (rand.nextFloat() < additionalDifficulty * 0.2F)
+            getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("Speed Bonus", rand.nextDouble() * 2.0 * 0.24 + 0.01, 2));
 
-		return null;
-	}
+        if (rand.nextFloat() < additionalDifficulty * 0.1F)
+            tasks.addTask(1, breakDoorAI);
 
-	@Override
-	protected void despawnEntity() {
-		super.despawnEntity();
-		if (isDead && ridingEntity != null)
-			ridingEntity.setDead();
-	}
+        Random random = new Random();
+        int rng = random.nextInt(100);
 
-	/* RENDERING */
+        ItemStack slot0 = null;
+        ItemStack slot1 = null;
+        ItemStack slot2 = null;
+        ItemStack slot3 = null;
+        ItemStack slot4 = null;
 
-	@Override
-	public double getYOffset() {
-		return -0.3;
-	}
+        if (rng >= 0 && rng <= 25) {
 
-	/* SAVE AND LOAD */
+        } else if (rng >= 26 && rng <= 45) {  // Wooden Sword + No Armor
+            slot0 = new ItemStack(Items.wooden_sword);
+        } else if (rng >= 46 && rng <= 58) {  // Bow + No Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.wooden_sword);
+        } else if (rng >= 59 && rng <= 68) {  // Wooden Sword + Leather Armor
+            slot0 = new ItemStack(Items.wooden_sword);
+            slot1 = new ItemStack(Items.leather_boots);
+            slot2 = new ItemStack(Items.leather_leggings);
+            slot3 = new ItemStack(Items.leather_chestplate);
+            slot4 = new ItemStack(Items.leather_helmet);
+        } else if (rng >= 69 && rng <= 78) {  // Bow + Leather Armor
+            slot0 = new ItemStack(Items.wooden_sword);
+            //slot0 = new ItemStack(Items.bow);
+            slot1 = new ItemStack(Items.leather_boots);
+            slot2 = new ItemStack(Items.leather_leggings);
+            slot3 = new ItemStack(Items.leather_chestplate);
+            slot4 = new ItemStack(Items.leather_helmet);
+        } else if (rng >= 79 && rng <= 84) {  // Iron Sword + Iron Armor
+            slot0 = new ItemStack(Items.iron_sword);
+            slot1 = new ItemStack(Items.iron_boots);
+            slot2 = new ItemStack(Items.iron_leggings);
+            slot3 = new ItemStack(Items.iron_chestplate);
+            slot4 = new ItemStack(Items.iron_helmet);
+        } else if (rng >= 85 && rng <= 90) {  // Bow + Iron Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.iron_sword);
+            slot1 = new ItemStack(Items.iron_boots);
+            slot2 = new ItemStack(Items.iron_leggings);
+            slot3 = new ItemStack(Items.iron_chestplate);
+            slot4 = new ItemStack(Items.iron_helmet);
+        } else if (rng >= 91 && rng <= 93) {  // Golden Sword + Gold Armor
+            slot0 = new ItemStack(Items.golden_sword);
+            slot1 = new ItemStack(Items.golden_boots);
+            slot2 = new ItemStack(Items.golden_leggings);
+            slot3 = new ItemStack(Items.golden_chestplate);
+            slot4 = new ItemStack(Items.golden_helmet);
+        } else if (rng >= 94 && rng <= 96) {  // Bow + Gold Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.golden_sword);
+            slot1 = new ItemStack(Items.golden_boots);
+            slot2 = new ItemStack(Items.golden_leggings);
+            slot3 = new ItemStack(Items.golden_chestplate);
+            slot4 = new ItemStack(Items.golden_helmet);
+        } else if (rng >= 97 && rng <= 98) {  // Diamond Sword + Diamond Armor
+            slot0 = new ItemStack(Items.diamond_sword);
+            slot1 = new ItemStack(Items.diamond_boots);
+            slot2 = new ItemStack(Items.diamond_leggings);
+            slot3 = new ItemStack(Items.diamond_chestplate);
+            slot4 = new ItemStack(Items.diamond_helmet);
+        } else if (rng >= 99 && rng <= 100) { // Bow + Diamond Armor
+            //slot0 = new ItemStack(Items.bow);
+            slot0 = new ItemStack(Items.diamond_sword);
+            slot1 = new ItemStack(Items.diamond_boots);
+            slot2 = new ItemStack(Items.diamond_leggings);
+            slot3 = new ItemStack(Items.diamond_chestplate);
+            slot4 = new ItemStack(Items.diamond_helmet);
+        }
 
-	@Override
-	public void writeEntityToNBT(NBTTagCompound nbt) {
-		super.writeEntityToNBT(nbt);
+        if (slot0 != null)
+            this.setCurrentItemOrArmor(0, slot0);
 
-		String username = getUsername();
-		if (!StringUtils.isBlank(username))
-			nbt.setString("Username", username);
-	}
+        if (slot1 != null)
+            this.setCurrentItemOrArmor(1, slot1);
 
-	@Override
-	public void readEntityFromNBT(NBTTagCompound nbt) {
-		super.readEntityFromNBT(nbt);
+        if (slot2 != null)
+            this.setCurrentItemOrArmor(2, slot2);
 
-		String username;
-		if (nbt.hasKey("Username")) {
-			username = nbt.getString("Username");
-		} else
-			username = "FireBall1725";
-		setUsername(username);
+        if (slot3 != null)
+            this.setCurrentItemOrArmor(3, slot3);
 
-		setCombatAI();
-	}
+        if (slot4 != null)
+            this.setCurrentItemOrArmor(4, slot4);
 
-	/* ATTACK STUFF */
+        return null;
+    }
 
-	@Override
-	public boolean attackEntityAsMob(Entity target) {
-		boolean result = super.attackEntityAsMob(target);
-		if (result)
-			swingItem();
-		return result;
-	}
+    @Override
+    protected void despawnEntity() {
+        super.despawnEntity();
+        if (isDead && ridingEntity != null)
+            ridingEntity.setDead();
+    }
 
-	@Override
-	public void attackEntityWithRangedAttack(EntityLivingBase target, float damage) {
-		if (!hasBow())
-			return;
+    @Override
+    public double getYOffset() {
+        return -0.3;
+    }
 
-		EntityArrow arrow = new EntityArrow(worldObj, this, target, 1.6F, 14 - worldObj.getDifficulty().getDifficultyId() * 4);
-		int power = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, getHeldItem());
-		int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, getHeldItem());
-		arrow.setDamage(damage * 2.0F + rand.nextGaussian() * 0.25D + worldObj.getDifficulty().getDifficultyId() * 0.11F);
+    @Override
+    public void writeEntityToNBT(NBTTagCompound nbt) {
+        super.writeEntityToNBT(nbt);
 
-		if (power > 0)
-			arrow.setDamage(arrow.getDamage() + power * 0.5D + 0.5D);
+        String username = getUsername();
+        if (!StringUtils.isBlank(username))
+            nbt.setString("Username", username);
+    }
 
-		if (punch > 0)
-			arrow.setKnockbackStrength(punch);
+    @Override
+    public void readEntityFromNBT(NBTTagCompound nbt) {
+        super.readEntityFromNBT(nbt);
 
-		if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, getHeldItem()) > 0)
-			arrow.setFire(100);
+        String username;
+        if (nbt.hasKey("Username")) {
+            username = nbt.getString("Username");
+        } else
+            username = "FireBall1725";
+        setUsername(username);
 
-		playSound("random.bow", 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
-		worldObj.spawnEntityInWorld(arrow);
-	}
+        setCombatAI();
+    }
 
-	private boolean hasBow() {
-		return getHeldItem() != null && getHeldItem().getItem() instanceof ItemBow;
-	}
+    @Override
+    public boolean attackEntityAsMob(Entity target) {
+        boolean result = super.attackEntityAsMob(target);
+        if (result)
+            swingItem();
+        return result;
+    }
 
-	private void setCombatAI() {
-		if (hasBow())
-			tasks.addTask(1, arrowAI);
-		else
-			tasks.removeTask(arrowAI);
-	}
+    @Override
+    public void attackEntityWithRangedAttack(EntityLivingBase target, float damage) {
+        if (!hasBow())
+            return;
 
-	/* USERNAME */
+        EntityArrow arrow = new EntityArrow(worldObj, this, target, 1.6F, 14 - worldObj.getDifficulty().getDifficultyId() * 4);
+        int power = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, getHeldItem());
+        int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, getHeldItem());
+        arrow.setDamage(damage * 2.0F + rand.nextGaussian() * 0.25D + worldObj.getDifficulty().getDifficultyId() * 0.11F);
 
-	@Override
-	public String getName() {
-		return getUsername();
-	}
+        if (power > 0)
+            arrow.setDamage(arrow.getDamage() + power * 0.5D + 0.5D);
 
-	@Override
-	public String getCustomNameTag() {
-		return getUsername();
-	}
+        if (punch > 0)
+            arrow.setKnockbackStrength(punch);
 
-	@Override
-	public boolean hasCustomName() {
-		return true;
-	}
+        if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, getHeldItem()) > 0)
+            arrow.setFire(100);
 
-	@Override
-	public IChatComponent getDisplayName() {
-		return new ChatComponentText(getName()) {
+        playSound("random.bow", 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
+        worldObj.spawnEntityInWorld(arrow);
+    }
 
-			private ChatStyle style;
+    private boolean hasBow() {
+        return getHeldItem() != null && getHeldItem().getItem() instanceof ItemBow;
+    }
 
-			@Override
-			public ChatStyle getChatStyle() {
-				if (style == null) {
-					style = new ChatStyle() {
+    private void setCombatAI() {
+        if (hasBow())
+            tasks.addTask(1, arrowAI);
+        else
+            tasks.removeTask(arrowAI);
+    }
 
-						@Override
-						@SideOnly(Side.CLIENT)
-						public String getFormattingCode() {
-							return "";
-						}
+    @Override
+    public String getName() {
+        return getUsername();
+    }
 
-					};
-					Iterator<?> iterator = siblings.iterator();
+    @Override
+    public String getCustomNameTag() {
+        return getUsername();
+    }
 
-					while (iterator.hasNext()) {
-						IChatComponent ichatcomponent = (IChatComponent) iterator.next();
-						ichatcomponent.getChatStyle().setParentStyle(style);
-					}
-				}
+    @Override
+    public void setCustomNameTag(String name) {
+    }
 
-				return style;
-			}
-		};
-	}
+    @Override
+    public boolean hasCustomName() {
+        return true;
+    }
 
-	@Override
-	public void setCustomNameTag(String name) {
-	}
+    @Override
+    public IChatComponent getDisplayName() {
+        return new ChatComponentText(getName()) {
+
+            private ChatStyle style;
+
+            @Override
+            public ChatStyle getChatStyle() {
+                if (style == null) {
+                    style = new ChatStyle() {
+
+                        @Override
+                        @SideOnly(Side.CLIENT)
+                        public String getFormattingCode() {
+                            return "";
+                        }
+
+                    };
+                    Iterator<?> iterator = siblings.iterator();
+
+                    while (iterator.hasNext()) {
+                        IChatComponent ichatcomponent = (IChatComponent) iterator.next();
+                        ichatcomponent.getChatStyle().setParentStyle(style);
+                    }
+                }
+
+                return style;
+            }
+        };
+    }
+
+    @Override
+    public GameProfile getProfile() {
+        if (profile == null)
+            setProfile(TileEntitySkull.updateGameprofile(new GameProfile(null, getUsername())));
+        return profile;
+    }
+
+    public void setProfile(GameProfile profile) {
+        this.profile = profile;
+    }
+
+    @Override
+    public String getUsername() {
+        String username = getDataWatcher().getWatchableObjectString(NAME);
+        if (StringUtils.isBlank(username))
+            getDataWatcher().updateObject(NAME, "FireBall1725");
+        return username;
+    }
+
+    @Override
+    public void setUsername(String name) {
+        getDataWatcher().updateObject(NAME, name);
+
+        if ("Herobrine".equals(name)) {
+            getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("Herobrine Damage Bonus", 1, 2));
+            getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, 2));
+        }
+    }
+
+    @Override
+    public double getInterpolatedCapeX(float partialTickTime) {
+        return prevCapeX + (capeX - prevCapeX) * partialTickTime - (prevPosX + (posX - prevPosX) * partialTickTime);
+    }
+
+    @Override
+    public double getInterpolatedCapeY(float partialTickTime) {
+        return prevCapeY + (capeY - prevCapeY) * partialTickTime - (prevPosY + (posY - prevPosY) * partialTickTime);
+    }
+
+    @Override
+    public double getInterpolatedCapeZ(float partialTickTime) {
+        return prevCapeZ + (capeZ - prevCapeZ) * partialTickTime - (prevPosZ + (posZ - prevPosZ) * partialTickTime);
+    }
+
+    @Override
+    public boolean isChild() {
+        return getDataWatcher().getWatchableObjectByte(CHILD) == 1;
+    }
+
+    @Override
+    protected void setSize(float width, float height) {
+        super.setSize(width, height);
+        dataWatcher.updateObject(WIDTH, this.width);
+        dataWatcher.updateObject(HEIGHT, this.height);
+    }
+
+    class PlayerZombieMoveTargetPos {
+        private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
+
+        public double posX;
+        public double posY;
+        public double posZ;
+        public double distX;
+        public double distY;
+        public double distZ;
+        public double dist;
+        public double aimX;
+        public double aimY;
+        public double aimZ;
+
+        public PlayerZombieMoveTargetPos() {
+            this(0, 0, 0);
+        }
+
+        public PlayerZombieMoveTargetPos(double posX, double posY, double posZ) {
+            this.setTarget(posX, posY, posZ);
+        }
+
+        public void setTarget(double posX, double posY, double posZ) {
+            this.posX = posX;
+            this.posY = posY;
+            this.posZ = posZ;
+            this.refresh();
+        }
+
+        public void refresh() {
+            this.distX = this.posX - this.playerZombie.posX;
+            this.distY = this.posY - this.playerZombie.posY;
+            this.distZ = this.posZ - this.playerZombie.posZ;
+
+            this.dist = (double) MathHelper.sqrt_double(this.distX * this.distX + this.distY * this.distY + this.distZ * this.distZ);
+
+            // (aimX,aimY,aimZ) is a unit vector in the direction we want to go
+            if (this.dist == 0.0D) {
+                this.aimX = 0.0D;
+                this.aimY = 0.0D;
+                this.aimZ = 0.0D;
+            } else {
+                this.aimX = this.distX / this.dist;
+                this.aimY = this.distY / this.dist;
+                this.aimZ = this.distZ / this.dist;
+            }
+        }
+
+        public boolean isBoxBlocked(AxisAlignedBB box) {
+            //return !this.playerZombie.worldObj.getCollidingBoundingBoxes(this.playerZombie, box).isEmpty();
+            return false;
+        }
+
+        // check nothing will collide with the playerZombie in the direction of aim, for howFar units (or until the destination - whichever is closer)
+        public boolean isPathClear(double howFar) {
+            howFar = Math.min(howFar, this.dist);
+            AxisAlignedBB box = this.playerZombie.getEntityBoundingBox();
+            for (double i = 0.5D; i < howFar; ++i) {
+                // check there's nothing in the way
+                if (this.isBoxBlocked(box.offset(this.aimX * i, this.aimY * i, this.aimZ * i))) {
+                    return false;
+                }
+            }
+            if (this.isBoxBlocked(box.offset(this.aimX * howFar, this.aimY * howFar, this.aimZ * howFar))) {
+                return false;
+            }
+            return true;
+        }
+
+    }
+
+    class PlayerZombieMoveHelper extends EntityMoveHelper {
+        private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
+        private int courseChangeCooldown = 0;
+        private double closeEnough = 0.3D;
+        private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
+
+        public PlayerZombieMoveHelper() {
+            super(EntityPlayerZombie.this);
+        }
+
+        @Override
+        public void setMoveTo(double x, double y, double z, double speedIn) {
+            super.setMoveTo(x, y, z, speedIn);
+            this.targetPos.setTarget(x, y, z);
+        }
+
+        @Override
+        public void onUpdateMoveHelper() {
+            if (!this.update) {
+                return;
+            }
+
+            if (this.courseChangeCooldown-- > 0) {
+                // limit the rate at which we change course
+                return;
+            }
+            this.courseChangeCooldown += this.playerZombie.getRNG().nextInt(5) + 2;
+
+            // update the target position
+            this.targetPos.refresh();
+
+            // accelerate the playerZombie towards the target
+            double acceleration = 0.1D;
+            this.playerZombie.motionX += this.targetPos.aimX * acceleration;
+            this.playerZombie.motionY += this.targetPos.aimY * acceleration;
+            this.playerZombie.motionZ += this.targetPos.aimZ * acceleration;
+
+            // rotate to point at target
+            this.playerZombie.renderYawOffset = this.playerZombie.rotationYaw = -((float) Math.atan2(this.targetPos.distX, this.targetPos.distZ)) * 180.0F / (float) Math.PI;
+
+            // occasionally jerk to the side - makes them more difficult to hit
+            if (this.playerZombie.getRNG().nextInt(5) == 0) {
+                float strafeAmount = (this.playerZombie.getRNG().nextFloat() * 0.4F) - 0.2F;
+                this.playerZombie.motionX += (double) (strafeAmount * MathHelper.cos(this.playerZombie.rotationYaw * (float) Math.PI / 180.0F));
+                this.playerZombie.motionZ += (double) (strafeAmount * MathHelper.sin(this.playerZombie.rotationYaw * (float) Math.PI / 180.0F));
+            }
+
+            // abandon this movement if we have reached the target or there is no longer a clear path to the target
+            if (!this.targetPos.isPathClear(5.0D)) {
+                //LogHelper.info(">>> Abandoning move target - way is blocked");
+                this.update = true;
+            } else if (this.targetPos.dist < this.closeEnough) {
+                //LogHelper.info(">>> Arrived (close enough) dist:" + this.targetPos.dist);
+                this.update = true;
+            }
+        }
+
+    }
+
+    // AI class for implementing the random flying behaviour
+    class AIPlayerZombieRandomFly extends EntityAIBase {
+        private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
+        private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
+
+        public AIPlayerZombieRandomFly() {
+            this.setMutexBits(1);
+        }
+
+        // should we choose a new random destination for the playerZombie to fly to?
+        // yes, if the playerZombie doesn't already have a destination
+        @Override
+        public boolean shouldExecute() {
+            //LogHelper.info(this.playerZombie.getMoveHelper().isUpdating() ? ">>> has a move target" : ">>> no move target");
+            return !this.playerZombie.getMoveHelper().isUpdating();
+        }
+
+        @Override
+        public boolean continueExecuting() {
+            return false;
+        }
+
+        // choose a a new random destination for the playerZombie to fly to
+        @Override
+        public void startExecuting() {
+            Random rand = this.playerZombie.getRNG();
+            // pick a random nearby point and see if we can fly to it
+            if (this.tryGoingRandomDirection(rand, 6.0D)) {
+                return;
+            }
+            // pick a random closer point to fly to instead
+            if (this.tryGoingRandomDirection(rand, 2.0D)) {
+                return;
+            }
+            // try going straight along axes (try all 6 directions in random order)
+            List<EnumFacing> directions = Arrays.asList(EnumFacing.values());
+            Collections.shuffle(directions);
+            for (EnumFacing facing : directions) {
+                if (this.tryGoingAlongAxis(rand, facing, 1.0D)) {
+                    return;
+                }
+            }
+        }
 
 
-	private static List<String> names = new LinkedList<String>();
+        // note y direction has a slight downward bias to stop them flying too high
+        public boolean tryGoingRandomDirection(Random rand, double maxDistance) {
+            double dirX = ((rand.nextDouble() * 2.0D - 1.0D) * maxDistance);
+            double dirY = ((rand.nextDouble() * 2.0D - 1.1D) * maxDistance);
+            double dirZ = ((rand.nextDouble() * 2.0D - 1.0D) * maxDistance);
+            return this.tryGoing(dirX, dirY, dirZ);
+        }
+
+        public boolean tryGoingAlongAxis(Random rand, EnumFacing facing, double maxDistance) {
+            double dirX = 0.0D;
+            double dirY = 0.0D;
+            double dirZ = 0.0D;
+            switch (facing.getAxis()) {
+                case X:
+                    dirX = rand.nextDouble() * facing.getAxisDirection().getOffset() * maxDistance;
+                    break;
+                case Y:
+                    dirY = rand.nextDouble() * facing.getAxisDirection().getOffset() * maxDistance;
+                    break;
+                case Z:
+                default:
+                    dirZ = rand.nextDouble() * facing.getAxisDirection().getOffset() * maxDistance;
+                    break;
+            }
+            return this.tryGoing(dirX, dirY, dirZ);
+        }
+
+        public boolean tryGoing(double dirX, double dirY, double dirZ) {
+            //System.out.println("("+dirX+","+dirY+","+dirZ+")");
+            this.targetPos.setTarget(this.playerZombie.posX + dirX, this.playerZombie.posY + dirY, this.playerZombie.posZ + dirZ);
+            //LogHelper.info(">>> Testing random move target distance:" + this.targetPos.dist + " direction:(" + this.targetPos.aimX + "," + this.targetPos.aimY + "," + this.targetPos.aimZ + ")");
+            boolean result = this.targetPos.isPathClear(5.0F);
+            if (result) {
+                this.playerZombie.getMoveHelper().setMoveTo(this.targetPos.posX, this.targetPos.posY, this.targetPos.posZ, 1.0D);
+            }
+            return result;
+        }
+    }
 
 
-	public void setProfile(GameProfile profile) {
-		this.profile = profile;
-	}
+    // AI class for implementing the behaviour to target and attack players
+    class AIPlayerZombieAttackTarget extends EntityAIBase {
+        private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
+        private int attackTick = 0;
+        private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
 
-	// IHumanEntity
+        public AIPlayerZombieAttackTarget() {
+            this.setMutexBits(2);
+        }
 
-	@Override
-	public GameProfile getProfile() {
-		if (profile == null)
-			setProfile(TileEntitySkull.updateGameprofile(new GameProfile(null, getUsername())));
-		return profile;
-	}
+        public boolean attackTargetExists() {
+            // see if there's actually a living attack target to aim for
+            EntityLivingBase attackTarget = this.playerZombie.getAttackTarget();
+            return (attackTarget != null && attackTarget.isEntityAlive());
+        }
 
-	@Override
-	public String getUsername() {
-		String username = getDataWatcher().getWatchableObjectString(NAME);
-		if (StringUtils.isBlank(username))
-			getDataWatcher().updateObject(NAME, "FireBall1725");
-		return username;
-	}
+        @Override
+        public boolean shouldExecute() {
+            // decrement time since last attack
+            if (this.attackTick > 0) {
+                --this.attackTick;
+            }
 
-	@Override
-	public void setUsername(String name) {
-		getDataWatcher().updateObject(NAME, name);
+            return this.attackTargetExists();
+        }
 
-		if ("Herobrine".equals(name)) {
-			getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("Herobrine Damage Bonus", 1, 2));
-			getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, 2));
-		}
-	}
+        @Override
+        public boolean continueExecuting() {
+            // decrement time since last attack
+            if (this.attackTick > 0) {
+                --this.attackTick;
+            }
 
-	@Override
-	public double getInterpolatedCapeX(float partialTickTime) {
-		return prevCapeX + (capeX - prevCapeX) * partialTickTime - (prevPosX + (posX - prevPosX) * partialTickTime);
-	}
+            if (!this.attackTargetExists()) {
+                return false;
+            }
 
-	@Override
-	public double getInterpolatedCapeY(float partialTickTime) {
-		return prevCapeY + (capeY - prevCapeY) * partialTickTime - (prevPosY + (posY - prevPosY) * partialTickTime);
-	}
+            // focus attack on target position
+            EntityLivingBase attackTarget = this.playerZombie.getAttackTarget();
+            this.targetPos.setTarget(attackTarget.posX, attackTarget.posY, attackTarget.posZ);
 
-	@Override
-	public double getInterpolatedCapeZ(float partialTickTime) {
-		return prevCapeZ + (capeZ - prevCapeZ) * partialTickTime - (prevPosZ + (posZ - prevPosZ) * partialTickTime);
-	}
+            // damage the target if it's in range, and it has been long enough since the last attack
+            double damageRange = (double) (this.playerZombie.width + attackTarget.width);
+            if (this.attackTick <= 0 && this.targetPos.dist < damageRange) {
+                this.playerZombie.attackEntityAsMob(attackTarget);
+                this.attackTick = 16; // 16 ticks before next attack
+            }
 
-	// Child stuff
+            // see if there's a straight path to the target, if there is, aim for it
+            if (this.targetPos.isPathClear(5.0D)) {
+                //LogHelper.info(">>> Setting attack target");
+                this.playerZombie.getMoveHelper().setMoveTo(attackTarget.posX, attackTarget.posY, attackTarget.posZ, 1.0D);
+            }
+            //System.out.println("dist:"+this.targetPos.dist+" damageRange:"+damageRange+" attackTick:"+attackTick);
+            return true;
+        }
+    }
 
-	@Override
-	public boolean isChild() {
-		return getDataWatcher().getWatchableObjectByte(CHILD) == 1;
-	}
 
-	@Override
-	protected void setSize(float width, float height) {
-		super.setSize(width, height);
-		dataWatcher.updateObject(WIDTH, this.width);
-		dataWatcher.updateObject(HEIGHT, this.height);
-	}
 }

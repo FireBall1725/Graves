@@ -10,6 +10,7 @@ import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.GameRules;
@@ -45,29 +46,45 @@ public class EventDeathHandler {
         if (itemsList.isEmpty())
             return;
 
-        //for (EntityItem item : itemsList) {
-        //    LogHelper.info(">>> " + item.toString());
-        //}
+        boolean spawnGrave = true;
 
+        NBTTagCompound nbtTagCompound = event.entityPlayer.getEntityData();
+        if (nbtTagCompound.hasKey("MasterGrave")) {
+            LogHelper.info(">>> HAS GRAVE KEY!");
 
-        BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition());
+            int[] gravePos = nbtTagCompound.getIntArray("MasterGrave");
+            BlockPos blockPos = new BlockPos(gravePos[0], gravePos[1], gravePos[2]);
 
-        EnumFacing facing = event.entityPlayer.getHorizontalFacing();
-        IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
-        world.setBlockState(safePos, state);
+            TileEntityGraveStone graveStone = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
 
-        TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
-        graveStoneTileEntity.setGraveItems(itemsList, event.entityPlayer);
-        graveStoneTileEntity.breakBlocks();
-		graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
+            if (graveStone != null) {
+                spawnGrave = false;
 
-        // Adding Headstone
-        world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
-        TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
-        if (tileEntityHeadStone != null) {
-            tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
+                graveStone.addGraveItems(itemsList);
+            }
         }
-        // End of adding headstone
+
+        if (spawnGrave) {
+            BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition());
+
+            EnumFacing facing = event.entityPlayer.getHorizontalFacing();
+            IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
+            world.setBlockState(safePos, state);
+
+            TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
+            graveStoneTileEntity.setGraveItems(itemsList);
+            graveStoneTileEntity.breakBlocks();
+            graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
+
+            // Adding Headstone
+            world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
+            TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
+            if (tileEntityHeadStone != null) {
+                tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
+                //tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
+            }
+            // End of adding headstone
+        }
 
         event.drops.clear();
     }
