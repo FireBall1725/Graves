@@ -250,58 +250,27 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
         if (rng >= 0 && rng <= 25) {
 
-        } else if (rng >= 26 && rng <= 45) {  // Wooden Sword + No Armor
+        } else if (rng >= 26 && rng <= 58) {  // Wooden Sword + No Armor
             slot0 = new ItemStack(Items.wooden_sword);
-        } else if (rng >= 46 && rng <= 58) {  // Bow + No Armor
-            //slot0 = new ItemStack(Items.bow);
-            slot0 = new ItemStack(Items.wooden_sword);
-        } else if (rng >= 59 && rng <= 68) {  // Wooden Sword + Leather Armor
+        } else if (rng >= 59 && rng <= 78) {  // Wooden Sword + Leather Armor
             slot0 = new ItemStack(Items.wooden_sword);
             slot1 = new ItemStack(Items.leather_boots);
             slot2 = new ItemStack(Items.leather_leggings);
             slot3 = new ItemStack(Items.leather_chestplate);
             slot4 = new ItemStack(Items.leather_helmet);
-        } else if (rng >= 69 && rng <= 78) {  // Bow + Leather Armor
-            slot0 = new ItemStack(Items.wooden_sword);
-            //slot0 = new ItemStack(Items.bow);
-            slot1 = new ItemStack(Items.leather_boots);
-            slot2 = new ItemStack(Items.leather_leggings);
-            slot3 = new ItemStack(Items.leather_chestplate);
-            slot4 = new ItemStack(Items.leather_helmet);
-        } else if (rng >= 79 && rng <= 84) {  // Iron Sword + Iron Armor
+        } else if (rng >= 79 && rng <= 90) {  // Iron Sword + Iron Armor
             slot0 = new ItemStack(Items.iron_sword);
             slot1 = new ItemStack(Items.iron_boots);
             slot2 = new ItemStack(Items.iron_leggings);
             slot3 = new ItemStack(Items.iron_chestplate);
             slot4 = new ItemStack(Items.iron_helmet);
-        } else if (rng >= 85 && rng <= 90) {  // Bow + Iron Armor
-            //slot0 = new ItemStack(Items.bow);
-            slot0 = new ItemStack(Items.iron_sword);
-            slot1 = new ItemStack(Items.iron_boots);
-            slot2 = new ItemStack(Items.iron_leggings);
-            slot3 = new ItemStack(Items.iron_chestplate);
-            slot4 = new ItemStack(Items.iron_helmet);
-        } else if (rng >= 91 && rng <= 93) {  // Golden Sword + Gold Armor
+        } else if (rng >= 91 && rng <= 96) {  // Golden Sword + Gold Armor
             slot0 = new ItemStack(Items.golden_sword);
             slot1 = new ItemStack(Items.golden_boots);
             slot2 = new ItemStack(Items.golden_leggings);
             slot3 = new ItemStack(Items.golden_chestplate);
             slot4 = new ItemStack(Items.golden_helmet);
-        } else if (rng >= 94 && rng <= 96) {  // Bow + Gold Armor
-            //slot0 = new ItemStack(Items.bow);
-            slot0 = new ItemStack(Items.golden_sword);
-            slot1 = new ItemStack(Items.golden_boots);
-            slot2 = new ItemStack(Items.golden_leggings);
-            slot3 = new ItemStack(Items.golden_chestplate);
-            slot4 = new ItemStack(Items.golden_helmet);
-        } else if (rng >= 97 && rng <= 98) {  // Diamond Sword + Diamond Armor
-            slot0 = new ItemStack(Items.diamond_sword);
-            slot1 = new ItemStack(Items.diamond_boots);
-            slot2 = new ItemStack(Items.diamond_leggings);
-            slot3 = new ItemStack(Items.diamond_chestplate);
-            slot4 = new ItemStack(Items.diamond_helmet);
-        } else if (rng >= 99 && rng <= 100) { // Bow + Diamond Armor
-            //slot0 = new ItemStack(Items.bow);
+        } else if (rng >= 97 && rng <= 100) {  // Diamond Sword + Diamond Armor
             slot0 = new ItemStack(Items.diamond_sword);
             slot1 = new ItemStack(Items.diamond_boots);
             slot2 = new ItemStack(Items.diamond_leggings);
