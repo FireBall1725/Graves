@@ -22,7 +22,7 @@ public class SafeBlockReplacer {
         if (blockState.getBlock().hasTileEntity(blockState))
             return false;
 
-        if (blockState.getBlock().getBlockHardness(null, null) == -1.0F)
+        if (blockState.getBlock().getBlockHardness(world, blockPos) == -1.0F)
             return false;
 
         return true;
