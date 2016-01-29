@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.item.ItemBow;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     private static final ModelPlayer STEVE = new ModelPlayer(0, false);
@@ -60,6 +61,9 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     @Override
     protected void preRenderCallback(EntityPlayerZombie entity, float float0) {
         GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
+        GlStateManager.color(1, 1, 1, 0.75f);
+        GlStateManager.enableBlend();
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     private void setModel(EntityPlayerZombie playerZombie) {
