@@ -6,6 +6,7 @@ import com.fireball1725.graves.proxy.IProxy;
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.util.GuiHandler;
 import com.google.common.base.Stopwatch;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -15,13 +16,15 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.concurrent.TimeUnit;
 
-@Mod(modid = ModInfo.MOD_ID, name = ModInfo.MOD_NAME, certificateFingerprint = ModInfo.FINGERPRINT, dependencies = ModInfo.DEPENDENCIES, version = ModInfo.VERSION_BUILD)
+@Mod(modid = ModInfo.MOD_ID, name = ModInfo.MOD_NAME, certificateFingerprint = ModInfo.FINGERPRINT, dependencies = ModInfo.DEPENDENCIES, version = ModInfo.VERSION_BUILD, guiFactory = ModInfo.GUI_FACTORY)
 public class Graves {
     @Mod.Instance(ModInfo.MOD_ID)
     public static Graves instance;
 
     @SidedProxy(clientSide = ModInfo.CLIENT_PROXY_CLASS, serverSide = ModInfo.SERVER_PROXY_CLASS)
     public static IProxy proxy;
+
+    public static Configuration configuration;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
