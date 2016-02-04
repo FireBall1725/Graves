@@ -73,6 +73,13 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     }
 
     @Override
+    public boolean writeMountToNBT(NBTTagCompound tagCompund) {
+        tagCompund.setBoolean("[GoldenLassoPrevent]", true); // Make it so ExU2 cursed lassos are disabled
+
+        return super.writeMountToNBT(tagCompund);
+    }
+
+    @Override
     public boolean canPickUpLoot() {
         return true;
     }
@@ -83,9 +90,9 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         if (entity instanceof EntityPlayer) {
             EntityPlayer player = (EntityPlayer) entity;
 
-            if (!player.getName().equals(this.getName())) {
-                damageAmount = 0;
-            }
+            //if (!player.getName().equals(this.getName())) {
+            //    damageAmount = 0;
+            //}
         }
 
         super.damageEntity(damageSrc, damageAmount);
@@ -220,7 +227,7 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         setCombatAI();
 
         float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
-        getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 0.50, 0));
+        getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 50, 0));
 
         double rangeBonus = rand.nextDouble() * 1.5 * additionalDifficulty;
         if (rangeBonus > 1.0)
@@ -495,16 +502,33 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         String username = getDataWatcher().getWatchableObjectString(NAME);
         if (StringUtils.isBlank(username))
             getDataWatcher().updateObject(NAME, "FireBall1725");
+        if (username.equals("Soaryn"))
+            return "direwolf20";
+        if (username.equals("direwolf20"))
+            return "Soaryn";
         return username;
     }
 
     @Override
     public void setUsername(String name) {
         getDataWatcher().updateObject(NAME, name);
+        String newName = "";
 
         if ("Herobrine".equals(name)) {
             getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("Herobrine Damage Bonus", 1, 2));
             getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, 2));
+        }
+
+        if ("direwolf20".equals(name)) {
+            newName = "Soaryn";
+        }
+
+        if ("Soaryn".equals(name)) {
+            newName = "direwolf20";
+        }
+
+        if (newName != "") {
+            name = newName;
         }
     }
 
