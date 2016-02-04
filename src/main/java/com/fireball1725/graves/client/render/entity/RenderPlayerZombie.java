@@ -1,5 +1,6 @@
 package com.fireball1725.graves.client.render.entity;
 
+import com.fireball1725.graves.configuration.ConfigZombie;
 import com.fireball1725.graves.entity.EntityPlayerZombie;
 import com.fireball1725.graves.helpers.IDeadPlayerEntity;
 import com.fireball1725.graves.util.TextureUtils;
@@ -43,7 +44,8 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     @Override
     public void doRender(EntityPlayerZombie entity, double x, double y, double z, float f0, float partialTickTime) {
         setModel(entity);
-        BossStatus.setBossStatus(entity, true);
+        if (ConfigZombie.configZombieShowBossBar)
+            BossStatus.setBossStatus(entity, true);
 
         if (entity.getHeldItem() != null && entity.getHeldItem().getItem() instanceof ItemBow)
             modelBipedMain.aimedBow = true;

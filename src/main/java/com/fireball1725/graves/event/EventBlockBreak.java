@@ -1,13 +1,16 @@
 package com.fireball1725.graves.event;
 
 import com.fireball1725.graves.block.BlockGraveStone;
+import com.fireball1725.graves.configuration.ConfigZombie;
 import com.fireball1725.graves.entity.EntityPlayerZombie;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -17,6 +20,9 @@ import java.util.Random;
 public class EventBlockBreak {
     @SubscribeEvent
     public void onBreakBlock(BlockEvent.BreakEvent event) {
+        boolean hardcoreEnabled = Minecraft.getMinecraft().theWorld.getWorldInfo().isHardcoreModeEnabled();
+        EnumDifficulty gameDifficulty = Minecraft.getMinecraft().theWorld.getDifficulty();
+
         TileEntityGraveStone graveStone = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveStone.class);
         if (graveStone != null) {
             if (graveStone.getHasLid() && !event.getPlayer().capabilities.isCreativeMode) {
@@ -28,6 +34,24 @@ public class EventBlockBreak {
 
                 //todo: make if player has items, make the chance less
                 int spawnChance = 40;
+
+                switch (gameDifficulty) {
+                    case EASY:
+                        spawnChance = ConfigZombie.configZombieSpawnChanceEasy;
+                        break;
+
+                    case NORMAL:
+                        spawnChance = ConfigZombie.configZombieSpawnChanceNormal;
+                        break;
+
+                    case HARD:
+                        spawnChance = ConfigZombie.configZombieSpawnChanceHard;
+                        break;
+                }
+
+                if (hardcoreEnabled) {
+                    spawnChance = ConfigZombie.configZombieSpawnChanceHardCore;
+                }
 
                 /* Notes :
 
@@ -44,7 +68,7 @@ public class EventBlockBreak {
                         spawnPlayerZombie = true;
                 }
 
-                if (spawnPlayerZombie) {
+                if (spawnPlayerZombie && ConfigZombie.configZombieEnabled)  {
                     EntityPlayerZombie playerZombie = new EntityPlayerZombie(event.world);
 
                     playerZombie.setUsername(graveStone.getPlayerProfile().getName());

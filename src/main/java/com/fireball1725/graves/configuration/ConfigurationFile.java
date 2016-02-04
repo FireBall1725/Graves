@@ -32,7 +32,6 @@ public class ConfigurationFile {
         ConfigZombie.configZombiePlayerOptOut = ConfigurationHelper.getBoolean(configuration, "Allow player to opt-out", "zombie.general", true, "Allow player to preform a ritual to opt-out of graves");
         ConfigZombie.configZombieShowBossBar = ConfigurationHelper.getBoolean(configuration, "Show boss bar", "zombie.general", true, "Show the boss bar");
 
-
         // Zombie Difficulty Configuration
         ConfigZombie.configZombieArmorEnabled = ConfigurationHelper.getBoolean(configuration, "Zombie Armor Enabled", "zombie.difficulty", true, "Is there a chance the grave zombie will spawn with armor");
         ConfigZombie.configZombieRelicDestroyable = ConfigurationHelper.getBoolean(configuration, "Relics random destroyable", "zombie.difficulty", true, "Can the relics be randomly destroyed");
@@ -77,7 +76,6 @@ public class ConfigurationFile {
         ConfigZombie.configZombieSpawnChanceHardCore = ConfigurationHelper.getInt(configuration, "Spawn Chance", "zombie.difficulty.hardcore", 100, "Spawn chance grave zombie will spawn in hardcore game mode");
         ConfigZombie.configZombieRelicDestroyChanceHardCore = ConfigurationHelper.getInt(configuration, "Relic Destroy Chance", "zombie.difficulty.hardcore", 80, "Chance the relic will be destroyed");
         ConfigZombie.configZombieRelicRiskHardCorePercent = ConfigurationHelper.getInt(configuration, "Relic Reduce Chance", "zombie.difficulty.hardcore", 5, "The amount of chance to reduce the zombie spawning with a relic placed");
-
 
         // Zombie Entity Defaults
         ConfigZombie.configZombieDefaultSpeed = ConfigurationHelper.getDouble(configuration, "Default Zombie Speed", "zombie.default", 0.50, "Grave zombie's default speed");

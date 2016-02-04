@@ -1,8 +1,12 @@
 package com.fireball1725.graves.entity;
 
+import com.fireball1725.graves.configuration.ConfigZombie;
 import com.fireball1725.graves.helpers.IDeadPlayerEntity;
+import com.fireball1725.graves.helpers.LogHelper;
 import com.google.common.base.Predicate;
 import com.mojang.authlib.GameProfile;
+import com.typesafe.config.Config;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
@@ -17,9 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.*;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
@@ -138,9 +140,9 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(100.0);
-        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(0.50);
-        getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(6.0);
+        getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ConfigZombie.configZombieDefaultFollowRange);
+        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(ConfigZombie.configZombieDefaultSpeed);
+        getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(ConfigZombie.configZombieDefaultBaseDamage);
     }
 
     @Override
@@ -210,12 +212,15 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
+        boolean hardcoreEnabled = Minecraft.getMinecraft().theWorld.getWorldInfo().isHardcoreModeEnabled();
+        EnumDifficulty gameDifficulty = Minecraft.getMinecraft().theWorld.getDifficulty();
+
         setEquipmentBasedOnDifficulty(difficulty);
         setEnchantmentBasedOnDifficulty(difficulty);
         setCombatAI();
 
         float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
-        getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 0.05, 0));
+        getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 0.50, 0));
 
         double rangeBonus = rand.nextDouble() * 1.5 * additionalDifficulty;
         if (rangeBonus > 1.0)
@@ -242,50 +247,107 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         ItemStack slot3 = null;
         ItemStack slot4 = null;
 
-        if (rng >= 0 && rng <= 25) {
+        int rngNothing = 0;
+        int rngSword = 0;
+        int rngLeatherKit = 0;
+        int rngIronKit = 0;
+        int rngGoldKit = 0;
+        int rngDiamondKit = 0;
 
-        } else if (rng >= 26 && rng <= 58) {  // Wooden Sword + No Armor
-            slot0 = new ItemStack(Items.wooden_sword);
-        } else if (rng >= 59 && rng <= 78) {  // Wooden Sword + Leather Armor
-            slot0 = new ItemStack(Items.wooden_sword);
-            slot1 = new ItemStack(Items.leather_boots);
-            slot2 = new ItemStack(Items.leather_leggings);
-            slot3 = new ItemStack(Items.leather_chestplate);
-            slot4 = new ItemStack(Items.leather_helmet);
-        } else if (rng >= 79 && rng <= 90) {  // Iron Sword + Iron Armor
-            slot0 = new ItemStack(Items.iron_sword);
-            slot1 = new ItemStack(Items.iron_boots);
-            slot2 = new ItemStack(Items.iron_leggings);
-            slot3 = new ItemStack(Items.iron_chestplate);
-            slot4 = new ItemStack(Items.iron_helmet);
-        } else if (rng >= 91 && rng <= 96) {  // Golden Sword + Gold Armor
-            slot0 = new ItemStack(Items.golden_sword);
-            slot1 = new ItemStack(Items.golden_boots);
-            slot2 = new ItemStack(Items.golden_leggings);
-            slot3 = new ItemStack(Items.golden_chestplate);
-            slot4 = new ItemStack(Items.golden_helmet);
-        } else if (rng >= 97 && rng <= 100) {  // Diamond Sword + Diamond Armor
+        switch (gameDifficulty) {
+            case EASY:
+                rngNothing = ConfigZombie.configZombieArmorChanceEasyNone;
+                rngSword = ConfigZombie.configZombieArmorChanceEasyWoodSword;
+                rngLeatherKit = ConfigZombie.configZombieArmorChanceEasyLeatherKit;
+                rngIronKit = ConfigZombie.configZombieArmorChanceEasyIronKit;
+                rngGoldKit = ConfigZombie.configZombieArmorChanceEasyGoldKit;
+                rngDiamondKit = ConfigZombie.configZombieArmorChanceEasyDiamondKit;
+                break;
+
+            case NORMAL:
+                rngNothing = ConfigZombie.configZombieArmorChanceNormalNone;
+                rngSword = ConfigZombie.configZombieArmorChanceNormalWoodSword;
+                rngLeatherKit = ConfigZombie.configZombieArmorChanceNormalLeatherKit;
+                rngIronKit = ConfigZombie.configZombieArmorChanceNormalIronKit;
+                rngGoldKit = ConfigZombie.configZombieArmorChanceNormalGoldKit;
+                rngDiamondKit = ConfigZombie.configZombieArmorChanceNormalDiamondKit;
+                break;
+
+            case HARD:
+                rngNothing = ConfigZombie.configZombieArmorChanceHardNone;
+                rngSword = ConfigZombie.configZombieArmorChanceHardWoodSword;
+                rngLeatherKit = ConfigZombie.configZombieArmorChanceHardLeatherKit;
+                rngIronKit = ConfigZombie.configZombieArmorChanceHardIronKit;
+                rngGoldKit = ConfigZombie.configZombieArmorChanceHardGoldKit;
+                rngDiamondKit = ConfigZombie.configZombieArmorChanceHardDiamondKit;
+                break;
+        }
+
+        if (hardcoreEnabled) {
+            rngNothing = ConfigZombie.configZombieArmorChanceHardCoreNone;
+            rngSword = ConfigZombie.configZombieArmorChanceHardCoreWoodSword;
+            rngLeatherKit = ConfigZombie.configZombieArmorChanceHardCoreLeatherKit;
+            rngIronKit = ConfigZombie.configZombieArmorChanceHardCoreIronKit;
+            rngGoldKit = ConfigZombie.configZombieArmorChanceHardCoreGoldKit;
+            rngDiamondKit = ConfigZombie.configZombieArmorChanceHardCoreDiamondKit;
+        }
+
+        if (rngNothing + rngSword + rngLeatherKit + rngIronKit + rngGoldKit + rngDiamondKit != 100) {
+            rngNothing = 30;
+            rngSword = 20;
+            rngLeatherKit = 20;
+            rngIronKit = 16;
+            rngGoldKit = 8;
+            rngDiamondKit = 6;
+            LogHelper.error("RNG Values did not add up to 100, please check your config and fix this! using default RNG values for Zombie Armor!");
+        }
+
+        if (rng > rngNothing + rngSword + rngLeatherKit + rngIronKit + rngGoldKit) { // Diamond Kit
             slot0 = new ItemStack(Items.diamond_sword);
             slot1 = new ItemStack(Items.diamond_boots);
             slot2 = new ItemStack(Items.diamond_leggings);
             slot3 = new ItemStack(Items.diamond_chestplate);
             slot4 = new ItemStack(Items.diamond_helmet);
+        } else if (rng > rngNothing + rngSword + rngLeatherKit + rngIronKit) { // Gold Kit
+            slot0 = new ItemStack(Items.golden_sword);
+            slot1 = new ItemStack(Items.golden_boots);
+            slot2 = new ItemStack(Items.golden_leggings);
+            slot3 = new ItemStack(Items.golden_chestplate);
+            slot4 = new ItemStack(Items.golden_helmet);
+        } else if (rng > rngNothing + rngSword + rngLeatherKit) { // Iron Kit
+            slot0 = new ItemStack(Items.iron_sword);
+            slot1 = new ItemStack(Items.iron_boots);
+            slot2 = new ItemStack(Items.iron_leggings);
+            slot3 = new ItemStack(Items.iron_chestplate);
+            slot4 = new ItemStack(Items.iron_helmet);
+        } else if (rng > rngNothing + rngSword) { // Leather Kit
+            slot0 = new ItemStack(Items.wooden_sword);
+            slot1 = new ItemStack(Items.leather_boots);
+            slot2 = new ItemStack(Items.leather_leggings);
+            slot3 = new ItemStack(Items.leather_chestplate);
+            slot4 = new ItemStack(Items.leather_helmet);
+        } else if (rng > rngNothing) { // Wooden Sword
+            slot0 = new ItemStack(Items.wooden_sword);
         }
 
-        if (slot0 != null)
-            this.setCurrentItemOrArmor(0, slot0);
+        if (ConfigZombie.configZombieArmorEnabled) {
+            if (slot0 != null)
+                this.setCurrentItemOrArmor(0, slot0);
 
-        if (slot1 != null)
-            this.setCurrentItemOrArmor(1, slot1);
+            if (slot1 != null)
+                this.setCurrentItemOrArmor(1, slot1);
 
-        if (slot2 != null)
-            this.setCurrentItemOrArmor(2, slot2);
+            if (slot2 != null)
+                this.setCurrentItemOrArmor(2, slot2);
 
-        if (slot3 != null)
-            this.setCurrentItemOrArmor(3, slot3);
+            if (slot3 != null)
+                this.setCurrentItemOrArmor(3, slot3);
 
-        if (slot4 != null)
-            this.setCurrentItemOrArmor(4, slot4);
+            if (slot4 != null)
+                this.setCurrentItemOrArmor(4, slot4);
+        }
+
+        this.setHealth(ConfigZombie.configZombieDefaultHealth);
 
         return null;
     }
