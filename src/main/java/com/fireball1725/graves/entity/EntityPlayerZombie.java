@@ -86,14 +86,14 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     protected void damageEntity(DamageSource damageSrc, float damageAmount) {
-        Entity entity = damageSrc.getEntity();
-        if (entity instanceof EntityPlayer) {
-            EntityPlayer player = (EntityPlayer) entity;
+        //Entity entity = damageSrc.getEntity();
+        //if (entity instanceof EntityPlayer) {
+        //    EntityPlayer player = (EntityPlayer) entity;
 
             //if (!player.getName().equals(this.getName())) {
             //    damageAmount = 0;
             //}
-        }
+        //}
 
         super.damageEntity(damageSrc, damageAmount);
     }
