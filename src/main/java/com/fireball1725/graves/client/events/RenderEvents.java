@@ -44,7 +44,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		World world = player.worldObj;
 
-		List<BlockPos> blocks = new ArrayList<>();
+		List<BlockPos> blocks = new ArrayList<BlockPos>();
 
 		// extra-blockbreak animation
 		if(controllerMP.isHittingBlock) {

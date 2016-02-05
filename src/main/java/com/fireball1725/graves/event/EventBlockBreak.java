@@ -81,9 +81,9 @@ public class EventBlockBreak {
 
                     playerZombie.setPlayer(event.getPlayer());
 
-                    NBTTagCompound nbtTagCompound = event.getPlayer().getEntityData();
-                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
-
+                    playerZombie.setGraveMaster(graveStone.getPos());
+//                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
+					
                     event.world.spawnEntityInWorld(playerZombie);
                 }
 

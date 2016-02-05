@@ -5,7 +5,6 @@ import com.fireball1725.graves.helpers.IDeadPlayerEntity;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.google.common.base.Predicate;
 import com.mojang.authlib.GameProfile;
-import com.typesafe.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -40,7 +39,9 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     private GameProfile profile;
     private EntityPlayer player;
 
-    public EntityPlayerZombie(World world) {
+	private BlockPos graveMaster;
+
+	public EntityPlayerZombie(World world) {
         super(world);
 
         this.noClip = true;
@@ -75,7 +76,6 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     @Override
     public boolean writeMountToNBT(NBTTagCompound tagCompund) {
         tagCompund.setBoolean("[GoldenLassoPrevent]", true); // Make it so ExU2 cursed lassos are disabled
-
         return super.writeMountToNBT(tagCompund);
     }
 
@@ -374,6 +374,7 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     @Override
     public void writeEntityToNBT(NBTTagCompound nbt) {
         super.writeEntityToNBT(nbt);
+		nbt.setLong("graveMaster", graveMaster.toLong());
 
         String username = getUsername();
         if (!StringUtils.isBlank(username))
@@ -390,6 +391,8 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         } else
             username = "FireBall1725";
         setUsername(username);
+
+		graveMaster = BlockPos.fromLong(nbt.getLong("graveMaster"));
 
         setCombatAI();
     }
@@ -559,7 +562,17 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         dataWatcher.updateObject(HEIGHT, this.height);
     }
 
-    class PlayerZombieMoveTargetPos {
+	public void setGraveMaster(BlockPos graveMaster)
+	{
+		this.graveMaster = graveMaster;
+	}
+
+	public BlockPos getGraveMaster()
+	{
+		return graveMaster;
+	}
+
+	class PlayerZombieMoveTargetPos {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
 
         public double posX;

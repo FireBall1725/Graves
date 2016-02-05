@@ -3,18 +3,22 @@ package com.fireball1725.graves.event;
 import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.block.BlockHeadStone;
 import com.fireball1725.graves.block.Blocks;
+import com.fireball1725.graves.entity.EntityPlayerZombie;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.helpers.SafeBlockReplacer;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
+import jdk.nashorn.internal.ir.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -24,6 +28,7 @@ import java.util.List;
 public class EventDeathHandler {
     @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
     public void onPlayerDrops(PlayerDropsEvent event) {
+
         World world = event.entityPlayer.worldObj;
         if (world.isRemote)
             return;
@@ -48,21 +53,24 @@ public class EventDeathHandler {
 
         boolean spawnGrave = true;
 
-        NBTTagCompound nbtTagCompound = event.entityPlayer.getEntityData();
-        if (nbtTagCompound.hasKey("MasterGrave")) {
-            LogHelper.info(">>> HAS GRAVE KEY!");
 
-            int[] gravePos = nbtTagCompound.getIntArray("MasterGrave");
-            BlockPos blockPos = new BlockPos(gravePos[0], gravePos[1], gravePos[2]);
-
-            TileEntityGraveStone graveStone = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
-
-            if (graveStone != null) {
-                spawnGrave = false;
-
-                graveStone.addGraveItems(itemsList);
-            }
-        }
+		if (event.entityLiving instanceof EntityPlayer)
+		{
+			if (event.source.getEntity() != null && event.source.getEntity() instanceof EntityPlayerZombie)
+			{
+				EntityPlayerZombie zombie = (EntityPlayerZombie) event.source.getEntity();
+				BlockPos gravePos = zombie.getGraveMaster();
+				TileEntityGraveStone graveStone = TileTools.getTileEntity(event.entityLiving.worldObj, gravePos, TileEntityGraveStone.class);
+				if (graveStone != null)
+				{
+					graveStone.addGraveItems(event.drops);
+//					event.drops.clear();
+					graveStone.setHasLid(true);
+					spawnGrave = false;
+					LogHelper.info(">>> : Killed by zombie added drops to grave");
+				}
+			}
+		}
 
         if (spawnGrave) {
             BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition());
