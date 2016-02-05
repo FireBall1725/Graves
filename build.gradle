@@ -62,19 +62,6 @@ minecraft {
     mappings = "stable_20"
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs += 'src/main/java/'
-        }
-
-        resources {
-            srcDir "src/main/resources/"
-            include "mcmod.info"
-        }
-    }
-}
-
 processResources
 {
     // this will ensure that this task is redone when the versions change.
@@ -92,6 +79,13 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+// Add Access Transformers Manifest
+jar {
+    manifest {
+        attributes 'FMLAT': 'Graves_at.cfg'
     }
 }
 

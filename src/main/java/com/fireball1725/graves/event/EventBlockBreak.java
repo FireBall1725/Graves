@@ -58,16 +58,16 @@ public class EventBlockBreak {
                     NBTTagCompound nbtTagCompound = event.getPlayer().getEntityData();
                     nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
 
-                    event.world.spawnEntityInWorld(playerZombie);
+//                    event.world.spawnEntityInWorld(playerZombie);
                 }
 
                 event.setCanceled(true);
                 return;
             } else {
-                event.world.setBlockToAir(graveStone.getPos().down());
-                event.world.setBlockToAir(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
-                event.world.setBlockToAir(graveStone.getPos().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
-                event.world.setBlockToAir(graveStone.getPos());
+//                event.world.setBlockToAir(graveStone.getPos().down());
+//                event.world.setBlockToAir(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
+//                event.world.setBlockToAir(graveStone.getPos().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
+//                event.world.setBlockToAir(graveStone.getPos());
             }
         }
         TileEntityGraveSlave graveSlave = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveSlave.class);

@@ -5,8 +5,7 @@
       "#inside": "minecraft:blocks/wool_colored_red",
       "#box": "minecraft:blocks/stone_andesite_smooth",
       "#headstone": "minecraft:blocks/stone_diorite_smooth"
-    },
-    "model": "graves:gravestone.obj"
+    }
   },
   "variants": {
     "normal": [
@@ -14,14 +13,17 @@
     ],
     "inventory": [
       {
+        "model": "graves:gravestone.obj",
         "submodel": "graves:gravestone_lid.obj",
         "transform": "forge:default-block"
       }
     ],
     "haslid": {
-      "false": {},
+      "false": {
+        "model": "graves:nothing.obj"
+      },
       "true": {
-        "submodel": "graves:gravestone_lid.obj"
+        "model": "graves:gravelidsection.obj"
       }
     },
     "facing": {

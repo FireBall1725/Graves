@@ -1,9 +1,14 @@
 package com.fireball1725.graves.block;
 
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
+import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
+import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.Entity;
@@ -11,9 +16,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -23,17 +26,54 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockGraveSlave extends BlockBase {
+	public enum SlaveType implements IStringSerializable
+	{
+		LID,
+		BOX,
+		BOXFOOT,
+		NORENDER,
+		;
+
+		@Override
+		public String getName()
+		{
+			return name().toLowerCase();
+		}
+	}
+
+	public static final PropertyBool isFoot = PropertyBool.create("isFoot");
+	public static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slaveType", SlaveType.class);
+
     public BlockGraveSlave() {
         super(Material.cloth);
+		setDefaultState(blockState.getBaseState().withProperty(slaveType, SlaveType.LID).withProperty(isFoot, true).withProperty(BlockGraveStone.FACING, EnumFacing.NORTH));
         setStepSound(Block.soundTypeStone);
         setHardness(1.0F);
         setResistance(10000.0F);
         setTileEntity(TileEntityGraveSlave.class);
     }
 
-    @Override
+	@Override
+	protected BlockState createBlockState() {
+		PropertyDirection test = BlockGraveStone.FACING;
+		return new BlockState(this, slaveType, isFoot, BlockGraveStone.FACING);
+	}
+
+	@Override
+	public int getMetaFromState(IBlockState state)
+	{
+		return 0;
+	}
+
+	@Override
+	public IBlockState getStateFromMeta(int meta)
+	{
+		return getDefaultState();
+	}
+
+	@Override
     public int getRenderType() {
-        return -1;
+        return 3;
     }
 
     @Override
@@ -91,7 +131,49 @@ public class BlockGraveSlave extends BlockBase {
         }
     }
 
-    @Override
+	@Override
+	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+	{
+		TileEntityGraveSlave slave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
+		if (slave != null)
+		{
+			if (slave.getMasterBlock() != null)
+			{
+				TileEntityGraveStone master = TileTools.getTileEntity(worldIn, slave.getMasterBlock(), TileEntityGraveStone.class);
+				if (master != null)
+				{
+					IBlockState masterState = worldIn.getBlockState(slave.getMasterBlock());
+					IBlockState masterActualState = masterState.getBlock().getActualState(masterState, worldIn, slave.getMasterBlock());
+					EnumFacing masterFacing = masterActualState.getValue(BlockGraveStone.FACING);
+
+					SlaveType st = SlaveType.NORENDER;
+					if (pos.equals(master.getPos().offset(masterFacing)))
+					{
+						if (masterActualState.getValue(BlockGraveStone.HASLID))
+						{
+							st = SlaveType.LID;
+						}
+					}
+					else if (pos.equals(master.getPos().down()))
+					{
+						st = SlaveType.BOX;
+					}
+					else if (pos.equals(master.getPos().down().offset(masterFacing)))
+					{
+						st = SlaveType.BOXFOOT;
+					}
+
+					return getDefaultState()
+							.withProperty(slaveType, st)
+							.withProperty(isFoot, !pos.equals(slave.getMasterBlock().down()))
+							.withProperty(BlockGraveStone.FACING, masterFacing);
+				}
+			}
+		}
+		return super.getActualState(state, worldIn, pos);
+	}
+
+	@Override
     public boolean addLandingEffects(WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
         return super.addLandingEffects(worldObj, blockPosition, iblockstate, entity, numberOfParticles);
     }
