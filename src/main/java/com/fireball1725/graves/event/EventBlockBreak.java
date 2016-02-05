@@ -8,8 +8,6 @@ import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.EnumDifficulty;
@@ -24,8 +22,8 @@ public class EventBlockBreak {
     public void onBreakBlock(BlockEvent.BreakEvent event) {
 		if (!(event.state.getBlock() instanceof BlockGraveStone || event.state.getBlock() instanceof BlockGraveSlave)) return;
 
-        boolean hardcoreEnabled = Minecraft.getMinecraft().theWorld.getWorldInfo().isHardcoreModeEnabled();
-        EnumDifficulty gameDifficulty = Minecraft.getMinecraft().theWorld.getDifficulty();
+        boolean hardcoreEnabled = event.getPlayer().worldObj.getWorldInfo().isHardcoreModeEnabled();
+        EnumDifficulty gameDifficulty = event.getPlayer().worldObj.getDifficulty();
 
         TileEntityGraveStone graveStone = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveStone.class);
         if (graveStone != null) {
