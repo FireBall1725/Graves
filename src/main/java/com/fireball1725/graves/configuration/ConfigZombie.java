@@ -8,7 +8,7 @@ public class ConfigZombie {
     public static int configZombieSpawnChanceEasy;
     public static int configZombieSpawnChanceNormal;
     public static int configZombieSpawnChanceHard;
-    public static int configZombieSpawnChanceHardcore;
+    public static int configZombieSpawnChanceHardCore;
 
     // Does zombie have a chance to spawn with armor / weapons (Default: true)
     public static boolean configZombieArmorEnabled;
@@ -42,6 +42,15 @@ public class ConfigZombie {
     public static int configZombieArmorChanceHardCoreGoldKit;
     public static int configZombieArmorChanceHardCoreDiamondKit;
 
+    // Zombie base stats
+    public static double configZombieDefaultSpeed;
+    public static double configZombieDefaultBaseDamage;
+    public static int configZombieDefaultHealth;
+    public static double configZombieDefaultFollowRange;
+
+    // Show Zombie Boss Bar (Default: true)
+    public static boolean configZombieShowBossBar;
+
     // Enable the relics to decrease the spawn chances (Default: true)
     public static boolean configZombieRelics;
 
@@ -49,7 +58,7 @@ public class ConfigZombie {
     public static int configZombieRelicRiskEasyPercent;
     public static int configZombieRelicRiskNormalPercent;
     public static int configZombieRelicRiskHardPercent;
-    public static int configZombieRelicRiskHardcorePercent;
+    public static int configZombieRelicRiskHardCorePercent;
 
     // Configure if incorrectly placed relics increase zombie spawn chance (Default: true)
     public static boolean configZombieRelicIncorrectAddSpawnChance;
@@ -61,7 +70,7 @@ public class ConfigZombie {
     public static int configZombieRelicDestroyChanceEasy;
     public static int configZombieRelicDestroyChanceNormal;
     public static int configZombieRelicDestroyChanceHard;
-    public static int configZombieRelicDestroyChanceHardcore;
+    public static int configZombieRelicDestroyChanceHardCore;
 
     // Configure if the relics can be duplicated (Default: true)
     public static boolean configZombieRelicDuplicationRecipe;
