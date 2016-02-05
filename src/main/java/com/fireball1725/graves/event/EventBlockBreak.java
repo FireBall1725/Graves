@@ -1,11 +1,12 @@
 package com.fireball1725.graves.event;
 
+import com.fireball1725.graves.block.BlockGraveSlave;
 import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.entity.EntityPlayerZombie;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
-import net.minecraft.entity.player.EntityPlayer;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,6 +18,8 @@ import java.util.Random;
 public class EventBlockBreak {
     @SubscribeEvent
     public void onBreakBlock(BlockEvent.BreakEvent event) {
+		if (!(event.state.getBlock() instanceof BlockGraveStone || event.state.getBlock() instanceof BlockGraveSlave)) return;
+
         TileEntityGraveStone graveStone = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveStone.class);
         if (graveStone != null) {
             if (graveStone.getHasLid() && !event.getPlayer().capabilities.isCreativeMode) {
@@ -58,16 +61,16 @@ public class EventBlockBreak {
                     NBTTagCompound nbtTagCompound = event.getPlayer().getEntityData();
                     nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
 
-//                    event.world.spawnEntityInWorld(playerZombie);
+                    event.world.spawnEntityInWorld(playerZombie);
                 }
 
                 event.setCanceled(true);
                 return;
             } else {
-//                event.world.setBlockToAir(graveStone.getPos().down());
-//                event.world.setBlockToAir(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
-//                event.world.setBlockToAir(graveStone.getPos().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
-//                event.world.setBlockToAir(graveStone.getPos());
+                event.world.setBlockToAir(graveStone.getPos().down());
+                event.world.setBlockToAir(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
+                event.world.setBlockToAir(graveStone.getPos().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)));
+                event.world.setBlockToAir(graveStone.getPos());
             }
         }
         TileEntityGraveSlave graveSlave = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveSlave.class);
