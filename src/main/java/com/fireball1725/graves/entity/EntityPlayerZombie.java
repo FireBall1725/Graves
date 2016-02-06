@@ -163,19 +163,17 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     protected String getLivingSound() {
-        return null;
+        return "graves:graveZombieIdle";
     }
 
     @Override
     protected String getHurtSound() {
-        return "game.hostile.hurt";
+        return "graves:graveZombieAttack";
     }
-
-	/* DROPS */
 
     @Override
     protected String getDeathSound() {
-        return "game.hostile.die";
+        return "graves:graveZombieDeath";
     }
 
     @Override

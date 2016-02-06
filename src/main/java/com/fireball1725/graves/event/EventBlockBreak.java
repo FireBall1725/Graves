@@ -85,6 +85,7 @@ public class EventBlockBreak {
 //                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
 					
                     event.world.spawnEntityInWorld(playerZombie);
+                    event.world.playSoundEffect(event.pos.getX(), event.pos.getY(), event.pos.getZ(), "graves:graveZombieSpawn", 1, 1);
                 }
 
                 event.setCanceled(true);
