@@ -9,24 +9,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IChatComponent;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
-public class InternalInventory implements IInventory, Iterable<ItemStack> {
-    protected final int size;
-    protected final ItemStack[] inventory;
+public class InternalDynamicInventory implements IInventory, Iterable<ItemStack>, IInventoryCustom {
+    protected final ArrayList<ItemStack> inventory;
     public boolean enableClientEvents = false;
     protected IInventoryHandler inventoryHandler;
     protected int maxSize;
 
-    public InternalInventory(IInventoryHandler inventory, int size) {
-        this.size = size;
-        this.inventory = new ItemStack[size];
+    public InternalDynamicInventory(IInventoryHandler inventory) {
+        this.inventory = new ArrayList<ItemStack>();
         this.inventoryHandler = inventory;
         this.maxSize = 64;
     }
 
     public boolean isEmpty() {
-        for (int i = 0; i < this.size; i++) {
+        for (int i = 0; i < this.getSizeInventory(); i++) {
             if (this.getStackInSlot(i) != null)
                 return false;
         }
@@ -40,23 +39,23 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
 
     @Override
     public int getSizeInventory() {
-        return this.size;
+        return inventory.size();
     }
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return this.inventory[slot];
+        return this.inventory.get(slot);
     }
 
     @Override
     public ItemStack decrStackSize(int slot, int qty) {
-        if (this.inventory[slot] != null) {
+        if (this.inventory.get(slot) != null) {
             ItemStack split = this.getStackInSlot(slot);
-            ItemStack newStack = null;
+            ItemStack newStack;
 
             if (qty >= split.stackSize) {
-                newStack = this.inventory[slot];
-                this.inventory[slot] = null;
+                newStack = this.inventory.get(slot);
+                this.inventory.set(slot, null);
             } else {
                 newStack = split.splitStack(qty);
             }
@@ -79,30 +78,23 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack itemStack) {
-        ItemStack oldStack = this.inventory[slot];
-        this.inventory[slot] = itemStack;
-
-        if (this.inventoryHandler != null && this.eventsEnabled()) {
-            ItemStack removed = oldStack;
-            ItemStack added = itemStack;
-
-            if (oldStack != null && itemStack != null && Platform.isSameItem(oldStack, itemStack)) {
-                if (oldStack.stackSize > itemStack.stackSize) {
-                    removed = removed.copy();
-                    removed.stackSize -= itemStack.stackSize;
-                } else if (oldStack.stackSize < itemStack.stackSize) {
-                    added = added.copy();
-                    added.stackSize -= oldStack.stackSize;
-                    removed = null;
-                } else {
-                    removed = added = null;
-                }
-            }
-
-            this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.setInventorySlotContents, removed, added);
-
-            this.markDirty();
+        if (inventory.size() != 0 && inventory.size() >= slot) {
+            this.inventory.set(slot, itemStack);
+        } else {
+            this.inventory.add(itemStack);
         }
+
+        //this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.setInventorySlotContents, removed, added);
+
+        this.markDirty();
+    }
+
+    public void addInventorySlotContents(ItemStack itemStack) {
+        this.inventory.add(itemStack);
+
+        //this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.setInventorySlotContents, removed, added);
+
+        this.markDirty();
     }
 
     @Override
@@ -170,6 +162,33 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
 
     public void setMaxStackSize(int s) {
         this.maxSize = s;
+    }
+
+    public void writeToNBT(NBTTagCompound nbtTagCompound) {
+        NBTTagCompound tagCompound = new NBTTagCompound();
+
+        for (int i = 0; i < this.getSizeInventory(); i++) {
+            NBTTagCompound item = new NBTTagCompound();
+            ItemStack itemStack = this.getStackInSlot(i);
+            if (itemStack != null)
+                itemStack.writeToNBT(item);
+            tagCompound.setTag("item" + i, item);
+        }
+        nbtTagCompound.setTag("Items", tagCompound);
+
+        nbtTagCompound.setInteger("inventorySize", this.getSizeInventory());
+    }
+
+    public void readFromNBT(NBTTagCompound nbtTagCompound) {
+        int invSize = 0;
+        if (nbtTagCompound.hasKey("inventorySize"))
+            invSize = nbtTagCompound.getInteger("inventorySize");
+
+        NBTTagCompound tagCompound = nbtTagCompound.getCompoundTag("Items");
+        for (int i = 0; i < invSize; i++) {
+            NBTTagCompound item = tagCompound.getCompoundTag("item" + i);
+            inventory.add(ItemStack.loadItemStackFromNBT(item));
+        }
     }
 
     @Override

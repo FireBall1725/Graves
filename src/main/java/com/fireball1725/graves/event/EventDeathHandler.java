@@ -80,7 +80,7 @@ public class EventDeathHandler {
             world.setBlockState(safePos, state);
 
             TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
-            graveStoneTileEntity.setGraveItems(itemsList);
+            graveStoneTileEntity.addGraveItems(itemsList);
             graveStoneTileEntity.breakBlocks();
             graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
 

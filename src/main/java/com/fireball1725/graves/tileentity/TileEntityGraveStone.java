@@ -2,6 +2,7 @@ package com.fireball1725.graves.tileentity;
 
 import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.block.Blocks;
+import com.fireball1725.graves.tileentity.inventory.InternalDynamicInventory;
 import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
 import com.fireball1725.graves.util.TileTools;
@@ -21,32 +22,12 @@ import java.util.Random;
 
 public class TileEntityGraveStone extends TileEntityInventoryBase {
     protected boolean hasLid = true;
-    private InternalInventory internalInventory = new InternalInventory(this, 500);
+    private InternalDynamicInventory internalInventory = new InternalDynamicInventory(this);
     private GameProfile playerProfile;
 
-    public void setGraveItems(List<EntityItem> itemsList) {
-
-        int i = 0;
+    public void addGraveItems(List<EntityItem> itemsList) {
         for (EntityItem item : itemsList) {
-            internalInventory.setInventorySlotContents(i, item.getEntityItem());
-            i++;
-        }
-    }
-
-    public void addGraveItems(List<EntityItem> itemList) {
-
-        for (EntityItem item : itemList) {
-            boolean foundSlot = false;
-            int i = 0;
-
-            while (!foundSlot) {
-                i++;
-                ItemStack itemStack = internalInventory.getStackInSlot(i);
-                if (itemStack != null)
-                    foundSlot = true;
-            }
-
-            internalInventory.setInventorySlotContents(i, item.getEntityItem());
+            internalInventory.addInventorySlotContents(item.getEntityItem());
         }
     }
 

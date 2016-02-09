@@ -1,5 +1,6 @@
 package com.fireball1725.graves.tileentity;
 
+import com.fireball1725.graves.tileentity.inventory.IInventoryCustom;
 import com.fireball1725.graves.tileentity.inventory.IInventoryHandler;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,27 +16,39 @@ public abstract class TileEntityInventoryBase extends TileEntityBase implements 
     @Override
     public void readFromNBT(NBTTagCompound nbtTagCompound) {
         super.readFromNBT(nbtTagCompound);
-        IInventory inventory = this.getInternalInventory();
-        NBTTagCompound tagCompound = nbtTagCompound.getCompoundTag("Items");
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            NBTTagCompound item = tagCompound.getCompoundTag("item" + i);
-            inventory.setInventorySlotContents(i, ItemStack.loadItemStackFromNBT(item));
+
+        if (getInternalInventory() instanceof IInventoryCustom) {
+            IInventoryCustom inventoryCustom = (IInventoryCustom)getInternalInventory();
+            inventoryCustom.readFromNBT(nbtTagCompound);
+        } else {
+            IInventory inventory = this.getInternalInventory();
+            NBTTagCompound tagCompound = nbtTagCompound.getCompoundTag("Items");
+            for (int i = 0; i < inventory.getSizeInventory(); i++) {
+                NBTTagCompound item = tagCompound.getCompoundTag("item" + i);
+                inventory.setInventorySlotContents(i, ItemStack.loadItemStackFromNBT(item));
+            }
         }
     }
 
     @Override
     public void writeToNBT(NBTTagCompound nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
-        IInventory inventory = this.getInternalInventory();
-        NBTTagCompound tagCompound = new NBTTagCompound();
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            NBTTagCompound item = new NBTTagCompound();
-            ItemStack itemStack = this.getStackInSlot(i);
-            if (itemStack != null)
-                itemStack.writeToNBT(item);
-            tagCompound.setTag("item" + i, item);
+
+        if (getInternalInventory() instanceof IInventoryCustom) {
+            IInventoryCustom inventoryCustom = (IInventoryCustom)getInternalInventory();
+            inventoryCustom.writeToNBT(nbtTagCompound);
+        } else {
+            IInventory inventory = this.getInternalInventory();
+            NBTTagCompound tagCompound = new NBTTagCompound();
+            for (int i = 0; i < inventory.getSizeInventory(); i++) {
+                NBTTagCompound item = new NBTTagCompound();
+                ItemStack itemStack = this.getStackInSlot(i);
+                if (itemStack != null)
+                    itemStack.writeToNBT(item);
+                tagCompound.setTag("item" + i, item);
+            }
+            nbtTagCompound.setTag("Items", tagCompound);
         }
-        nbtTagCompound.setTag("Items", tagCompound);
     }
 
     @Override

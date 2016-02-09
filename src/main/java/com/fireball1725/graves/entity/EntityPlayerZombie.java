@@ -217,8 +217,8 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
-        boolean hardcoreEnabled = Minecraft.getMinecraft().theWorld.getWorldInfo().isHardcoreModeEnabled();
-        EnumDifficulty gameDifficulty = Minecraft.getMinecraft().theWorld.getDifficulty();
+        boolean hardcoreEnabled = worldObj.getWorldInfo().isHardcoreModeEnabled();
+        EnumDifficulty gameDifficulty = worldObj.getDifficulty();
 
         setEquipmentBasedOnDifficulty(difficulty);
         setEnchantmentBasedOnDifficulty(difficulty);
