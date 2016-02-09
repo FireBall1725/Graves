@@ -57,14 +57,14 @@ public class RenderEvents implements IResourceManagerReloadListener
 					if(block instanceof BlockGraveSlave)
 					{
 						TileEntityGraveSlave slave = TileTools.getTileEntity(world, pos, TileEntityGraveSlave.class);
-						if(slave.getMasterBlock() == null)
+						if(slave == null || slave.getMasterBlock() == null)
 							return;
 						pos = slave.getMasterBlock();
 					}
 					if(pos == null)
 						return;
 					TileEntityGraveStone master = TileTools.getTileEntity(world, pos, TileEntityGraveStone.class);
-
+					if (master == null) return;
 					blocks.add(pos);
 					blocks.add(pos.offset(master.getBlockState().getValue(BlockGraveStone.FACING)));
 					blocks.add(pos.down());
