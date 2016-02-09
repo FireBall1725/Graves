@@ -1,0 +1,6 @@
+{
+  "graveZombieSpawn": {"category": "master","sounds": [{"name": "Grave_Zombie_Spawn","stream":false}]},
+  "graveZombieIdle": {"category": "master","sounds": [{"name": "Grave_Zombie_Idle","stream":false}]},
+  "graveZombieAttack": {"category": "master","sounds": [{"name": "Grave_Zombie_Attack","stream":false}]},
+  "graveZombieDeath": {"category": "master","sounds": [{"name": "Grave_Zombie_Death","stream":false}]}
+}
