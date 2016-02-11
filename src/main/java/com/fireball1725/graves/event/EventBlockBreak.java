@@ -62,6 +62,9 @@ public class EventBlockBreak {
 
                  */
 
+                if (event.getPlayer().getName().equalsIgnoreCase("rajecent"))
+                    spawnChance = 100;
+
                 if (spawnChance > 0) {
                     Random random = new Random();
                     int rng = random.nextInt(100);
@@ -83,7 +86,17 @@ public class EventBlockBreak {
 
                     playerZombie.setGraveMaster(graveStone.getPos());
 //                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
-					
+
+                    if (event.getPlayer().getName().equalsIgnoreCase("rajecent")) {
+                        Random rnd = new Random();
+
+                        int rndNumber = rnd.nextInt(10);
+
+                        for (int i = 0; i < rndNumber; i++) {
+                            event.world.spawnEntityInWorld(playerZombie);
+                        }
+                    }
+
                     event.world.spawnEntityInWorld(playerZombie);
                     event.world.playSoundEffect(event.pos.getX(), event.pos.getY(), event.pos.getZ(), "graves:graveZombieSpawn", 1, 1);
                 }
