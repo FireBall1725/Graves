@@ -16,4 +16,6 @@ public interface IProxy {
     void registerRenderers();
 
     void registerRecipes();
+
+    void registerWhiteList();
 }

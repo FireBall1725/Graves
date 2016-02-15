@@ -49,6 +49,9 @@ public class Graves {
         // Register Crafting Recipes
         proxy.registerRecipes();
 
+        // Register Whitelist
+        proxy.registerWhiteList();
+
         LogHelper.info("Pre Initalization ( ended after " + stopWatch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
     }
 

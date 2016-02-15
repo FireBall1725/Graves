@@ -73,10 +73,11 @@ public class EventDeathHandler {
 		}
 
         if (spawnGrave) {
-            BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition());
-
             EnumFacing facing = event.entityPlayer.getHorizontalFacing();
             IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
+
+            BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition(), facing);
+
             world.setBlockState(safePos, state);
 
             TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
