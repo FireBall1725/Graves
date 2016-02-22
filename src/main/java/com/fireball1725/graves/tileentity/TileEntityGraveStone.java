@@ -2,6 +2,7 @@ package com.fireball1725.graves.tileentity;
 
 import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.block.Blocks;
+import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.inventory.InternalDynamicInventory;
 import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
@@ -14,6 +15,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
+import net.minecraft.network.Packet;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IChatComponent;
 
@@ -24,6 +26,13 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     protected boolean hasLid = true;
     private InternalDynamicInventory internalInventory = new InternalDynamicInventory(this);
     private GameProfile playerProfile;
+
+    @Override
+    public Packet getDescriptionPacket() {
+        LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
+
+        return super.getDescriptionPacket();
+    }
 
     public void addGraveItems(List<EntityItem> itemsList) {
         for (EntityItem item : itemsList) {

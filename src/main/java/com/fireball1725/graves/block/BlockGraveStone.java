@@ -1,5 +1,6 @@
 package com.fireball1725.graves.block;
 
+import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.material.Material;
