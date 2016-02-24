@@ -1,5 +1,6 @@
 package com.fireball1725.graves.event;
 
+import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.block.BlockHeadStone;
 import com.fireball1725.graves.block.Blocks;
@@ -20,6 +21,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
+import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -76,7 +78,9 @@ public class EventDeathHandler {
             EnumFacing facing = event.entityPlayer.getHorizontalFacing();
             IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
 
-            BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition(), facing);
+			BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition(), facing);
+
+			sendTomTomPos(Graves.instance, event.entityPlayer, safePos, "Grave this way!");
 
             world.setBlockState(safePos, state);
 
@@ -97,4 +101,21 @@ public class EventDeathHandler {
 
         event.drops.clear();
     }
+
+	/**
+	 * @param mod Your @Mod.instance object.
+	 * @param player The player we are setting the gps for.
+	 * @param pos The destination position.
+	 * @param text The short description of the destination
+	 */
+
+	public static void sendTomTomPos(Object mod, EntityPlayer player, BlockPos pos, String text)
+	{
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setLong("location", pos.toLong());
+		tag.setLong("uuid-most", player.getUniqueID().getMostSignificantBits());
+		tag.setLong("uuid-least", player.getUniqueID().getLeastSignificantBits());
+		tag.setString("text", text);
+		FMLInterModComms.sendRuntimeMessage(mod, "tomtom", "setPointer", tag);
+	}
 }
