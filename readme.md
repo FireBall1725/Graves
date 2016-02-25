@@ -25,7 +25,6 @@ The graves mod is a mod that holds onto your items when you die so you can later
 
 * Graves
   - (c) 2016 FireBall1725
-  - [![License](https://img.shields.io/badge/License-MIT-red.svg?style=flat-square)](http://opensource.org/licenses/MIT)
 
 The graves mod can be freely used and modified as long as no profit is made directly from this Minecraft mod.  This mod can be included into any modpacks without asking for permissions.
 
