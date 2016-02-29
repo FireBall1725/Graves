@@ -6,7 +6,6 @@ import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
@@ -26,24 +25,8 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockGraveSlave extends BlockBase {
-	public enum SlaveType implements IStringSerializable
-	{
-		LID,
-		BOX,
-		BOXFOOT,
-		NORENDER,
-		;
-
-		@Override
-		public String getName()
-		{
-			return name().toLowerCase();
-		}
-	}
-
 	public static final PropertyBool isFoot = PropertyBool.create("isFoot");
 	public static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slaveType", SlaveType.class);
-
     public BlockGraveSlave() {
         super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(slaveType, SlaveType.LID).withProperty(isFoot, true).withProperty(BlockGraveStone.FACING, EnumFacing.NORTH));
@@ -54,8 +37,8 @@ public class BlockGraveSlave extends BlockBase {
     }
 
 	@Override
-	protected BlockState createBlockState() {
-		PropertyDirection test = BlockGraveStone.FACING;
+	protected BlockState createBlockState()
+	{
 		return new BlockState(this, slaveType, isFoot, BlockGraveStone.FACING);
 	}
 
@@ -74,36 +57,44 @@ public class BlockGraveSlave extends BlockBase {
 	@Override
     public int getRenderType() {
         return 3;
-    }
+	}
+
+	@Override
+	public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos, EntityPlayer player)
+	{
+		TileEntityGraveSlave slave = TileTools.getTileEntity(world, pos, TileEntityGraveSlave.class);
+		if(slave == null)
+		{
+			return null;
+		}
+		return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(target, world, slave.getMasterBlock(), player);
+	}
 
     @Override
-    public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos, EntityPlayer player) {
-        TileEntityGraveSlave slave = TileTools.getTileEntity(world, pos, TileEntityGraveSlave.class);
-        if (slave == null) {
-            return null;
-        }
-        return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(target, world, slave.getMasterBlock(), player);
-    }
+	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
+	{
+		AxisAlignedBB selectionBox;
+		if(worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone)
+		{
+			selectionBox = AxisAlignedBB.fromBounds(0f, 0f, 0f, 1f, 1f, 1f);
+		}
+		else
+		{
+			selectionBox = AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1);
+		}
+		return selectionBox.offset(pos.getX(), pos.getY(), pos.getZ());
+	}
 
     @Override
-    public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
-        AxisAlignedBB selectionBox;
-        if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone) {
-            selectionBox = AxisAlignedBB.fromBounds(0f, 0f, 0f, 1f, 1f, 1f);
-        } else {
-            selectionBox = AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1);
-        }
-        return selectionBox.offset(pos.getX(), pos.getY(), pos.getZ());
-    }
-
-    @Override
-    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
-        TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-        if (graveSlave != null && graveSlave.getMasterBlock() != null && graveSlave.getMasterBlock().up().getY() == pos.getY()) {
-            setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
-        } else {
-            setBlockBounds(0, 0, 0, 1, .1425f, 1);
-        }
+	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
+	{
+		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
+		if(graveSlave != null && graveSlave.getMasterBlock() != null && graveSlave.getMasterBlock().up().getY() == pos.getY())
+		{
+			setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
+		} else {
+			setBlockBounds(0, 0, 0, 1, .1425f, 1);
+		}
     }
 
     @Override
@@ -125,9 +116,9 @@ public class BlockGraveSlave extends BlockBase {
 						case NORTH:
 							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(1f-pixel, 0f, 0f, 1f, 1f, 1f);
+							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if (isFoot)
+							if(isFoot)
 							{
 								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
 								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
@@ -141,9 +132,9 @@ public class BlockGraveSlave extends BlockBase {
 						case SOUTH:
 							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(1f-pixel, 0f, 0f, 1f, 1f, 1f);
+							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if (!isFoot)
+							if(!isFoot)
 							{
 								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
 								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
@@ -157,9 +148,9 @@ public class BlockGraveSlave extends BlockBase {
 						case WEST:
 							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(0f, 0f, 1f-pixel, 1f, 1f, 1f);
+							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if (isFoot)
+							if(isFoot)
 							{
 								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
 								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
@@ -173,9 +164,9 @@ public class BlockGraveSlave extends BlockBase {
 						case EAST:
 							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(0f, 0f, 1f-pixel, 1f, 1f, 1f);
+							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
 							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if (!isFoot)
+							if(!isFoot)
 							{
 								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
 								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
@@ -187,47 +178,52 @@ public class BlockGraveSlave extends BlockBase {
 							}
 							break;
 					}
-                } else {
-                    if (hasLid) {
-                        setBlockBounds(0, 0, 0, 1, .1425f, 1);
-                        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-                    } else {
-                        setBlockBounds(0, 0, 0, .000001f, .000001f, .000001f);
-                        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-                    }
-                }
-            }
-        }
-    }
+				}
+				else
+				{
+					if(hasLid)
+					{
+						setBlockBounds(0, 0, 0, 1, .1425f, 1);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+					}
+					else
+					{
+						setBlockBounds(0, 0, 0, .000001f, .000001f, .000001f);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+					}
+				}
+			}
+		}
+	}
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
 	{
 		TileEntityGraveSlave slave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-		if (slave != null)
+		if(slave != null)
 		{
-			if (slave.getMasterBlock() != null)
+			if(slave.getMasterBlock() != null)
 			{
 				TileEntityGraveStone master = TileTools.getTileEntity(worldIn, slave.getMasterBlock(), TileEntityGraveStone.class);
-				if (master != null)
+				if(master != null)
 				{
 					IBlockState masterState = worldIn.getBlockState(slave.getMasterBlock());
 					IBlockState masterActualState = masterState.getBlock().getActualState(masterState, worldIn, slave.getMasterBlock());
 					EnumFacing masterFacing = masterActualState.getValue(BlockGraveStone.FACING);
 
 					SlaveType st = SlaveType.NORENDER;
-					if (pos.equals(master.getPos().offset(masterFacing)))
+					if(pos.equals(master.getPos().offset(masterFacing)))
 					{
-						if (masterActualState.getValue(BlockGraveStone.HASLID))
+						if(masterActualState.getValue(BlockGraveStone.HASLID))
 						{
 							st = SlaveType.LID;
 						}
 					}
-					else if (pos.equals(master.getPos().down()))
+					else if(pos.equals(master.getPos().down()))
 					{
 						st = SlaveType.BOX;
 					}
-					else if (pos.equals(master.getPos().down().offset(masterFacing)))
+					else if(pos.equals(master.getPos().down().offset(masterFacing)))
 					{
 						st = SlaveType.BOXFOOT;
 					}
@@ -245,40 +241,60 @@ public class BlockGraveSlave extends BlockBase {
 	@Override
     public boolean addLandingEffects(WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
         return super.addLandingEffects(worldObj, blockPosition, iblockstate, entity, numberOfParticles);
+	}
+
+	@Override
+	public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer)
+	{
+		return super.addHitEffects(worldObj, target, effectRenderer);
+	}
+
+    @Override
+	public boolean addDestroyEffects(World world, BlockPos pos, EffectRenderer effectRenderer)
+	{
+		return super.addDestroyEffects(world, pos, effectRenderer);
+	}
+
+    @Override
+	public boolean isOpaqueCube()
+	{
+		return false;
+	}
+
+    @Override
+	public boolean isFullBlock()
+	{
+		return false;
     }
 
     @Override
-    public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer) {
-        return super.addHitEffects(worldObj, target, effectRenderer);
+	public boolean isFullCube()
+	{
+		return false;
     }
 
     @Override
-    public boolean addDestroyEffects(World world, BlockPos pos, EffectRenderer effectRenderer) {
-        return super.addDestroyEffects(world, pos, effectRenderer);
-    }
-
-    @Override
-    public boolean isOpaqueCube() {
-        return false;
-    }
-
-    @Override
-    public boolean isFullBlock() {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube() {
-        return false;
-    }
-
-    @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return null;
-    }
+	public Item getItemDropped(IBlockState state, Random rand, int fortune)
+	{
+		return null;
+	}
 
     @Override
     public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
 
     }
+
+	public enum SlaveType implements IStringSerializable
+	{
+		LID,
+		BOX,
+		BOXFOOT,
+		NORENDER,;
+
+		@Override
+		public String getName()
+		{
+			return name().toLowerCase();
+		}
+	}
 }

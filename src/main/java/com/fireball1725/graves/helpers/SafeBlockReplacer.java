@@ -1,9 +1,7 @@
 package com.fireball1725.graves.helpers;
 
 import net.minecraft.block.BlockAir;
-import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
@@ -32,11 +30,9 @@ public class SafeBlockReplacer {
             return false;
 
         // Make sure the block is on the whitelist
-        if (!BreakableWhiteListHelper.checkBlock(blockState))
-            return false;
+		return BreakableWhiteListHelper.checkBlock(blockState);
 
-        return true;
-    }
+	}
 
     private static boolean CheckGraveSite(World world, BlockPos blockPos, EnumFacing facing) {
         BlockPos Headstone = blockPos.offset(facing, -1);
@@ -119,8 +115,10 @@ public class SafeBlockReplacer {
 
             if (y < 1 ) {
                 y = 3;
-            } else if (y < 256) {
-                y = 253;
+			}
+			else if(y > 255)
+			{
+				y = 253;
             }
 
             blockPos = new BlockPos(blockPos.getX(), y, blockPos.getZ());
