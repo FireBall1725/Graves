@@ -29,7 +29,7 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
 
     @Override
     public Packet getDescriptionPacket() {
-        LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
+        LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile == null ? "null" : this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
 
         return super.getDescriptionPacket();
     }
