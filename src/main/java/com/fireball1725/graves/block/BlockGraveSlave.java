@@ -112,12 +112,81 @@ public class BlockGraveSlave extends BlockBase {
         if (graveSlave != null && graveSlave.getMasterBlock() != null) {
             IBlockState masterState = worldIn.getBlockState(graveSlave.getMasterBlock());
             IBlockState actualState = masterState.getBlock().getActualState(masterState, worldIn, graveSlave.getMasterBlock());
-            //			LogHelper.info(">>> " + actualState);
+			EnumFacing facing = getActualState(state, worldIn, pos).getValue(BlockGraveStone.FACING);
+            float pixel = 0.0625f;
+			boolean isFoot = worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave;
             if (masterState.getBlock() instanceof BlockGraveStone) {
                 boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
                 if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone) {
                     setBlockBounds(0f, 0f, 0f, 1f, 0.01f, 1f);
                     super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+					switch (facing)
+					{
+						case NORTH:
+							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							setBlockBounds(1f-pixel, 0f, 0f, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							if (isFoot)
+							{
+								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							else
+							{
+								setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							break;
+						case SOUTH:
+							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							setBlockBounds(1f-pixel, 0f, 0f, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							if (!isFoot)
+							{
+								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							else
+							{
+								setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							break;
+						case WEST:
+							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							setBlockBounds(0f, 0f, 1f-pixel, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							if (isFoot)
+							{
+								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							else
+							{
+								setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							break;
+						case EAST:
+							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							setBlockBounds(0f, 0f, 1f-pixel, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							if (!isFoot)
+							{
+								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							else
+							{
+								setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
+								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							}
+							break;
+					}
                 } else {
                     if (hasLid) {
                         setBlockBounds(0, 0, 0, 1, .1425f, 1);
