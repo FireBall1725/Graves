@@ -3,7 +3,7 @@ package com.fireball1725.graves.util;
 import com.fireball1725.graves.client.gui.GuiScreenHeadstone;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 

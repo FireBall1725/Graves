@@ -2,8 +2,8 @@ package com.fireball1725.graves.client.render.entity;
 
 import com.fireball1725.graves.configuration.ConfigZombie;
 import com.fireball1725.graves.entity.EntityPlayerZombie;
-import com.fireball1725.graves.helpers.IDeadPlayerEntity;
 import com.fireball1725.graves.util.TextureUtils;
+import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderBiped;
@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.entity.layers.LayerArrow;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
-import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.item.ItemBow;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
@@ -45,20 +45,20 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     public void doRender(EntityPlayerZombie entity, double x, double y, double z, float f0, float partialTickTime) {
         setModel(entity);
         if (ConfigZombie.configZombieShowBossBar)
-            BossStatus.setBossStatus(entity, true);
+		{
+			// TODO: Do what was done here...
+		}
 
-        if (entity.getHeldItem() != null && entity.getHeldItem().getItem() instanceof ItemBow)
-            modelBipedMain.aimedBow = true;
-        else
-            modelBipedMain.aimedBow = false;
+		if(entity.getHeldItem(EnumHand.MAIN_HAND) != null && entity.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemBow)
+		{ modelBipedMain.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW; }
 
         super.doRender(entity, x, y, z, f0, partialTickTime);
     }
 
     @Override
     protected ResourceLocation getEntityTexture(EntityPlayerZombie entity) {
-        return TextureUtils.getPlayerSkin(((IDeadPlayerEntity) entity).getProfile());
-    }
+		return TextureUtils.getPlayerSkin((entity).getProfile());
+	}
 
     @Override
     protected void preRenderCallback(EntityPlayerZombie entity, float float0) {

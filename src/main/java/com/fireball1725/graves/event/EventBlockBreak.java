@@ -7,9 +7,7 @@ import com.fireball1725.graves.entity.EntityPlayerZombie;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
-
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
@@ -85,8 +83,8 @@ public class EventBlockBreak {
 //                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
 
                     event.world.spawnEntityInWorld(playerZombie);
-                    event.world.playSoundEffect(event.pos.getX(), event.pos.getY(), event.pos.getZ(), "graves:graveZombieSpawn", 1, 1);
-                }
+					//                    event.world.playSound(event.pos.getX(), event.pos.getY(), event.pos.getZ(), SoundHelper.getRegisteredSoundEvent("graves:graveZombieSpawn"), SoundCategory.HOSTILE, 1, 1, true);
+				}
 
                 event.setCanceled(true);
                 return;

@@ -13,7 +13,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -28,8 +29,8 @@ public class BlockBase extends BlockContainer {
     protected BlockBase(Material material) {
         super(material);
 
-        setStepSound(Block.soundTypeStone);
-        setHardness(2.2F);
+		//        setStepSound(SoundType.STONE);
+		setHardness(2.2F);
         setResistance(5.0F);
         //setHarvestLevel("pickaxe", 0);
 
@@ -40,8 +41,8 @@ public class BlockBase extends BlockContainer {
     public TileEntity createNewTileEntity(World var1, int var2) {
         if (hasBlockTileEntity()) {
             try {
-                return (TileEntity) this.tileEntityType.newInstance();
-            } catch (Throwable e) {
+				return this.tileEntityType.newInstance();
+			} catch (Throwable e) {
                 throw new RuntimeException(e);
             }
         }
@@ -61,8 +62,8 @@ public class BlockBase extends BlockContainer {
     }
 
     private void setTileProvider(boolean b) {
-        ReflectionHelper.setPrivateValue(Block.class, this, Boolean.valueOf(b), new String[]{"isTileProvider"});
-    }
+		ReflectionHelper.setPrivateValue(Block.class, this, Boolean.valueOf(b), "isTileProvider");
+	}
 
     public Class<? extends TileEntity> getTileEntityClass() {
         return this.tileEntityType;
@@ -132,8 +133,9 @@ public class BlockBase extends BlockContainer {
         }
     }
 
-    @Override
-    public int getRenderType() {
-        return 3;
-    }
+	@Override
+	public EnumBlockRenderType getRenderType(IBlockState state)
+	{
+		return EnumBlockRenderType.MODEL;
+	}
 }

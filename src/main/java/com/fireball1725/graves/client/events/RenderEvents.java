@@ -2,7 +2,6 @@ package com.fireball1725.graves.client.events;
 
 import com.fireball1725.graves.block.BlockGraveSlave;
 import com.fireball1725.graves.block.BlockGraveStone;
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
@@ -14,7 +13,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -24,7 +23,7 @@ import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -71,7 +70,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 					blocks.add(pos.down().offset(master.getBlockState().getValue(BlockGraveStone.FACING)));
 
 					drawBlockDamageTexture(Tessellator.getInstance(),
-							Tessellator.getInstance().getWorldRenderer(),
+							Tessellator.getInstance().getBuffer(),
 							player,
 							event.partialTicks,
 							world,
@@ -82,7 +81,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 	}
 
 	// RenderGlobal.drawBlockDamageTexture
-	public void drawBlockDamageTexture(Tessellator tessellatorIn, WorldRenderer worldRendererIn, Entity entityIn, float partialTicks, World world, List<BlockPos> blocks)
+	public void drawBlockDamageTexture(Tessellator tessellatorIn, VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, World world, List<BlockPos> blocks)
 	{
 		double d0 = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double)partialTicks;
 		double d1 = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double)partialTicks;
@@ -121,7 +120,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 			{
 				IBlockState iblockstate = world.getBlockState(blockpos);
 
-				if (iblockstate.getBlock().getMaterial() != Material.air)
+				if(iblockstate.getBlock().getMaterial(iblockstate) != Material.air)
 				{
 					TextureAtlasSprite textureatlassprite = this.destroyBlockIcons[progress];
 					BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();

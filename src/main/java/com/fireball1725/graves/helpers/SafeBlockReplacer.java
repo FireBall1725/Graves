@@ -2,8 +2,8 @@ package com.fireball1725.graves.helpers;
 
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SafeBlockReplacer {
@@ -26,8 +26,8 @@ public class SafeBlockReplacer {
             return false;
 
         // Make sure the block isn't unbreakable
-        if (blockState.getBlock().getBlockHardness(world, blockPos) == -1.0F)
-            return false;
+		if(blockState.getBlock().getBlockHardness(world.getBlockState(blockPos), world, blockPos) == -1.0F)
+		{ return false; }
 
         // Make sure the block is on the whitelist
 		return BreakableWhiteListHelper.checkBlock(blockState);

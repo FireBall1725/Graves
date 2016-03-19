@@ -6,7 +6,7 @@ import com.fireball1725.graves.item.ItemHeadStone;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public enum Blocks {
@@ -52,8 +52,8 @@ public enum Blocks {
     }
 
     public String getStatName() {
-        return StatCollector.translateToLocal(block.getUnlocalizedName().replace("tileentity.", "block."));
-    }
+		return I18n.translateToLocal(block.getUnlocalizedName().replace("tileentity.", "block."));
+	}
 
     private void register() {
         GameRegistry.registerBlock(block.setCreativeTab(creativeTabs).setUnlocalizedName(internalName), itemBlockClass, internalName);

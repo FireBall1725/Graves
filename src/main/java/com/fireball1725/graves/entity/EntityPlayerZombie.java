@@ -5,36 +5,45 @@ import com.fireball1725.graves.helpers.IDeadPlayerEntity;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.google.common.base.Predicate;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.*;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemBow;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntitySkull;
-import net.minecraft.util.*;
-import net.minecraft.world.*;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
-public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob, IDeadPlayerEntity, IBossDisplayData {
-    private static final int NAME = 13;
-    private static final int CHILD = 14;
-    private static final int WIDTH = 16;
-    private static final int HEIGHT = 17;
-    private final EntityAIBreakDoor breakDoorAI = new EntityAIBreakDoor(this);
-    private final EntityAIArrowAttack arrowAI = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
-    private double prevCapeX, prevCapeY, prevCapeZ;
+public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntity
+{
+	private static final DataParameter<String> NAME = EntityDataManager.createKey(EntityPlayerZombie.class, DataSerializers.STRING);
+	private static final DataParameter<Byte> CHILD = EntityDataManager.createKey(EntityPlayerZombie.class, DataSerializers.BYTE);
+	private static final DataParameter<Float> WIDTH = EntityDataManager.createKey(EntityPlayerZombie.class, DataSerializers.FLOAT);
+	private static final DataParameter<Float> HEIGHT = EntityDataManager.createKey(EntityPlayerZombie.class, DataSerializers.FLOAT);
+	private final EntityAIBreakDoor breakDoorAI = new EntityAIBreakDoor(this);
+	private double prevCapeX, prevCapeY, prevCapeZ;
     private double capeX, capeY, capeZ;
     private GameProfile profile;
     private EntityPlayer player;
@@ -52,8 +61,8 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         tasks.addTask(4, new AIPlayerZombieAttackTarget());
 
         tasks.addTask(1, new EntityAIOpenDoor(this, true));
-        tasks.addTask(2, new EntityAIAttackOnCollide(this, EntityPlayer.class, 1.0D, false));
-        tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
+		tasks.addTask(2, new EntityAIAttackMelee(this, 1.0D, false));
+		tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
 
         tasks.addTask(7, new EntityAIWander(this, 1.0D));
         tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
@@ -73,11 +82,12 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         this.player = player;
     }
 
-    @Override
-    public boolean writeMountToNBT(NBTTagCompound tagCompund) {
-        tagCompund.setBoolean("[GoldenLassoPrevent]", true); // Make it so ExU2 cursed lassos are disabled
-        return super.writeMountToNBT(tagCompund);
-    }
+	@Override
+	public void writeToNBT(NBTTagCompound tagCompund)
+	{
+		tagCompund.setBoolean("[GoldenLassoPrevent]", true); // Make it so ExU2 cursed lassos are disabled
+		super.writeToNBT(tagCompund);
+	}
 
     @Override
     public boolean canPickUpLoot() {
@@ -126,12 +136,12 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         capeY += y * 0.25;
 
         if (worldObj.isRemote) {
-            float w = dataWatcher.getWatchableObjectFloat(WIDTH);
-            if (w != width)
-                width = w;
-            float h = dataWatcher.getWatchableObjectFloat(HEIGHT);
-            if (h != height)
-                height = h;
+			float w = dataWatcher.get(WIDTH);
+			if(w != width)
+				width = w;
+			float h = dataWatcher.get(HEIGHT);
+			if(h != height)
+				height = h;
         }
 
         if (this.player != null) {
@@ -147,42 +157,46 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();
-        getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ConfigZombie.configZombieDefaultFollowRange);
-        getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(ConfigZombie.configZombieDefaultSpeed);
-        getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(ConfigZombie.configZombieDefaultBaseDamage);
-    }
+		getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(ConfigZombie.configZombieDefaultFollowRange);
+		getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(ConfigZombie.configZombieDefaultSpeed);
+		getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(ConfigZombie.configZombieDefaultBaseDamage);
+	}
 
     @Override
     protected void entityInit() {
         super.entityInit();
-        getDataWatcher().addObject(NAME, "");
-        getDataWatcher().addObject(CHILD, (byte) 0);
-        getDataWatcher().addObject(WIDTH, width);
-        getDataWatcher().addObject(HEIGHT, height);
-    }
+		dataWatcher.register(NAME, "");
+		dataWatcher.register(CHILD, (byte) 0);
+		dataWatcher.register(WIDTH, width);
+		dataWatcher.register(HEIGHT, height);
+	}
 
-    @Override
-    protected String getLivingSound() {
-        return "graves:graveZombieIdle";
-    }
-
-    @Override
-    protected String getHurtSound() {
-        return "graves:graveZombieAttack";
-    }
-
-    @Override
-    protected String getDeathSound() {
-        return "graves:graveZombieDeath";
-    }
+	//TODO: Add Sounds when not completely broken.
+	//	@Override
+	//	protected SoundEvent getAmbientSound()
+	//	{
+	//		return SoundHelper.getRegisteredSoundEvent("graves:graveZombieIdle");
+	//	}
+	//
+	//	@Override
+	//	protected SoundEvent getHurtSound()
+	//	{
+	//		return SoundHelper.getRegisteredSoundEvent("graves:graveZombieAttack");
+	//	}
+	//
+	//	@Override
+	//	public SoundCategory getSoundCategory()
+	//	{
+	//		return SoundCategory.HOSTILE;
+	//	}
+	//
+	//	@Override
+	//    protected String getDeathSound() {
+	//        return "graves:graveZombieDeath";
+	//    }
 
     @Override
     protected void dropFewItems(boolean recentHit, int looting) {
-
-    }
-
-    @Override
-    protected void addRandomDrop() {
 
     }
 
@@ -193,23 +207,24 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         if (rand.nextFloat() < (worldObj.getDifficulty() == EnumDifficulty.HARD ? 0.1F : 0.05F)) {
             int i = rand.nextInt(3);
 
-            if (i == 0)
-                setCurrentItemOrArmor(0, new ItemStack(Items.stone_sword));
-            else if (i == 1)
-                setCurrentItemOrArmor(0, new ItemStack(Items.bow));
-        }
-    }
+			if(i == 0)
+			{ setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.stone_sword)); }
+			else if(i == 1)
+			{ setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.bow)); }
+		}
+	}
+
+	@Override
+	public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack)
+	{
+		super.setItemStackToSlot(slotIn, stack);
+	}
 
     @Override
-    public void setCurrentItemOrArmor(int slot, ItemStack stack) {
-        super.setCurrentItemOrArmor(slot, stack);
-        setCombatAI();
-    }
-
-    @Override
-    public ItemStack getPickedResult(MovingObjectPosition target) {
-        ItemStack stack = new ItemStack(Items.spawn_egg);
-        NBTTagCompound nbt = new NBTTagCompound();
+	public ItemStack getPickedResult(RayTraceResult target)
+	{
+		ItemStack stack = new ItemStack(Items.spawn_egg);
+		NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("entity_name", EntityList.classToStringMapping.get(getClass()));
         stack.setTagCompound(nbt);
         return stack;
@@ -222,23 +237,22 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
         setEquipmentBasedOnDifficulty(difficulty);
         setEnchantmentBasedOnDifficulty(difficulty);
-        setCombatAI();
 
-        float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
-        getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 50, 0));
+		float additionalDifficulty = difficulty.getClampedAdditionalDifficulty();
+		getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).applyModifier(new AttributeModifier("Knockback Resistance Bonus", rand.nextDouble() * 50, 0));
 
         double rangeBonus = rand.nextDouble() * 1.5 * additionalDifficulty;
-        if (rangeBonus > 1.0)
-            getEntityAttribute(SharedMonsterAttributes.followRange).applyModifier(new AttributeModifier("Range Bonus", rangeBonus, 2));
+		if(rangeBonus > 1.0)
+		{ getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).applyModifier(new AttributeModifier("Range Bonus", rangeBonus, 2)); }
 
-        if (rand.nextFloat() < additionalDifficulty * 0.05F)
-            getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("Health Bonus", rand.nextDouble() * 3.0 + 1.0, 2));
+		if(rand.nextFloat() < additionalDifficulty * 0.05F)
+		{ getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("Health Bonus", rand.nextDouble() * 3.0 + 1.0, 2)); }
 
-        if (rand.nextFloat() < additionalDifficulty * 0.15F)
-            getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("Damage Bonus", rand.nextDouble() + 0.5, 2));
+		if(rand.nextFloat() < additionalDifficulty * 0.15F)
+		{ getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("Damage Bonus", rand.nextDouble() + 0.5, 2)); }
 
-        if (rand.nextFloat() < additionalDifficulty * 0.2F)
-            getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("Speed Bonus", rand.nextDouble() * 2.0 * 0.24 + 0.01, 2));
+		if(rand.nextFloat() < additionalDifficulty * 0.2F)
+		{ getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(new AttributeModifier("Speed Bonus", rand.nextDouble() * 2.0 * 0.24 + 0.01, 2)); }
 
         if (rand.nextFloat() < additionalDifficulty * 0.1F)
             tasks.addTask(1, breakDoorAI);
@@ -336,21 +350,21 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         }
 
         if (ConfigZombie.configZombieArmorEnabled) {
-            if (slot0 != null)
-                this.setCurrentItemOrArmor(0, slot0);
+			if(slot0 != null)
+			{ this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, slot0); }
 
-            if (slot1 != null)
-                this.setCurrentItemOrArmor(1, slot1);
+			if(slot1 != null)
+			{ this.setItemStackToSlot(EntityEquipmentSlot.FEET, slot1); }
 
-            if (slot2 != null)
-                this.setCurrentItemOrArmor(2, slot2);
+			if(slot2 != null)
+			{ this.setItemStackToSlot(EntityEquipmentSlot.LEGS, slot2); }
 
-            if (slot3 != null)
-                this.setCurrentItemOrArmor(3, slot3);
+			if(slot3 != null)
+			{ this.setItemStackToSlot(EntityEquipmentSlot.CHEST, slot3); }
 
-            if (slot4 != null)
-                this.setCurrentItemOrArmor(4, slot4);
-        }
+			if(slot4 != null)
+			{ this.setItemStackToSlot(EntityEquipmentSlot.HEAD, slot4); }
+		}
 
         this.setHealth(ConfigZombie.configZombieDefaultHealth);
 
@@ -360,9 +374,9 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     @Override
     protected void despawnEntity() {
         super.despawnEntity();
-        if (isDead && ridingEntity != null)
-            ridingEntity.setDead();
-    }
+		if(isDead && this.getRidingEntity() != null)
+		{ getRidingEntity().setDead(); }
+	}
 
     @Override
     public double getYOffset() {
@@ -391,51 +405,15 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         setUsername(username);
 
 		graveMaster = BlockPos.fromLong(nbt.getLong("graveMaster"));
-
-        setCombatAI();
     }
 
     @Override
     public boolean attackEntityAsMob(Entity target) {
         boolean result = super.attackEntityAsMob(target);
-        if (result)
-            swingItem();
-        return result;
-    }
-
-    @Override
-    public void attackEntityWithRangedAttack(EntityLivingBase target, float damage) {
-        if (!hasBow())
-            return;
-
-        EntityArrow arrow = new EntityArrow(worldObj, this, target, 1.6F, 14 - worldObj.getDifficulty().getDifficultyId() * 4);
-        int power = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, getHeldItem());
-        int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, getHeldItem());
-        arrow.setDamage(damage * 2.0F + rand.nextGaussian() * 0.25D + worldObj.getDifficulty().getDifficultyId() * 0.11F);
-
-        if (power > 0)
-            arrow.setDamage(arrow.getDamage() + power * 0.5D + 0.5D);
-
-        if (punch > 0)
-            arrow.setKnockbackStrength(punch);
-
-        if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, getHeldItem()) > 0)
-            arrow.setFire(100);
-
-        playSound("random.bow", 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
-        worldObj.spawnEntityInWorld(arrow);
-    }
-
-    private boolean hasBow() {
-        return getHeldItem() != null && getHeldItem().getItem() instanceof ItemBow;
-    }
-
-    private void setCombatAI() {
-        if (hasBow())
-            tasks.addTask(1, arrowAI);
-        else
-            tasks.removeTask(arrowAI);
-    }
+		if(result)
+		{ swingArm(EnumHand.MAIN_HAND); }
+		return result;
+	}
 
     @Override
     public String getName() {
@@ -457,15 +435,20 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
     }
 
     @Override
-    public IChatComponent getDisplayName() {
-        return new ChatComponentText(getName()) {
+	public ITextComponent getDisplayName()
+	{
+		return new TextComponentString(getName())
+		{
 
-            private ChatStyle style;
+			private Style style;
 
             @Override
-            public ChatStyle getChatStyle() {
-                if (style == null) {
-                    style = new ChatStyle() {
+			public Style getChatStyle()
+			{
+				if(style == null)
+				{
+					style = new Style()
+					{
 
                         @Override
                         @SideOnly(Side.CLIENT)
@@ -477,10 +460,10 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
                     Iterator<?> iterator = siblings.iterator();
 
                     while (iterator.hasNext()) {
-                        IChatComponent ichatcomponent = (IChatComponent) iterator.next();
-                        ichatcomponent.getChatStyle().setParentStyle(style);
-                    }
-                }
+						ITextComponent ITextComponent = (ITextComponent) iterator.next();
+						ITextComponent.getChatStyle().setParentStyle(style);
+					}
+				}
 
                 return style;
             }
@@ -500,11 +483,11 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     public String getUsername() {
-        String username = getDataWatcher().getWatchableObjectString(NAME);
-        if (StringUtils.isBlank(username))
-            getDataWatcher().updateObject(NAME, "FireBall1725");
-        if (username.equals("Soaryn"))
-            return "direwolf20";
+		String username = dataWatcher.get(NAME);
+		if(StringUtils.isBlank(username))
+		{ dataWatcher.set(NAME, "FireBall1725"); }
+		if(username.equals("Soaryn"))
+			return "direwolf20";
         if (username.equals("direwolf20"))
             return "Soaryn";
         return username;
@@ -512,13 +495,12 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     public void setUsername(String name) {
-        getDataWatcher().updateObject(NAME, name);
         String newName = "";
 
         if ("Herobrine".equals(name)) {
-            getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("Herobrine Damage Bonus", 1, 2));
-            getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, 2));
-        }
+			getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).applyModifier(new AttributeModifier("Herobrine Damage Bonus", 1, 2));
+			getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).applyModifier(new AttributeModifier("Herobrine Speed Bonus", 0.5, 2));
+		}
 
         if ("direwolf20".equals(name)) {
             newName = "Soaryn";
@@ -528,10 +510,12 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
             newName = "direwolf20";
         }
 
-        if (newName != "") {
-            name = newName;
-        }
-    }
+		if(!newName.isEmpty())
+		{
+			name = newName;
+		}
+		dataWatcher.set(NAME, name);
+	}
 
     @Override
     public double getInterpolatedCapeX(float partialTickTime) {
@@ -550,19 +534,14 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 
     @Override
     public boolean isChild() {
-        return getDataWatcher().getWatchableObjectByte(CHILD) == 1;
-    }
+		return dataWatcher.get(CHILD) == 1;
+	}
 
     @Override
     protected void setSize(float width, float height) {
         super.setSize(width, height);
-        dataWatcher.updateObject(WIDTH, this.width);
-        dataWatcher.updateObject(HEIGHT, this.height);
-    }
-
-	public void setGraveMaster(BlockPos graveMaster)
-	{
-		this.graveMaster = graveMaster;
+		dataWatcher.set(WIDTH, this.width);
+		dataWatcher.set(HEIGHT, this.height);
 	}
 
 	public BlockPos getGraveMaster()
@@ -570,11 +549,23 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
 		return graveMaster;
 	}
 
-	class PlayerZombieMoveTargetPos {
-        private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
+	public void setGraveMaster(BlockPos graveMaster)
+	{
+		this.graveMaster = graveMaster;
+	}
 
-        public double posX;
-        public double posY;
+	/**
+	 * Returns false if this Entity is a boss, true otherwise.
+	 */
+	public boolean isNonBoss()
+	{
+		return false;
+	}
+
+	class PlayerZombieMoveTargetPos
+	{
+		public double posX;
+		public double posY;
         public double posZ;
         public double distX;
         public double distY;
@@ -583,6 +574,7 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
         public double aimX;
         public double aimY;
         public double aimZ;
+		private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
 
         public PlayerZombieMoveTargetPos() {
             this(0, 0, 0);
@@ -631,25 +623,26 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
                 // check there's nothing in the way
                 if (this.isBoxBlocked(box.offset(this.aimX * i, this.aimY * i, this.aimZ * i))) {
                     return false;
-                }
-            }
-            if (this.isBoxBlocked(box.offset(this.aimX * howFar, this.aimY * howFar, this.aimZ * howFar))) {
-                return false;
-            }
-            return true;
-        }
+				}
+			}
+			return !this.isBoxBlocked(box.offset(this.aimX * howFar, this.aimY * howFar, this.aimZ * howFar));
+		}
 
-    }
+	}
+
+
 
     class PlayerZombieMoveHelper extends EntityMoveHelper {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
         private int courseChangeCooldown = 0;
         private double closeEnough = 0.3D;
         private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
+		private boolean update;
 
-        public PlayerZombieMoveHelper() {
-            super(EntityPlayerZombie.this);
-        }
+		public PlayerZombieMoveHelper()
+		{
+			super(EntityPlayerZombie.this);
+		}
 
         @Override
         public void setMoveTo(double x, double y, double z, double speedIn) {
@@ -691,17 +684,20 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
             // abandon this movement if we have reached the target or there is no longer a clear path to the target
             if (!this.targetPos.isPathClear(5.0D)) {
                 //LogHelper.info(">>> Abandoning move target - way is blocked");
+
                 this.update = true;
             } else if (this.targetPos.dist < this.closeEnough) {
                 //LogHelper.info(">>> Arrived (close enough) dist:" + this.targetPos.dist);
                 this.update = true;
             }
-        }
+		}
 
-    }
+	}
 
-    // AI class for implementing the random flying behaviour
-    class AIPlayerZombieRandomFly extends EntityAIBase {
+
+
+	// AI class for implementing the random flying behaviour
+	class AIPlayerZombieRandomFly extends EntityAIBase {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
         private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
 
@@ -782,11 +778,12 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
             }
             return result;
         }
-    }
+	}
 
 
-    // AI class for implementing the behaviour to target and attack players
-    class AIPlayerZombieAttackTarget extends EntityAIBase {
+
+	// AI class for implementing the behaviour to target and attack players
+	class AIPlayerZombieAttackTarget extends EntityAIBase {
         private EntityPlayerZombie playerZombie = EntityPlayerZombie.this;
         private int attackTick = 0;
         private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
@@ -842,6 +839,4 @@ public class EntityPlayerZombie extends EntityFlying implements IRangedAttackMob
             return true;
         }
     }
-
-
 }

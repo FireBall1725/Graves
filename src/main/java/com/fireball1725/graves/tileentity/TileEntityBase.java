@@ -9,9 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -30,21 +30,22 @@ public class TileEntityBase extends TileEntity {
     public Packet getDescriptionPacket() {
         NBTTagCompound data = new NBTTagCompound();
         writeToNBT(data);
-        return new S35PacketUpdateTileEntity(this.pos, 1, data);
-    }
+		return new SPacketUpdateTileEntity(this.pos, 1, data);
+	}
 
     @Override
-    public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity s35PacketUpdateTileEntity) {
-        readFromNBT(s35PacketUpdateTileEntity.getNbtCompound());
-        worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
-        markForUpdate();
+	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity sPacketUpdateTileEntity)
+	{
+		readFromNBT(sPacketUpdateTileEntity.getNbtCompound());
+		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
+		markForUpdate();
     }
 
     public void markForUpdate() {
         if (this.renderedFragment > 0) {
             this.renderedFragment |= 0x1;
         } else if (this.worldObj != null) {
-            this.worldObj.markBlockForUpdate(this.pos);
+			this.worldObj.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 0);
 
             Block block = worldObj.getBlockState(this.pos).getBlock();
 

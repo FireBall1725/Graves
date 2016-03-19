@@ -3,43 +3,47 @@ package com.fireball1725.graves.block;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
-import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.*;
+import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import java.util.List;
 import java.util.Random;
 
 public class BlockGraveSlave extends BlockBase {
-	public static final PropertyBool isFoot = PropertyBool.create("isFoot");
-	public static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slaveType", SlaveType.class);
-    public BlockGraveSlave() {
-        super(Material.cloth);
+	public static final PropertyBool isFoot = PropertyBool.create("isfoot");
+	public static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slavetype", SlaveType.class);
+
+	public BlockGraveSlave()
+	{
+		super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(slaveType, SlaveType.LID).withProperty(isFoot, true).withProperty(BlockGraveStone.FACING, EnumFacing.NORTH));
-        setStepSound(Block.soundTypeStone);
-        setHardness(1.0F);
-        setResistance(10000.0F);
+		setStepSound(SoundType.STONE);
+		setHardness(1.0F);
+		setResistance(10000.0F);
         setTileEntity(TileEntityGraveSlave.class);
     }
 
 	@Override
-	protected BlockState createBlockState()
+	protected BlockStateContainer createBlockState()
 	{
-		return new BlockState(this, slaveType, isFoot, BlockGraveStone.FACING);
+		return new BlockStateContainer(this, slaveType, isFoot, BlockGraveStone.FACING);
 	}
 
 	@Override
@@ -55,50 +59,41 @@ public class BlockGraveSlave extends BlockBase {
 	}
 
 	@Override
-    public int getRenderType() {
-        return 3;
+	public EnumBlockRenderType getRenderType(IBlockState state)
+	{
+		return EnumBlockRenderType.MODEL;
 	}
 
 	@Override
-	public ItemStack getPickBlock(MovingObjectPosition target, World world, BlockPos pos, EntityPlayer player)
+	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
 	{
 		TileEntityGraveSlave slave = TileTools.getTileEntity(world, pos, TileEntityGraveSlave.class);
 		if(slave == null)
 		{
 			return null;
 		}
-		return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(target, world, slave.getMasterBlock(), player);
+		return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(state, target, world, slave.getMasterBlock(), player);
 	}
 
-    @Override
-	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
+	@Override
+	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
 	{
-		AxisAlignedBB selectionBox;
-		if(worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone)
+		AxisAlignedBB selectionBox = new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, 1f);
+		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(source, pos, TileEntityGraveSlave.class);
+		if(graveSlave != null && graveSlave.getMasterBlock() != null)
 		{
-			selectionBox = AxisAlignedBB.fromBounds(0f, 0f, 0f, 1f, 1f, 1f);
+			EnumFacing facing = getActualState(state, source, pos).getValue(BlockGraveStone.FACING);
+			if(graveSlave.getMasterBlock().offset(facing).equals(pos))
+			{
+				selectionBox = new AxisAlignedBB(0, 0, 0, 1, .1425f, 1);
+			}
 		}
-		else
-		{
-			selectionBox = AxisAlignedBB.fromBounds(0, 0, 0, 1, .1425f, 1);
-		}
-		return selectionBox.offset(pos.getX(), pos.getY(), pos.getZ());
+		return selectionBox;//.offset(pos.getX(), pos.getY(), pos.getZ());
 	}
 
-    @Override
-	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
+	@Override
+	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity p_185477_6_)
 	{
-		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-		if(graveSlave != null && graveSlave.getMasterBlock() != null && graveSlave.getMasterBlock().up().getY() == pos.getY())
-		{
-			setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
-		} else {
-			setBlockBounds(0, 0, 0, 1, .1425f, 1);
-		}
-    }
-
-    @Override
-    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
         TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
         if (graveSlave != null && graveSlave.getMasterBlock() != null) {
             IBlockState masterState = worldIn.getBlockState(graveSlave.getMasterBlock());
@@ -109,72 +104,55 @@ public class BlockGraveSlave extends BlockBase {
             if (masterState.getBlock() instanceof BlockGraveStone) {
                 boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
                 if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone) {
-                    setBlockBounds(0f, 0f, 0f, 1f, 0.01f, 1f);
-                    super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+					addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 0.01f, 1f));
 					switch (facing)
 					{
 						case NORTH:
-							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
 							if(isFoot)
 							{
-								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
 							}
 							else
 							{
-								setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
 							}
 							break;
 						case SOUTH:
-							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
 							if(!isFoot)
 							{
-								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
 							}
 							else
 							{
-								setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
 							}
 							break;
 						case WEST:
-							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
 							if(isFoot)
 							{
-								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
 							}
 							else
 							{
-								setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
 							}
 							break;
 						case EAST:
-							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
 							if(!isFoot)
 							{
-								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
 							}
 							else
 							{
-								setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
 							}
 							break;
 					}
@@ -183,13 +161,11 @@ public class BlockGraveSlave extends BlockBase {
 				{
 					if(hasLid)
 					{
-						setBlockBounds(0, 0, 0, 1, .1425f, 1);
-						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0, 0, 0, 1, .1425f, 1));
 					}
 					else
 					{
-						setBlockBounds(0, 0, 0, .000001f, .000001f, .000001f);
-						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0, 0, 0, .000001f, .000001f, .000001f));
 					}
 				}
 			}
@@ -223,7 +199,7 @@ public class BlockGraveSlave extends BlockBase {
 					{
 						st = SlaveType.BOX;
 					}
-					else if(pos.equals(master.getPos().down().offset(masterFacing)))
+					else if(pos.equals(master.getPos().offset(masterFacing).down()))
 					{
 						st = SlaveType.BOXFOOT;
 					}
@@ -238,37 +214,22 @@ public class BlockGraveSlave extends BlockBase {
 		return super.getActualState(state, worldIn, pos);
 	}
 
-	@Override
-    public boolean addLandingEffects(WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
-        return super.addLandingEffects(worldObj, blockPosition, iblockstate, entity, numberOfParticles);
-	}
 
-	@Override
-	public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer)
-	{
-		return super.addHitEffects(worldObj, target, effectRenderer);
-	}
 
     @Override
-	public boolean addDestroyEffects(World world, BlockPos pos, EffectRenderer effectRenderer)
-	{
-		return super.addDestroyEffects(world, pos, effectRenderer);
-	}
-
-    @Override
-	public boolean isOpaqueCube()
+	public boolean isOpaqueCube(IBlockState state)
 	{
 		return false;
 	}
 
     @Override
-	public boolean isFullBlock()
+	public boolean isFullBlock(IBlockState state)
 	{
 		return false;
     }
 
     @Override
-	public boolean isFullCube()
+	public boolean isFullCube(IBlockState state)
 	{
 		return false;
     }

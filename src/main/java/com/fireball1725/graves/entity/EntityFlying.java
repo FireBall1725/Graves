@@ -2,8 +2,8 @@ package com.fireball1725.graves.entity;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public abstract class EntityFlying extends EntityMob

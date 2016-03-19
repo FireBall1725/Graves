@@ -4,7 +4,6 @@ import com.fireball1725.graves.block.BlockGraveStone;
 import com.fireball1725.graves.block.Blocks;
 import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.inventory.InternalDynamicInventory;
-import com.fireball1725.graves.tileentity.inventory.InternalInventory;
 import com.fireball1725.graves.tileentity.inventory.InventoryOperation;
 import com.fireball1725.graves.util.TileTools;
 import com.mojang.authlib.GameProfile;
@@ -17,7 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.Packet;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 import java.util.Random;
@@ -47,8 +46,8 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     public void setHasLid(boolean hasLid) {
         this.hasLid = hasLid;
         worldObj.setBlockState(pos, worldObj.getBlockState(pos).withProperty(BlockGraveStone.HASLID, false));
-        worldObj.markBlockForUpdate(pos);
-    }
+		worldObj.notifyBlockUpdate(pos, getBlockState(), getBlockState(), 0);
+	}
 
     public GameProfile getPlayerProfile() {
         return playerProfile;
@@ -168,7 +167,8 @@ public class TileEntityGraveStone extends TileEntityInventoryBase {
     }
 
     @Override
-    public IChatComponent getDisplayName() {
-        return null;
-    }
+	public ITextComponent getDisplayName()
+	{
+		return null;
+	}
 }

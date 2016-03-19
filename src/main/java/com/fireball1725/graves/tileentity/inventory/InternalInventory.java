@@ -1,13 +1,11 @@
 package com.fireball1725.graves.tileentity.inventory;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.util.Platform;
 import com.fireball1725.graves.util.iterators.InventoryIterator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.Iterator;
 
@@ -183,7 +181,8 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
     }
 
     @Override
-    public IChatComponent getDisplayName() {
-        return null;
-    }
+	public ITextComponent getDisplayName()
+	{
+		return null;
+	}
 }

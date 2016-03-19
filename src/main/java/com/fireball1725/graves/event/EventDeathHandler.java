@@ -10,16 +10,14 @@ import com.fireball1725.graves.helpers.SafeBlockReplacer;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -28,6 +26,23 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.List;
 
 public class EventDeathHandler {
+	/**
+	 * @param mod    Your @Mod.instance object.
+	 * @param player The player we are setting the gps for.
+	 * @param pos    The destination position.
+	 * @param text   The short description of the destination
+	 */
+
+	public static void sendTomTomPos(Object mod, EntityPlayer player, BlockPos pos, String text)
+	{
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setLong("location", pos.toLong());
+		tag.setLong("uuid-most", player.getUniqueID().getMostSignificantBits());
+		tag.setLong("uuid-least", player.getUniqueID().getLeastSignificantBits());
+		tag.setString("text", text);
+		FMLInterModComms.sendRuntimeMessage(mod, "tomtom", "setPointer", tag);
+	}
+
     @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
     public void onPlayerDrops(PlayerDropsEvent event) {
 
@@ -101,21 +116,4 @@ public class EventDeathHandler {
 
         event.drops.clear();
     }
-
-	/**
-	 * @param mod Your @Mod.instance object.
-	 * @param player The player we are setting the gps for.
-	 * @param pos The destination position.
-	 * @param text The short description of the destination
-	 */
-
-	public static void sendTomTomPos(Object mod, EntityPlayer player, BlockPos pos, String text)
-	{
-		NBTTagCompound tag = new NBTTagCompound();
-		tag.setLong("location", pos.toLong());
-		tag.setLong("uuid-most", player.getUniqueID().getMostSignificantBits());
-		tag.setLong("uuid-least", player.getUniqueID().getLeastSignificantBits());
-		tag.setString("text", text);
-		FMLInterModComms.sendRuntimeMessage(mod, "tomtom", "setPointer", tag);
-	}
 }
