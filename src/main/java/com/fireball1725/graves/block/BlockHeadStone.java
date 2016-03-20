@@ -135,16 +135,19 @@ public class BlockHeadStone extends BlockBase {
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
 	{
 		IBlockState astate = source.getBlockState(pos);
-		switch(astate.getValue(FACING))
+		if(astate.getBlock() instanceof BlockHeadStone)
 		{
-			case NORTH:
-				return new AxisAlignedBB(.1f, 0f, 0f, .9f, .95f, .3f);
-			case SOUTH:
-				return new AxisAlignedBB(.1f, 0f, .7f, .9f, .95f, 1f);
-			case WEST:
-				return new AxisAlignedBB(0f, 0f, .1f, .3f, .95f, .9f);
-			case EAST:
-				return new AxisAlignedBB(.7f, 0f, .1f, 1f, .95f, .9f);
+			switch(astate.getValue(FACING))
+			{
+				case NORTH:
+					return new AxisAlignedBB(.1f, 0f, 0f, .9f, .95f, .3f);
+				case SOUTH:
+					return new AxisAlignedBB(.1f, 0f, .7f, .9f, .95f, 1f);
+				case WEST:
+					return new AxisAlignedBB(0f, 0f, .1f, .3f, .95f, .9f);
+				case EAST:
+					return new AxisAlignedBB(.7f, 0f, .1f, 1f, .95f, .9f);
+			}
 		}
 		return null;
 	}
