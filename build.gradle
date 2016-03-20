@@ -59,7 +59,7 @@ minecraft {
     replace "@MCVERSION@", minecraft_version
 
     runDir = "run"
-    mappings = "snapshot_20160312"
+    mappings = mcp_mappings
 }
 
 processResources
