@@ -143,6 +143,6 @@ public class TileEntityBase extends TileEntity {
     }
 
     public IBlockState getBlockState() {
-        return worldObj.getBlockState(pos);
-    }
+		return worldObj.getBlockState(pos).getActualState(worldObj, pos);
+	}
 }

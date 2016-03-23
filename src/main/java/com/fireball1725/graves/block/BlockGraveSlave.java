@@ -40,6 +40,40 @@ public class BlockGraveSlave extends BlockBase {
         setTileEntity(TileEntityGraveSlave.class);
     }
 
+	@SuppressWarnings("Duplicates")
+	public static IBlockState getActualStatePre(IBlockState state, IBlockAccess worldIn, BlockPos pos, BlockPos masterPos)
+	{
+		if(masterPos != null)
+		{
+			TileEntityGraveStone master = TileTools.getTileEntity(worldIn, masterPos, TileEntityGraveStone.class);
+			if(master != null)
+			{
+				IBlockState masterState = master.getBlockState();
+				EnumFacing masterFacing = masterState.getValue(BlockGraveStone.FACING);
+
+				SlaveType st = SlaveType.NORENDER;
+				if(pos.offset(masterFacing.getOpposite()).up().equals(master.getPos()))
+				{
+					st = SlaveType.BOXFOOT;
+				}
+				if(pos.up().equals(master.getPos()))
+				{
+					st = SlaveType.BOX;
+				}
+				if(master.getPos().offset(masterFacing).equals(pos) && master.getHasLid())
+				{
+					st = SlaveType.LID;
+				}
+
+				return state
+						.withProperty(slaveType, st)
+						.withProperty(isFoot, !pos.up().equals(master.getPos()))
+						.withProperty(BlockGraveStone.FACING, master.getFacing());
+			}
+		}
+		return null;
+	}
+
 	@Override
 	protected BlockStateContainer createBlockState()
 	{
@@ -80,10 +114,10 @@ public class BlockGraveSlave extends BlockBase {
 	{
 		AxisAlignedBB selectionBox = new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, 1f);
 		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(source, pos, TileEntityGraveSlave.class);
-		if(graveSlave != null && graveSlave.getMasterBlock() != null)
+		if(graveSlave != null)
 		{
-			EnumFacing facing = getActualState(state, source, pos).getValue(BlockGraveStone.FACING);
-			if(graveSlave.getMasterBlock().offset(facing).equals(pos))
+			SlaveType st = getActualState(state, source, pos).getValue(slaveType);
+			if(st == SlaveType.LID || st == SlaveType.NORENDER)
 			{
 				selectionBox = new AxisAlignedBB(0, 0, 0, 1, .1425f, 1);
 			}
@@ -95,83 +129,81 @@ public class BlockGraveSlave extends BlockBase {
 	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity p_185477_6_)
 	{
         TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-        if (graveSlave != null && graveSlave.getMasterBlock() != null) {
-            IBlockState masterState = worldIn.getBlockState(graveSlave.getMasterBlock());
-            IBlockState actualState = masterState.getBlock().getActualState(masterState, worldIn, graveSlave.getMasterBlock());
-			EnumFacing facing = getActualState(state, worldIn, pos).getValue(BlockGraveStone.FACING);
-            float pixel = 0.0625f;
+		if(graveSlave != null)
+		{
+			IBlockState actualState = getActualState(state, worldIn, pos);
+			EnumFacing facing = actualState.getValue(BlockGraveStone.FACING);
+
+			float pixel = 0.0625f;
 			boolean isFoot = worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave;
-            if (masterState.getBlock() instanceof BlockGraveStone) {
-                boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
-                if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone) {
-					addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 0.01f, 1f));
-					switch (facing)
-					{
-						case NORTH:
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
-							if(isFoot)
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
-							}
-							else
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
-							}
-							break;
-						case SOUTH:
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
-							if(!isFoot)
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
-							}
-							else
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
-							}
-							break;
-						case WEST:
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
-							if(isFoot)
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
-							}
-							else
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
-							}
-							break;
-						case EAST:
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
-							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
-							if(!isFoot)
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
-							}
-							else
-							{
-								addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
-							}
-							break;
-					}
-				}
-				else
+			SlaveType type = actualState.getValue(slaveType);
+			if(type == SlaveType.BOX || type == SlaveType.BOXFOOT)
+			{
+				addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 0.01f, 1f));
+				switch(facing)
 				{
-					if(hasLid)
-					{
-						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0, 0, 0, 1, .1425f, 1));
-					}
-					else
-					{
-						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0, 0, 0, .000001f, .000001f, .000001f));
-					}
+					case NORTH:
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
+						if(isFoot)
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
+						}
+						else
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
+						}
+						break;
+					case SOUTH:
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
+						if(!isFoot)
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
+						}
+						else
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
+						}
+						break;
+					case WEST:
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
+						if(isFoot)
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
+						}
+						else
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
+						}
+						break;
+					case EAST:
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, 1f, 1f, pixel));
+						addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 1f - pixel, 1f, 1f, 1f));
+						if(!isFoot)
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0f, 0f, 0f, pixel, 1f, 1f));
+						}
+						else
+						{
+							addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(1f - pixel, 0f, 0f, 1f, 1f, 1f));
+						}
+						break;
 				}
+			}
+			if(type == SlaveType.NORENDER)
+			{
+				addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0, 0, 0, 0, 0, 0));
+			}
+			if(type == SlaveType.LID)
+			{
+				addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(0, 0, 0, 1, .1425f, 1));
 			}
 		}
 	}
 
+	@SuppressWarnings("Duplicates")
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
 	{
@@ -183,31 +215,27 @@ public class BlockGraveSlave extends BlockBase {
 				TileEntityGraveStone master = TileTools.getTileEntity(worldIn, slave.getMasterBlock(), TileEntityGraveStone.class);
 				if(master != null)
 				{
-					IBlockState masterState = worldIn.getBlockState(slave.getMasterBlock());
-					IBlockState masterActualState = masterState.getBlock().getActualState(masterState, worldIn, slave.getMasterBlock());
-					EnumFacing masterFacing = masterActualState.getValue(BlockGraveStone.FACING);
+					IBlockState masterState = master.getBlockState();
+					EnumFacing masterFacing = masterState.getValue(BlockGraveStone.FACING);
 
 					SlaveType st = SlaveType.NORENDER;
-					if(pos.equals(master.getPos().offset(masterFacing)))
+					if(pos.offset(masterFacing.getOpposite()).up().equals(master.getPos()))
 					{
-						if(masterActualState.getValue(BlockGraveStone.HASLID))
-						{
-							st = SlaveType.LID;
-						}
+						st = SlaveType.BOXFOOT;
 					}
-					else if(pos.equals(master.getPos().down()))
+					if(pos.up().equals(master.getPos()))
 					{
 						st = SlaveType.BOX;
 					}
-					else if(pos.equals(master.getPos().offset(masterFacing).down()))
+					if(master.getPos().offset(masterFacing).equals(pos) && master.getHasLid())
 					{
-						st = SlaveType.BOXFOOT;
+						st = SlaveType.LID;
 					}
 
 					return getDefaultState()
 							.withProperty(slaveType, st)
-							.withProperty(isFoot, !pos.equals(slave.getMasterBlock().down()))
-							.withProperty(BlockGraveStone.FACING, masterFacing);
+							.withProperty(isFoot, !pos.up().equals(master.getPos()))
+							.withProperty(BlockGraveStone.FACING, master.getFacing());
 				}
 			}
 		}

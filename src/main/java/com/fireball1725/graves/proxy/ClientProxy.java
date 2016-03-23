@@ -6,7 +6,6 @@ import com.fireball1725.graves.client.render.TileEntityHeadStoneRenderer;
 import com.fireball1725.graves.client.render.entity.EntityRenderers;
 import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
 import com.fireball1725.graves.entity.EntityPlayerZombie;
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import net.minecraft.client.Minecraft;
@@ -24,9 +23,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void registerBlocks() {
         super.registerBlocks();
-		LogHelper.info(">>>: registering blockstate jsons");
-        OBJLoader.instance.addDomain(ModInfo.MOD_ID);
-        Item graveItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block);
+		OBJLoader.INSTANCE.addDomain(ModInfo.MOD_ID);
+		Item graveItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE.block);
         ModelLoader.setCustomModelResourceLocation(graveItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":gravestone", "inventory"));
 		graveItem = Item.getItemFromBlock(Blocks.BLOCK_GRAVESTONE_SLAVE.block);
 		ModelLoader.setCustomModelResourceLocation(graveItem, 0, new ModelResourceLocation(ModInfo.MOD_ID + ":graveslave", "inventory"));

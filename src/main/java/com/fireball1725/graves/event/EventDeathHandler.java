@@ -81,10 +81,9 @@ public class EventDeathHandler {
 				if (graveStone != null)
 				{
 					graveStone.addGraveItems(event.drops);
-//					event.drops.clear();
 					graveStone.setHasLid(true);
 					spawnGrave = false;
-					LogHelper.info(">>> : Killed by zombie added drops to grave");
+					//					LogHelper.info(">>> : Killed by zombie added drops to grave");
 				}
 			}
 		}

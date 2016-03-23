@@ -1,7 +1,6 @@
 package com.fireball1725.graves.tileentity.inventory;
 
 import com.fireball1725.graves.util.Platform;
-import com.fireball1725.graves.util.iterators.InventoryIterator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -10,10 +9,11 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class InternalDynamicInventory implements IInventory, Iterable<ItemStack>, IInventoryCustom {
-    protected final ArrayList<ItemStack> inventory;
-    public boolean enableClientEvents = false;
+	protected final List<ItemStack> inventory;
+	public boolean enableClientEvents = false;
     protected IInventoryHandler inventoryHandler;
     protected int maxSize;
 
@@ -63,8 +63,8 @@ public class InternalDynamicInventory implements IInventory, Iterable<ItemStack>
                 this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.decreaseStackSize, newStack, null);
             }
 
-            this.markDirty();
-            return newStack;
+			//            this.markDirty();
+			return newStack;
         }
 
         return null;
@@ -77,24 +77,25 @@ public class InternalDynamicInventory implements IInventory, Iterable<ItemStack>
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack itemStack) {
-        if (inventory.size() != 0 && inventory.size() >= slot) {
-            this.inventory.set(slot, itemStack);
+		ItemStack removed = this.inventory.get(slot);
+		if(inventory.size() >= slot)
+		{
+			this.inventory.set(slot, itemStack);
         } else {
             this.inventory.add(itemStack);
         }
 
-        //this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.setInventorySlotContents, removed, added);
+		this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.setInventorySlotContents, removed, itemStack);
 
-        this.markDirty();
-    }
+		//        this.markDirty();
+	}
 
     public void addInventorySlotContents(ItemStack itemStack) {
-        this.inventory.add(itemStack);
-
-        //this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.setInventorySlotContents, removed, added);
-
-        this.markDirty();
-    }
+		int slot = this.inventory.size();
+		this.inventory.add(itemStack);
+		this.inventoryHandler.onChangeInventory(this, slot, InventoryOperation.setInventorySlotContents, null, itemStack);
+		//        this.markDirty();
+	}
 
     @Override
     public int getInventoryStackLimit() {
@@ -150,14 +151,14 @@ public class InternalDynamicInventory implements IInventory, Iterable<ItemStack>
     }
 
     @Override
-    public void clear() {
-
-    }
+	public void clear()
+	{
+	}
 
     @Override
     public Iterator<ItemStack> iterator() {
-        return new InventoryIterator(this);
-    }
+		return inventory.iterator();
+	}
 
     public void setMaxStackSize(int s) {
         this.maxSize = s;

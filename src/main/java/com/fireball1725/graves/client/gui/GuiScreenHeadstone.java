@@ -1,6 +1,5 @@
 package com.fireball1725.graves.client.gui;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.network.PacketHandler;
 import com.fireball1725.graves.network.messages.MessageSetHeadstoneName;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
@@ -56,7 +55,6 @@ public class GuiScreenHeadstone extends GuiScreen {
             case 28:
             case 156:
                 name = name + "\\n";
-                LogHelper.info(">>> new Line, " + name);
                 break;
             default:
 

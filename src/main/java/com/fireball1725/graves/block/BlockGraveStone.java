@@ -103,8 +103,8 @@ public class BlockGraveStone extends BlockBase {
 		return new AxisAlignedBB(0, 0, 0, 1, .1425f, 1);
 	}
 
-    @Override
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
+	@Override
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
         return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
@@ -113,11 +113,14 @@ public class BlockGraveStone extends BlockBase {
         super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
 
         TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, blockPos, TileEntityGraveStone.class);
-        graveStoneTileEntity.breakBlocks();
-        graveStoneTileEntity.setPlayerProfile(((EntityPlayer) placer).getGameProfile());
-    }
+		if(graveStoneTileEntity != null)
+		{
+			graveStoneTileEntity.breakBlocks();
+			graveStoneTileEntity.setPlayerProfile(((EntityPlayer) placer).getGameProfile());
+		}
+	}
 
-    @Override
+	@Override
 	public boolean isOpaqueCube(IBlockState state)
 	{
 		return false;
@@ -136,7 +139,7 @@ public class BlockGraveStone extends BlockBase {
 	}
 
     @Override
-    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
-
-    }
+	public void onBlockExploded(World world, BlockPos pos, Explosion explosion)
+	{
+	}
 }

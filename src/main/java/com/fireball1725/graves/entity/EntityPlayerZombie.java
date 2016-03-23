@@ -478,8 +478,14 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
     }
 
     public void setProfile(GameProfile profile) {
-        this.profile = profile;
-    }
+		if(profile != null)
+		{
+			this.profile = profile;
+			this.setUsername(profile.getName());
+			return;
+		}
+		this.setUsername("FireBall1725");
+	}
 
     @Override
     public String getUsername() {
@@ -637,7 +643,6 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
         private int courseChangeCooldown = 0;
         private double closeEnough = 0.3D;
         private PlayerZombieMoveTargetPos targetPos = new PlayerZombieMoveTargetPos();
-		private boolean update;
 
 		public PlayerZombieMoveHelper()
 		{
@@ -652,8 +657,9 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 
         @Override
         public void onUpdateMoveHelper() {
-            if (!this.update) {
-                return;
+			if(!this.isUpdating())
+			{
+				return;
             }
 
             if (this.courseChangeCooldown-- > 0) {
@@ -679,16 +685,6 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
                 float strafeAmount = (this.playerZombie.getRNG().nextFloat() * 0.4F) - 0.2F;
                 this.playerZombie.motionX += (double) (strafeAmount * MathHelper.cos(this.playerZombie.rotationYaw * (float) Math.PI / 180.0F));
                 this.playerZombie.motionZ += (double) (strafeAmount * MathHelper.sin(this.playerZombie.rotationYaw * (float) Math.PI / 180.0F));
-            }
-
-            // abandon this movement if we have reached the target or there is no longer a clear path to the target
-            if (!this.targetPos.isPathClear(5.0D)) {
-                //LogHelper.info(">>> Abandoning move target - way is blocked");
-
-                this.update = true;
-            } else if (this.targetPos.dist < this.closeEnough) {
-                //LogHelper.info(">>> Arrived (close enough) dist:" + this.targetPos.dist);
-                this.update = true;
             }
 		}
 

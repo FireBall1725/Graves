@@ -6,10 +6,10 @@ import net.minecraft.item.ItemStack;
 import java.util.Iterator;
 
 public class InventoryIterator implements Iterator<ItemStack> {
-    final IInventory inventory;
-    final int size;
+	private final IInventory inventory;
+	private final int size;
 
-    int i = 0;
+	private int i = -1;
 
     public InventoryIterator(IInventory inventory) {
         this.inventory = inventory;
@@ -18,15 +18,13 @@ public class InventoryIterator implements Iterator<ItemStack> {
 
     @Override
     public boolean hasNext() {
-        return this.i < this.size;
-    }
+		return this.i + 1 < this.size;
+	}
 
     @Override
     public ItemStack next() {
-        ItemStack result = this.inventory.getStackInSlot(this.i);
-        this.i++;
-        return result;
-    }
+		return inventory.getStackInSlot(this.i++);
+	}
 
     @Override
     public void remove() {

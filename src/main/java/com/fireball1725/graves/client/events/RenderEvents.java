@@ -95,6 +95,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 
 		renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		//preRenderDamagedBlocks BEGIN
+		GlStateManager.pushMatrix();
 		GlStateManager.tryBlendFuncSeparate(774, 768, 1, 0);
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
@@ -102,7 +103,6 @@ public class RenderEvents implements IResourceManagerReloadListener
 		GlStateManager.enablePolygonOffset();
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.enableAlpha();
-		GlStateManager.pushMatrix();
 		//preRenderDamagedBlocks END
 
 		worldRendererIn.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -135,7 +135,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 		GlStateManager.disableAlpha();
 		GlStateManager.doPolygonOffset(0.0F, 0.0F);
 		GlStateManager.disablePolygonOffset();
-		GlStateManager.enableAlpha();
+		GlStateManager.disableBlend();
 		GlStateManager.depthMask(true);
 		GlStateManager.popMatrix();
 		// postRenderDamagedBlocks END
