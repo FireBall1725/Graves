@@ -72,7 +72,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 					drawBlockDamageTexture(Tessellator.getInstance(),
 							Tessellator.getInstance().getBuffer(),
 							player,
-							event.partialTicks,
+							event.getPartialTicks(),
 							world,
 							blocks);
 				}

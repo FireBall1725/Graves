@@ -46,8 +46,8 @@ public class EventDeathHandler {
     @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
     public void onPlayerDrops(PlayerDropsEvent event) {
 
-        World world = event.entityPlayer.worldObj;
-        if (world.isRemote)
+		World world = event.getEntityPlayer().worldObj;
+		if (world.isRemote)
             return;
 
         if (event.isCanceled()) {
@@ -62,7 +62,7 @@ public class EventDeathHandler {
                 return;
         }
 
-        final List<EntityItem> itemsList = event.drops;
+		final List<EntityItem> itemsList = event.getDrops();
 
         // If there are no items, then cancel spawning a grave
         if (itemsList.isEmpty())
@@ -70,17 +70,16 @@ public class EventDeathHandler {
 
         boolean spawnGrave = true;
 
-
-		if (event.entityLiving instanceof EntityPlayer)
+		if(event.getEntityLiving() instanceof EntityPlayer)
 		{
-			if (event.source.getEntity() != null && event.source.getEntity() instanceof EntityPlayerZombie)
+			if(event.getSource().getEntity() != null && event.getSource().getEntity() instanceof EntityPlayerZombie)
 			{
-				EntityPlayerZombie zombie = (EntityPlayerZombie) event.source.getEntity();
+				EntityPlayerZombie zombie = (EntityPlayerZombie) event.getSource().getEntity();
 				BlockPos gravePos = zombie.getGraveMaster();
-				TileEntityGraveStone graveStone = TileTools.getTileEntity(event.entityLiving.worldObj, gravePos, TileEntityGraveStone.class);
+				TileEntityGraveStone graveStone = TileTools.getTileEntity(event.getEntityLiving().worldObj, gravePos, TileEntityGraveStone.class);
 				if (graveStone != null)
 				{
-					graveStone.addGraveItems(event.drops);
+					graveStone.addGraveItems(itemsList);
 					graveStone.setHasLid(true);
 					spawnGrave = false;
 					//					LogHelper.info(">>> : Killed by zombie added drops to grave");
@@ -89,30 +88,30 @@ public class EventDeathHandler {
 		}
 
         if (spawnGrave) {
-            EnumFacing facing = event.entityPlayer.getHorizontalFacing();
-            IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
+			EnumFacing facing = event.getEntityPlayer().getHorizontalFacing();
+			IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
 
-			BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition(), facing);
+			BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.getEntityPlayer().getPosition(), facing);
 
-			sendTomTomPos(Graves.instance, event.entityPlayer, safePos, "Grave this way!");
+			sendTomTomPos(Graves.instance, event.getEntityPlayer(), safePos, "Grave this way!");
 
             world.setBlockState(safePos, state);
 
             TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
             graveStoneTileEntity.addGraveItems(itemsList);
             graveStoneTileEntity.breakBlocks();
-            graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
+			graveStoneTileEntity.setPlayerProfile(event.getEntityPlayer().getGameProfile());
 
             // Adding Headstone
             world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
             TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
             if (tileEntityHeadStone != null) {
-                tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
-                //tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
+				tileEntityHeadStone.setCustomName(event.getEntityPlayer().getDisplayName().getFormattedText());
+				//tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
             }
             // End of adding headstone
         }
 
-        event.drops.clear();
-    }
+		event.getDrops().clear();
+	}
 }

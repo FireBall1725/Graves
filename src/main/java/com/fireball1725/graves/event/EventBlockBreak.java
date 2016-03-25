@@ -12,20 +12,20 @@ public class EventBlockBreak {
     @SubscribeEvent
 	public void onBreakBlock(BlockEvent.BreakEvent event)
 	{
-		if(!(event.state.getBlock() instanceof BlockGraveStone || event.state.getBlock() instanceof BlockGraveSlave))
+		if(!(event.getState().getBlock() instanceof BlockGraveStone || event.getState().getBlock() instanceof BlockGraveSlave))
 		{ return; }
 
 		TileEntityGraveStone graveStone = null;
 
-		if(event.state.getBlock() instanceof BlockGraveSlave)
+		if(event.getState().getBlock() instanceof BlockGraveSlave)
 		{
-			TileEntityGraveSlave slave = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveSlave.class);
+			TileEntityGraveSlave slave = TileTools.getTileEntity(event.getWorld(), event.getPos(), TileEntityGraveSlave.class);
 			if(slave != null)
-			{ graveStone = TileTools.getTileEntity(event.world, slave.getMasterBlock(), TileEntityGraveStone.class); }
+			{ graveStone = TileTools.getTileEntity(event.getWorld(), slave.getMasterBlock(), TileEntityGraveStone.class); }
 		}
 		else
 		{
-			graveStone = TileTools.getTileEntity(event.world, event.pos, TileEntityGraveStone.class);
+			graveStone = TileTools.getTileEntity(event.getWorld(), event.getPos(), TileEntityGraveStone.class);
 		}
 
 		if(graveStone == null)
@@ -38,10 +38,10 @@ public class EventBlockBreak {
 		}
 		else
 		{
-			event.world.destroyBlock(graveStone.getPos().down(), false);
-			event.world.destroyBlock(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)), false);
-			event.world.destroyBlock(graveStone.getPos().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)), false);
-			event.world.destroyBlock(graveStone.getPos(), true);
+			event.getWorld().destroyBlock(graveStone.getPos().down(), false);
+			event.getWorld().destroyBlock(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)), false);
+			event.getWorld().destroyBlock(graveStone.getPos().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)), false);
+			event.getWorld().destroyBlock(graveStone.getPos(), true);
 			event.setCanceled(true);
 		}
 	}

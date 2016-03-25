@@ -10,8 +10,8 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public enum Blocks {
-    BLOCK_GRAVESTONE("gravestone", new BlockGraveStone()),
-    BLOCK_GRAVESTONE_SLAVE("graveslave", new BlockGraveSlave()),
+	BLOCK_GRAVESTONE("gravestone", new BlockGraveStone(), ModCreativeTabs.tabGraves),
+	BLOCK_GRAVESTONE_SLAVE("graveslave", new BlockGraveSlave()),
     BLOCK_GRAVE_HEADSTONE("headstone", new BlockHeadStone(), ItemHeadStone.class, ModCreativeTabs.tabGraves);
 
     private static boolean registered = false;

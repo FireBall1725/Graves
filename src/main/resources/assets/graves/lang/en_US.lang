@@ -1,0 +1,7 @@
+#Graves mod localization file for en_US
+#Blocks
+tile.headstone.name=Headstone
+tile.gravestone.name=Coffin
+
+#Creative tabs
+itemGroup.graves=Graves mod
