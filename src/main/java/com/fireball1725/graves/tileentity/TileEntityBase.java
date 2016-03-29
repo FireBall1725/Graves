@@ -30,21 +30,22 @@ public class TileEntityBase extends TileEntity {
     public Packet getDescriptionPacket() {
         NBTTagCompound data = new NBTTagCompound();
         writeToNBT(data);
-        return new S35PacketUpdateTileEntity(this.pos, 1, data);
-    }
+		return new S35PacketUpdateTileEntity(this.pos, 1, data);
+	}
 
     @Override
-    public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity s35PacketUpdateTileEntity) {
-        readFromNBT(s35PacketUpdateTileEntity.getNbtCompound());
-        worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
-        markForUpdate();
-    }
+	public void onDataPacket(NetworkManager networkManager, S35PacketUpdateTileEntity sPacketUpdateTileEntity)
+	{
+		readFromNBT(sPacketUpdateTileEntity.getNbtCompound());
+		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
+		markForUpdate();
+	}
 
     public void markForUpdate() {
         if (this.renderedFragment > 0) {
             this.renderedFragment |= 0x1;
         } else if (this.worldObj != null) {
-            this.worldObj.markBlockForUpdate(this.pos);
+			this.worldObj.markAndNotifyBlock(this.pos, worldObj.getChunkFromBlockCoords(this.pos), this.getBlockState(), this.getBlockState(), 3);
 
             Block block = worldObj.getBlockState(this.pos).getBlock();
 
@@ -142,6 +143,6 @@ public class TileEntityBase extends TileEntity {
     }
 
     public IBlockState getBlockState() {
-        return worldObj.getBlockState(pos);
-    }
+		return worldObj.getBlockState(pos).getBlock().getActualState(worldObj.getBlockState(pos), worldObj, pos);
+	}
 }

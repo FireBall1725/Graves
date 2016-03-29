@@ -2,23 +2,24 @@ package com.fireball1725.graves.block;
 
 import com.fireball1725.graves.reference.ModInfo;
 import com.fireball1725.graves.tileentity.TileEntityBase;
+import com.fireball1725.graves.tileentity.TileEntityInventoryBase;
 import com.fireball1725.graves.util.TileTools;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockBase extends BlockContainer {
     protected boolean isInventory = false;
@@ -28,9 +29,9 @@ public class BlockBase extends BlockContainer {
     protected BlockBase(Material material) {
         super(material);
 
-        setStepSound(Block.soundTypeStone);
-        setHardness(2.2F);
-        setResistance(5.0F);
+		//        setStepSound(SoundType.STONE);
+		setHardness(2.2F);
+		setResistance(5.0F);
         //setHarvestLevel("pickaxe", 0);
 
 
@@ -40,9 +41,11 @@ public class BlockBase extends BlockContainer {
     public TileEntity createNewTileEntity(World var1, int var2) {
         if (hasBlockTileEntity()) {
             try {
-                return (TileEntity) this.tileEntityType.newInstance();
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
+				return this.tileEntityType.newInstance();
+			}
+			catch(Throwable e)
+			{
+				throw new RuntimeException(e);
             }
         }
         return null;
@@ -61,58 +64,65 @@ public class BlockBase extends BlockContainer {
     }
 
     private void setTileProvider(boolean b) {
-        ReflectionHelper.setPrivateValue(Block.class, this, Boolean.valueOf(b), new String[]{"isTileProvider"});
-    }
+		ReflectionHelper.setPrivateValue(Block.class, this, Boolean.valueOf(b), "isTileProvider");
+	}
 
     public Class<? extends TileEntity> getTileEntityClass() {
         return this.tileEntityType;
     }
 
-    @Override
-    public void breakBlock(World world, BlockPos blockPos, IBlockState blockState) {
-        dropInventory(world, blockPos);
+	//    @Override
+	//    public void breakBlock(World world, BlockPos blockPos, IBlockState blockState) {
+	//        dropInventory(world, blockPos);
+	//
+	//        super.breakBlock(world, blockPos, blockState);
+	//    }
+	//
+	//    protected void dropInventory(World world, BlockPos blockPos) {
+	//        for (ItemStack itemStack : getDrops(world, blockPos, null, 0)) {
+	//
+	//            if (itemStack != null && itemStack.stackSize > 0) {
+	//                Random rand = new Random();
+	//
+	//                float dX = rand.nextFloat() * 0.8F + 0.1F;
+	//                float dY = rand.nextFloat() * 0.8F + 0.1F;
+	//                float dZ = rand.nextFloat() * 0.8F + 0.1F;
+	//
+	//                EntityItem entityItem = new EntityItem(world, blockPos.getX() + dX, blockPos.getY() + dY, blockPos.getZ() + dZ, itemStack.copy());
+	//
+	//                if (itemStack.hasTagCompound()) {
+	//                    entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
+	//                }
+	//
+	//                float factor = 0.05F;
+	//                entityItem.motionX = rand.nextGaussian() * factor;
+	//                entityItem.motionY = rand.nextGaussian() * factor + 0.2F;
+	//                entityItem.motionZ = rand.nextGaussian() * factor;
+	//                world.spawnEntityInWorld(entityItem);
+	//                itemStack.stackSize = 0;
+	//            }
+	//        }
+	//    }
 
-        super.breakBlock(world, blockPos, blockState);
-    }
+	@Override
+	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
+	{
+		TileEntityInventoryBase base = TileTools.getTileEntity(world, pos, TileEntityInventoryBase.class);
+		if(base != null)
+		{
+			List<ItemStack> drops = new ArrayList<ItemStack>();
+			IInventory iInventory = base.getInternalInventory();
+			for(int i = 0; i < iInventory.getSizeInventory(); i++)
+				drops.add(iInventory.getStackInSlot(i));
+			return drops;
+		}
+		return super.getDrops(world, pos, state, fortune);
+	}
 
-    protected void dropInventory(World world, BlockPos blockPos) {
-        TileEntity tileEntity = world.getTileEntity(blockPos);
-
-        if (!(tileEntity instanceof IInventory)) {
-            return;
-        }
-
-        IInventory inventory = (IInventory) tileEntity;
-
-        for (int i = 0; i < inventory.getSizeInventory(); i++) {
-            ItemStack itemStack = inventory.getStackInSlot(i);
-
-            if (itemStack != null && itemStack.stackSize > 0) {
-                Random rand = new Random();
-
-                float dX = rand.nextFloat() * 0.8F + 0.1F;
-                float dY = rand.nextFloat() * 0.8F + 0.1F;
-                float dZ = rand.nextFloat() * 0.8F + 0.1F;
-
-                EntityItem entityItem = new EntityItem(world, blockPos.getX() + dX, blockPos.getY() + dY, blockPos.getZ() + dZ, itemStack.copy());
-
-                if (itemStack.hasTagCompound()) {
-                    entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
-                }
-
-                float factor = 0.05F;
-                entityItem.motionX = rand.nextGaussian() * factor;
-                entityItem.motionY = rand.nextGaussian() * factor + 0.2F;
-                entityItem.motionZ = rand.nextGaussian() * factor;
-                world.spawnEntityInWorld(entityItem);
-                itemStack.stackSize = 0;
-            }
-        }
-    }
-
-    @Override
-    public String getUnlocalizedName() {
-        String blockName = getUnwrappedUnlocalizedName(super.getUnlocalizedName());
+	@Override
+	public String getUnlocalizedName()
+	{
+		String blockName = getUnwrappedUnlocalizedName(super.getUnlocalizedName());
 
         String test = String.format("tile.%s", blockName);
         return test.toLowerCase();
@@ -128,12 +138,16 @@ public class BlockBase extends BlockContainer {
 
         if (itemStack.hasDisplayName()) {
             TileEntityBase tileEntityBase = TileTools.getTileEntity(world, blockPos, TileEntityBase.class);
-            tileEntityBase.setCustomName(itemStack.getDisplayName());
-        }
-    }
+			if(tileEntityBase != null)
+			{
+				tileEntityBase.setCustomName(itemStack.getDisplayName());
+			}
+		}
+	}
 
-    @Override
-    public int getRenderType() {
-        return 3;
-    }
+	@Override
+	public int getRenderType()
+	{
+		return -1;
+	}
 }

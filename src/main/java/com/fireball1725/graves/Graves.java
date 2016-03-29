@@ -20,11 +20,9 @@ import java.util.concurrent.TimeUnit;
 public class Graves {
     @Mod.Instance(ModInfo.MOD_ID)
     public static Graves instance;
-
-    @SidedProxy(clientSide = ModInfo.CLIENT_PROXY_CLASS, serverSide = ModInfo.SERVER_PROXY_CLASS)
-    public static IProxy proxy;
-
     public static Configuration configuration;
+	@SidedProxy(clientSide = ModInfo.CLIENT_PROXY_CLASS, serverSide = ModInfo.SERVER_PROXY_CLASS)
+	private static IProxy proxy;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -34,26 +32,26 @@ public class Graves {
         // Setup Configuration
         proxy.registerConfiguration(event.getSuggestedConfigurationFile());
 
-        // Register Blocks
-        proxy.registerBlocks();
+		// Register Blocks
+		proxy.registerBlocks();
 
-        // Register Items
-        proxy.registerItems();
+		// Register Items
+		proxy.registerItems();
 
-        // Register Entities
-        proxy.registerEntities();
+		// Register Entities
+		proxy.registerEntities();
 
-        // Register Events
-        proxy.registerEvents();
+		// Register Events
+		proxy.registerEvents();
 
-        // Register Crafting Recipes
-        proxy.registerRecipes();
+		// Register Crafting Recipes
+		proxy.registerRecipes();
 
-        // Register Whitelist
-        proxy.registerWhiteList();
+		// Register Whitelist
+		proxy.registerWhiteList();
 
-        LogHelper.info("Pre Initalization ( ended after " + stopWatch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
-    }
+		LogHelper.info("Pre Initalization ( ended after " + stopWatch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
+	}
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {

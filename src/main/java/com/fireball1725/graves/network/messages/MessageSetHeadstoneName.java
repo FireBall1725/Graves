@@ -10,8 +10,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class MessageSetHeadstoneName implements IMessage {
-    protected BlockPos pos;
-    protected String playerName;
+	private BlockPos pos;
+	private String playerName;
 
     public MessageSetHeadstoneName() {
     }

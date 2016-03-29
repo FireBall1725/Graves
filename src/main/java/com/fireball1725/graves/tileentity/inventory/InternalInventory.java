@@ -1,22 +1,20 @@
 package com.fireball1725.graves.tileentity.inventory;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.util.Platform;
 import com.fireball1725.graves.util.iterators.InventoryIterator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IChatComponent;
 
 import java.util.Iterator;
 
 public class InternalInventory implements IInventory, Iterable<ItemStack> {
-    protected final int size;
-    protected final ItemStack[] inventory;
-    public boolean enableClientEvents = false;
-    protected IInventoryHandler inventoryHandler;
-    protected int maxSize;
+	private final int size;
+	private final ItemStack[] inventory;
+	private boolean enableClientEvents = false;
+	private IInventoryHandler inventoryHandler;
+	private int maxSize;
 
     public InternalInventory(IInventoryHandler inventory, int size) {
         this.size = size;
@@ -183,7 +181,8 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
     }
 
     @Override
-    public IChatComponent getDisplayName() {
-        return null;
-    }
+	public IChatComponent getDisplayName()
+	{
+		return null;
+	}
 }

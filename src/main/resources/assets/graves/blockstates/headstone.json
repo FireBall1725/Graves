@@ -13,7 +13,16 @@
     ],
     "inventory": [
       {
-        "transform": "forge:default-block"
+        "transform": {
+          "rotation": {
+            "y": 225
+          },
+          "translation": [
+            -0.25,
+            0,
+            0
+          ]
+        }
       }
     ],
     "facing": {

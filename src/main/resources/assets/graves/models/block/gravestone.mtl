@@ -1,24 +1,14 @@
-# Blender MTL File: 'grave.blend'
-# Material Count: 2
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 23.03.2016 14:46:27
 
 newmtl box
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.800000 0.800000
-Ks 0.164706 0.164706 0.164706
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd minecraft:blocks/stone_andesite_smooth
-
-newmtl inside
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.800000 0.800000 0.800000
-Ks 0.164706 0.164706 0.164706
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-map_Kd minecraft:blocks/wool_colored_red
+	Ns 96.0784
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 1.0000 1.0000 1.0000
+	Kd 0.8000 0.8000 0.8000
+	Ks 0.1647 0.1647 0.1647
+	Ke 0.0000 0.0000 0.0000

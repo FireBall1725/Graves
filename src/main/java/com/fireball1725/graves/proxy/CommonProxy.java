@@ -7,10 +7,8 @@ import com.fireball1725.graves.entity.Entities;
 import com.fireball1725.graves.event.EventBlockBreak;
 import com.fireball1725.graves.event.EventDeathHandler;
 import com.fireball1725.graves.helpers.BreakableWhiteListHelper;
-import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.io.File;

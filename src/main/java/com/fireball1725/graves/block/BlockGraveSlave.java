@@ -3,15 +3,12 @@ package com.fireball1725.graves.block;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,22 +16,57 @@ import net.minecraft.util.*;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 
 import java.util.List;
 import java.util.Random;
 
 public class BlockGraveSlave extends BlockBase {
-	public static final PropertyBool isFoot = PropertyBool.create("isFoot");
-	public static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slaveType", SlaveType.class);
-    public BlockGraveSlave() {
-        super(Material.cloth);
+	public static final PropertyBool isFoot = PropertyBool.create("isfoot");
+	public static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slavetype", SlaveType.class);
+
+	public BlockGraveSlave()
+	{
+		super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(slaveType, SlaveType.LID).withProperty(isFoot, true).withProperty(BlockGraveStone.FACING, EnumFacing.NORTH));
-        setStepSound(Block.soundTypeStone);
-        setHardness(1.0F);
-        setResistance(10000.0F);
-        setTileEntity(TileEntityGraveSlave.class);
+		setStepSound(soundTypeStone);
+		setHardness(1.0F);
+		setResistance(10000.0F);
+		setTileEntity(TileEntityGraveSlave.class);
     }
+
+	@SuppressWarnings("Duplicates")
+	public static IBlockState getActualStatePre(IBlockState state, IBlockAccess worldIn, BlockPos pos, BlockPos masterPos)
+	{
+		if(masterPos != null)
+		{
+			TileEntityGraveStone master = TileTools.getTileEntity(worldIn, masterPos, TileEntityGraveStone.class);
+			if(master != null)
+			{
+				IBlockState masterState = master.getBlockState();
+				EnumFacing masterFacing = masterState.getValue(BlockGraveStone.FACING);
+
+				SlaveType st = SlaveType.NORENDER;
+				if(pos.offset(masterFacing.getOpposite()).up().equals(master.getPos()))
+				{
+					st = SlaveType.BOXFOOT;
+				}
+				if(pos.up().equals(master.getPos()))
+				{
+					st = SlaveType.BOX;
+				}
+				if(master.getPos().offset(masterFacing).equals(pos) && master.getHasLid())
+				{
+					st = SlaveType.LID;
+				}
+
+				return state
+						.withProperty(slaveType, st)
+						.withProperty(isFoot, !pos.up().equals(master.getPos()))
+						.withProperty(BlockGraveStone.FACING, master.getFacing());
+			}
+		}
+		return null;
+	}
 
 	@Override
 	protected BlockState createBlockState()
@@ -45,7 +77,7 @@ public class BlockGraveSlave extends BlockBase {
 	@Override
 	public int getMetaFromState(IBlockState state)
 	{
-		return 0;
+		return 3;
 	}
 
 	@Override
@@ -55,8 +87,9 @@ public class BlockGraveSlave extends BlockBase {
 	}
 
 	@Override
-    public int getRenderType() {
-        return 3;
+	public int getRenderType()
+	{
+		return 3;
 	}
 
 	@Override
@@ -70,7 +103,7 @@ public class BlockGraveSlave extends BlockBase {
 		return world.getBlockState(slave.getMasterBlock()).getBlock().getPickBlock(target, world, slave.getMasterBlock(), player);
 	}
 
-    @Override
+	@Override
 	public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
 	{
 		AxisAlignedBB selectionBox;
@@ -85,117 +118,118 @@ public class BlockGraveSlave extends BlockBase {
 		return selectionBox.offset(pos.getX(), pos.getY(), pos.getZ());
 	}
 
-    @Override
+	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
 	{
 		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
 		if(graveSlave != null && graveSlave.getMasterBlock() != null && graveSlave.getMasterBlock().up().getY() == pos.getY())
 		{
 			setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
-		} else {
+		}
+		else
+		{
 			setBlockBounds(0, 0, 0, 1, .1425f, 1);
 		}
-    }
+	}
 
-    @Override
-    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
-        TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
-        if (graveSlave != null && graveSlave.getMasterBlock() != null) {
-            IBlockState masterState = worldIn.getBlockState(graveSlave.getMasterBlock());
-            IBlockState actualState = masterState.getBlock().getActualState(masterState, worldIn, graveSlave.getMasterBlock());
-			EnumFacing facing = getActualState(state, worldIn, pos).getValue(BlockGraveStone.FACING);
-            float pixel = 0.0625f;
+	@Override
+	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
+	{
+		TileEntityGraveSlave graveSlave = TileTools.getTileEntity(worldIn, pos, TileEntityGraveSlave.class);
+		if(graveSlave != null)
+		{
+			IBlockState actualState = getActualState(state, worldIn, pos);
+			EnumFacing facing = actualState.getValue(BlockGraveStone.FACING);
+
+			float pixel = 0.0625f;
 			boolean isFoot = worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave;
-            if (masterState.getBlock() instanceof BlockGraveStone) {
-                boolean hasLid = actualState.getValue(BlockGraveStone.HASLID);
-                if (worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveSlave || worldIn.getBlockState(pos.up()).getBlock() instanceof BlockGraveStone) {
-                    setBlockBounds(0f, 0f, 0f, 1f, 0.01f, 1f);
-                    super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-					switch (facing)
-					{
-						case NORTH:
-							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if(isFoot)
-							{
-								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							else
-							{
-								setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							break;
-						case SOUTH:
-							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if(!isFoot)
-							{
-								setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							else
-							{
-								setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							break;
-						case WEST:
-							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if(isFoot)
-							{
-								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							else
-							{
-								setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							break;
-						case EAST:
-							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
-							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							if(!isFoot)
-							{
-								setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							else
-							{
-								setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
-								super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-							}
-							break;
-					}
-				}
-				else
+			SlaveType type = actualState.getValue(slaveType);
+			if(type == SlaveType.BOX || type == SlaveType.BOXFOOT)
+			{
+				setBlockBounds(0f, 0f, 0f, 1f, 0.01f, 1f);
+				super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+				switch(facing)
 				{
-					if(hasLid)
-					{
-						setBlockBounds(0, 0, 0, 1, .1425f, 1);
+					case NORTH:
+						setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
 						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-					}
-					else
-					{
-						setBlockBounds(0, 0, 0, .000001f, .000001f, .000001f);
+						setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
 						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-					}
+						if(isFoot)
+						{
+							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						else
+						{
+							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						break;
+					case SOUTH:
+						setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						if(!isFoot)
+						{
+							setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						else
+						{
+							setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						break;
+					case WEST:
+						setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						if(isFoot)
+						{
+							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						else
+						{
+							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						break;
+					case EAST:
+						setBlockBounds(0f, 0f, 0f, 1f, 1f, pixel);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						setBlockBounds(0f, 0f, 1f - pixel, 1f, 1f, 1f);
+						super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						if(!isFoot)
+						{
+							setBlockBounds(0f, 0f, 0f, pixel, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						else
+						{
+							setBlockBounds(1f - pixel, 0f, 0f, 1f, 1f, 1f);
+							super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+						}
+						break;
 				}
+			}
+			if(type == SlaveType.NORENDER)
+			{
+				setBlockBounds(0, 0, 0, 0, 0, 0);
+				super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+			}
+			if(type == SlaveType.LID)
+			{
+				setBlockBounds(0, 0, 0, 1, .1425f, 1);
+				super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
 			}
 		}
 	}
 
+	@SuppressWarnings("Duplicates")
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
 	{
@@ -207,53 +241,34 @@ public class BlockGraveSlave extends BlockBase {
 				TileEntityGraveStone master = TileTools.getTileEntity(worldIn, slave.getMasterBlock(), TileEntityGraveStone.class);
 				if(master != null)
 				{
-					IBlockState masterState = worldIn.getBlockState(slave.getMasterBlock());
-					IBlockState masterActualState = masterState.getBlock().getActualState(masterState, worldIn, slave.getMasterBlock());
-					EnumFacing masterFacing = masterActualState.getValue(BlockGraveStone.FACING);
+					IBlockState masterState = master.getBlockState();
+					EnumFacing masterFacing = masterState.getValue(BlockGraveStone.FACING);
 
 					SlaveType st = SlaveType.NORENDER;
-					if(pos.equals(master.getPos().offset(masterFacing)))
+					if(pos.offset(masterFacing.getOpposite()).up().equals(master.getPos()))
 					{
-						if(masterActualState.getValue(BlockGraveStone.HASLID))
-						{
-							st = SlaveType.LID;
-						}
+						st = SlaveType.BOXFOOT;
 					}
-					else if(pos.equals(master.getPos().down()))
+					if(pos.up().equals(master.getPos()))
 					{
 						st = SlaveType.BOX;
 					}
-					else if(pos.equals(master.getPos().down().offset(masterFacing)))
+					if(master.getPos().offset(masterFacing).equals(pos) && master.getHasLid())
 					{
-						st = SlaveType.BOXFOOT;
+						st = SlaveType.LID;
 					}
 
 					return getDefaultState()
 							.withProperty(slaveType, st)
-							.withProperty(isFoot, !pos.equals(slave.getMasterBlock().down()))
-							.withProperty(BlockGraveStone.FACING, masterFacing);
+							.withProperty(isFoot, !pos.up().equals(master.getPos()))
+							.withProperty(BlockGraveStone.FACING, master.getFacing());
 				}
 			}
 		}
 		return super.getActualState(state, worldIn, pos);
 	}
 
-	@Override
-    public boolean addLandingEffects(WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
-        return super.addLandingEffects(worldObj, blockPosition, iblockstate, entity, numberOfParticles);
-	}
 
-	@Override
-	public boolean addHitEffects(World worldObj, MovingObjectPosition target, EffectRenderer effectRenderer)
-	{
-		return super.addHitEffects(worldObj, target, effectRenderer);
-	}
-
-    @Override
-	public boolean addDestroyEffects(World world, BlockPos pos, EffectRenderer effectRenderer)
-	{
-		return super.addDestroyEffects(world, pos, effectRenderer);
-	}
 
     @Override
 	public boolean isOpaqueCube()

@@ -5,9 +5,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public class ItemStackSrc {
-    public final Item item;
-    public final Block block;
-    public final int damage;
+	private final Item item;
+	private final Block block;
+	private final int damage;
 
     public ItemStackSrc(Item i, int dmg) {
         this.block = null;

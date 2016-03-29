@@ -1,6 +1,5 @@
 package com.fireball1725.graves.client.gui;
 
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.network.PacketHandler;
 import com.fireball1725.graves.network.messages.MessageSetHeadstoneName;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
@@ -9,12 +8,9 @@ import net.minecraft.util.ChatAllowedCharacters;
 
 import java.io.IOException;
 
-/**
- * Created by FusionLord on 1/21/2016.
- */
 public class GuiScreenHeadstone extends GuiScreen {
-    protected TileEntityHeadStone headStone;
-    protected String name;
+	private TileEntityHeadStone headStone;
+	private String name;
 
     public GuiScreenHeadstone(TileEntityHeadStone headStone) {
         super();
@@ -56,7 +52,6 @@ public class GuiScreenHeadstone extends GuiScreen {
             case 28:
             case 156:
                 name = name + "\\n";
-                LogHelper.info(">>> new Line, " + name);
                 break;
             default:
 

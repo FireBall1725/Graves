@@ -8,14 +8,14 @@ public class TileTools {
     /**
      * Gets tile entity at @BlockPos location
      *
-     * @param world    World
-     * @param blockPos Block Position
-     * @param tClass   Class of Tile Entity
-     * @param <T>
-     * @return Null is not the Tile Entity or the instance of the Tile Entity
-     */
-    public static <T> T getTileEntity(IBlockAccess world, BlockPos blockPos, Class<T> tClass) {
+	 * @param world    The World
+	 * @param blockPos Block Position
+	 * @param tClass   Class of TileEntity
+	 * @param <T> Generic Class Type
+	 * @return The TileEntity or Null if not the TileEntity
+	 */
+	public static <T> T getTileEntity(IBlockAccess world, BlockPos blockPos, Class<T> tClass) {
         TileEntity tileEntity = world.getTileEntity(blockPos);
-        return !tClass.isInstance(tileEntity) ? null : (T) tileEntity;
-    }
+		return !tClass.isInstance(tileEntity) ? null : tClass.cast(tileEntity);
+	}
 }

@@ -2,7 +2,6 @@ package com.fireball1725.graves.client.events;
 
 import com.fireball1725.graves.block.BlockGraveSlave;
 import com.fireball1725.graves.block.BlockGraveStone;
-import com.fireball1725.graves.helpers.LogHelper;
 import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
@@ -96,6 +95,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 
 		renderEngine.bindTexture(TextureMap.locationBlocksTexture);
 		//preRenderDamagedBlocks BEGIN
+		GlStateManager.pushMatrix();
 		GlStateManager.tryBlendFuncSeparate(774, 768, 1, 0);
 		GlStateManager.enableBlend();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
@@ -103,7 +103,6 @@ public class RenderEvents implements IResourceManagerReloadListener
 		GlStateManager.enablePolygonOffset();
 		GlStateManager.alphaFunc(516, 0.1F);
 		GlStateManager.enableAlpha();
-		GlStateManager.pushMatrix();
 		//preRenderDamagedBlocks END
 
 		worldRendererIn.begin(GL11.GL_QUADS, DefaultVertexFormats.BLOCK);
@@ -121,7 +120,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 			{
 				IBlockState iblockstate = world.getBlockState(blockpos);
 
-				if (iblockstate.getBlock().getMaterial() != Material.air)
+				if(iblockstate.getBlock().getMaterial() != Material.air)
 				{
 					TextureAtlasSprite textureatlassprite = this.destroyBlockIcons[progress];
 					BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
@@ -136,7 +135,7 @@ public class RenderEvents implements IResourceManagerReloadListener
 		GlStateManager.disableAlpha();
 		GlStateManager.doPolygonOffset(0.0F, 0.0F);
 		GlStateManager.disablePolygonOffset();
-		GlStateManager.enableAlpha();
+		GlStateManager.disableBlend();
 		GlStateManager.depthMask(true);
 		GlStateManager.popMatrix();
 		// postRenderDamagedBlocks END

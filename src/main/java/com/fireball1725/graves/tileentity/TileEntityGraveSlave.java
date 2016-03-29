@@ -4,7 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockPos;
 
 public class TileEntityGraveSlave extends TileEntityBase {
-    protected BlockPos masterBlock;
+	private BlockPos masterBlock;
 
     public TileEntityGraveSlave() {
         super();

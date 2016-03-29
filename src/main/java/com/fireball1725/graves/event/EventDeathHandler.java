@@ -10,7 +10,6 @@ import com.fireball1725.graves.helpers.SafeBlockReplacer;
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.util.TileTools;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +18,6 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -28,12 +26,30 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.util.List;
 
 public class EventDeathHandler {
-    @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
-    public void onPlayerDrops(PlayerDropsEvent event) {
+	/**
+	 * @param mod    Your @Mod.instance object.
+	 * @param player The player we are setting the gps for.
+	 * @param pos    The destination position.
+	 * @param text   The short description of the destination
+	 */
 
-        World world = event.entityPlayer.worldObj;
-        if (world.isRemote)
-            return;
+	public static void sendTomTomPos(Object mod, EntityPlayer player, BlockPos pos, String text)
+	{
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setLong("location", pos.toLong());
+		tag.setLong("uuid-most", player.getUniqueID().getMostSignificantBits());
+		tag.setLong("uuid-least", player.getUniqueID().getLeastSignificantBits());
+		tag.setString("text", text);
+		FMLInterModComms.sendRuntimeMessage(mod, "tomtom", "setPointer", tag);
+	}
+
+    @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
+    public void onPlayerDrops(PlayerDropsEvent event)
+	{
+
+		World world = event.entityPlayer.worldObj;
+		if(world.isRemote)
+			return;
 
         if (event.isCanceled()) {
             LogHelper.warn(">>>");
@@ -45,9 +61,9 @@ public class EventDeathHandler {
         if (gameRules.hasRule("keepInventory")) {
             if (gameRules.getBoolean("keepInventory"))
                 return;
-        }
+		}
 
-        final List<EntityItem> itemsList = event.drops;
+		final List<EntityItem> itemsList = event.drops;
 
         // If there are no items, then cancel spawning a grave
         if (itemsList.isEmpty())
@@ -55,28 +71,27 @@ public class EventDeathHandler {
 
         boolean spawnGrave = true;
 
-
-		if (event.entityLiving instanceof EntityPlayer)
+		if(event.entityLiving instanceof EntityPlayer)
 		{
-			if (event.source.getEntity() != null && event.source.getEntity() instanceof EntityPlayerZombie)
+			if(event.source.getEntity() != null && event.source.getEntity() instanceof EntityPlayerZombie)
 			{
 				EntityPlayerZombie zombie = (EntityPlayerZombie) event.source.getEntity();
 				BlockPos gravePos = zombie.getGraveMaster();
 				TileEntityGraveStone graveStone = TileTools.getTileEntity(event.entityLiving.worldObj, gravePos, TileEntityGraveStone.class);
 				if (graveStone != null)
 				{
-					graveStone.addGraveItems(event.drops);
-//					event.drops.clear();
+					graveStone.addGraveItems(itemsList);
 					graveStone.setHasLid(true);
 					spawnGrave = false;
-					LogHelper.info(">>> : Killed by zombie added drops to grave");
+					//					LogHelper.info(">>> : Killed by zombie added drops to grave");
 				}
 			}
 		}
 
-        if (spawnGrave) {
-            EnumFacing facing = event.entityPlayer.getHorizontalFacing();
-            IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
+        if(spawnGrave)
+		{
+			EnumFacing facing = event.entityPlayer.getHorizontalFacing();
+			IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
 
 			BlockPos safePos = SafeBlockReplacer.GetSafeGraveSite(world, event.entityPlayer.getPosition(), facing);
 
@@ -87,35 +102,19 @@ public class EventDeathHandler {
             TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, safePos, TileEntityGraveStone.class);
             graveStoneTileEntity.addGraveItems(itemsList);
             graveStoneTileEntity.breakBlocks();
-            graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
+			graveStoneTileEntity.setPlayerProfile(event.entityPlayer.getGameProfile());
 
             // Adding Headstone
             world.setBlockState(safePos.offset(facing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
             TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, safePos.offset(facing.getOpposite()), TileEntityHeadStone.class);
-            if (tileEntityHeadStone != null) {
-                tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
-                //tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
-            }
+            if (tileEntityHeadStone != null)
+			{
+				tileEntityHeadStone.setCustomName(event.entityPlayer.getDisplayName().getFormattedText());
+				//tileEntityHeadStone.setEulogy(event.source.getDeathMessage(event.entityPlayer).getFormattedText());
+			}
             // End of adding headstone
-        }
+		}
 
-        event.drops.clear();
-    }
-
-	/**
-	 * @param mod Your @Mod.instance object.
-	 * @param player The player we are setting the gps for.
-	 * @param pos The destination position.
-	 * @param text The short description of the destination
-	 */
-
-	public static void sendTomTomPos(Object mod, EntityPlayer player, BlockPos pos, String text)
-	{
-		NBTTagCompound tag = new NBTTagCompound();
-		tag.setLong("location", pos.toLong());
-		tag.setLong("uuid-most", player.getUniqueID().getMostSignificantBits());
-		tag.setLong("uuid-least", player.getUniqueID().getLeastSignificantBits());
-		tag.setString("text", text);
-		FMLInterModComms.sendRuntimeMessage(mod, "tomtom", "setPointer", tag);
+		event.drops.clear();
 	}
 }

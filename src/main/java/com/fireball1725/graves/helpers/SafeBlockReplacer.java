@@ -26,20 +26,20 @@ public class SafeBlockReplacer {
             return false;
 
         // Make sure the block isn't unbreakable
-        if (blockState.getBlock().getBlockHardness(world, blockPos) == -1.0F)
-            return false;
+		if(blockState.getBlock().getBlockHardness(world, blockPos) == -1.0F)
+		{ return false; }
 
         // Make sure the block is on the whitelist
 		return BreakableWhiteListHelper.checkBlock(blockState);
 
 	}
 
-    private static boolean CheckGraveSite(World world, BlockPos blockPos, EnumFacing facing) {
-        BlockPos Headstone = blockPos.offset(facing, -1);
-        BlockPos MasterGraveTile = blockPos;
-        BlockPos SlaveGraveTile1 = blockPos.offset(facing);
-        BlockPos SlaveGraveTile2 = blockPos.down();
-        BlockPos SlaveGraveTile3 = blockPos.down().offset(facing);
+	private static boolean CheckGraveSite(World world, BlockPos MasterGraveTile, EnumFacing facing)
+	{
+		BlockPos Headstone = MasterGraveTile.offset(facing, -1);
+		BlockPos SlaveGraveTile1 = MasterGraveTile.offset(facing);
+		BlockPos SlaveGraveTile2 = MasterGraveTile.down();
+		BlockPos SlaveGraveTile3 = MasterGraveTile.down().offset(facing);
 
         boolean placeGrave = true;
 

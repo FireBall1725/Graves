@@ -9,7 +9,7 @@ public class ModCreativeTabs {
     public static final CreativeTabs tabGraves = new CreativeTabs(ModInfo.MOD_ID) {
         @Override
         public Item getTabIconItem() {
-            return Blocks.BLOCK_GRAVE_HEADSTONE.block.getItem(null, null);
-        }
-    };
+			return Item.getItemFromBlock(Blocks.BLOCK_GRAVE_HEADSTONE.block);
+		}
+	};
 }

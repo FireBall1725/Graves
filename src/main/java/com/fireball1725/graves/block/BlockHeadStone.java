@@ -35,21 +35,24 @@ public class BlockHeadStone extends BlockBase {
     }
 
     @Override
-    public int getRenderType() {
-        return 3;
-    }
+	public int getRenderType()
+	{
+		return 3;
+	}
 
-    @Override
-    public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-        return willHarvest || super.removedByPlayer(world, pos, player, false);
-    }
+	@Override
+	public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+	{
+		return willHarvest || super.removedByPlayer(world, pos, player, false);
+	}
 
     @Override
     public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
-        if (headStone != null && headStone.getCustomName() != "") {
-            final ItemStack itemStack = new ItemStack(this);
-            itemStack.setStackDisplayName(headStone.getCustomName());
+		if(headStone != null && !headStone.getCustomName().isEmpty())
+		{
+			final ItemStack itemStack = new ItemStack(this);
+			itemStack.setStackDisplayName(headStone.getCustomName());
 
             ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
             drops.add(itemStack);
@@ -59,74 +62,85 @@ public class BlockHeadStone extends BlockBase {
         return super.getDrops(world, pos, state, fortune);
     }
 
-    @Override
-    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te) {
-        super.harvestBlock(world, player, pos, state, te);
-        world.setBlockToAir(pos);
-    }
+	@Override
+	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te)
+	{
+		super.harvestBlock(worldIn, player, pos, state, te);
+		worldIn.setBlockToAir(pos);
+	}
+
+	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ)
+	{
+		if(playerIn.capabilities.isCreativeMode)
+		{
+			playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		}
+		return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ);
+	}
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumFacing side, float hitX, float hitY, float hitZ) {
-        if (playerIn.capabilities.isCreativeMode) {
-            playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
-        }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, side, hitX, hitY, hitZ);
-    }
+	protected BlockState createBlockState()
+	{
+		return new BlockState(this, FACING);
+	}
 
     @Override
-    protected BlockState createBlockState() {
-        return new BlockState(this, FACING);
-    }
+	public boolean isOpaqueCube()
+	{
+		return false;
+	}
 
     @Override
-    public boolean isOpaqueCube() {
-        return false;
-    }
+	public boolean isFullBlock()
+	{
+		return false;
+	}
 
     @Override
-    public boolean isFullBlock() {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube() {
-        return false;
-    }
+	public boolean isFullCube()
+	{
+		return false;
+	}
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
     }
 
-    @Override
-    public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos) {
-        IBlockState state = worldIn.getBlockState(pos);
-        switch (state.getValue(FACING)) {
-            case NORTH:
-                setBlockBounds(.1f, 0f, 0f, .9f, .95f, .3f);
-                break;
-            case SOUTH:
-                setBlockBounds(.1f, 0f, .7f, .9f, .95f, 1f);
-                break;
-            case WEST:
-                setBlockBounds(0f, 0f, .1f, .3f, .95f, .9f);
-                break;
-            case EAST:
-                setBlockBounds(.7f, 0f, .1f, 1f, .95f, .9f);
-                break;
-        }
-    }
+	@Override
+	public void setBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos)
+	{
+		IBlockState state = worldIn.getBlockState(pos);
+		switch(state.getValue(FACING))
+		{
+			case NORTH:
+				setBlockBounds(.1f, 0f, 0f, .9f, .95f, .3f);
+				break;
+			case SOUTH:
+				setBlockBounds(.1f, 0f, .7f, .9f, .95f, 1f);
+				break;
+			case WEST:
+				setBlockBounds(0f, 0f, .1f, .3f, .95f, .9f);
+				break;
+			case EAST:
+				setBlockBounds(.7f, 0f, .1f, 1f, .95f, .9f);
+				break;
+		}
+	}
 
-    @Override
-    public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
-        setBlockBoundsBasedOnState(worldIn, pos);
-        super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
-    }
+	@Override
+	public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity)
+	{
+		setBlockBoundsBasedOnState(worldIn, pos);
+		super.addCollisionBoxesToList(worldIn, pos, state, mask, list, collidingEntity);
+	}
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FACING).getHorizontalIndex();
-    }
+	@Override
+	public int getMetaFromState(IBlockState state)
+	{
+		return state.getValue(FACING).getHorizontalIndex();
+	}
 
 
     @Override
