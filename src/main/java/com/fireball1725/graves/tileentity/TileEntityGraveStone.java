@@ -251,14 +251,13 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 
 		if(spawnPlayerZombie && ConfigZombie.configZombieEnabled)
 		{
-			EntityPlayerZombie playerZombie = new EntityPlayerZombie(worldObj);
+			EntityPlayerZombie playerZombie = new EntityPlayerZombie(worldObj, pos);
 
 			playerZombie.setProfile(getPlayerProfile());
 
 			playerZombie.setLocationAndAngles(pos.getX(), pos.down().getY(), pos.getZ(), getBlockState().getValue(BlockGraveStone.FACING).getHorizontalIndex() * 90f, 0f);
 			playerZombie.onInitialSpawn(worldObj.getDifficultyForLocation(new BlockPos(playerZombie)), null);
 			playerZombie.setPlayer(player);
-			playerZombie.setGraveMaster(pos);
 			//                    nbtTagCompound.setIntArray("MasterGrave", new int[]{graveStone.getPos().getX(), graveStone.getPos().getY(), graveStone.getPos().getZ()});
 
 			worldObj.spawnEntityInWorld(playerZombie);

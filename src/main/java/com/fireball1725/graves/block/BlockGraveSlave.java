@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockGraveSlave extends BlockBase {
-	public static final PropertyBool isFoot = PropertyBool.create("isfoot");
-	public static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slavetype", SlaveType.class);
+	private static final PropertyBool isFoot = PropertyBool.create("isfoot");
+	private static final PropertyEnum<SlaveType> slaveType = PropertyEnum.create("slavetype", SlaveType.class);
 
-	public BlockGraveSlave()
+	BlockGraveSlave()
 	{
 		super(Material.cloth);
 		setDefaultState(blockState.getBaseState().withProperty(slaveType, SlaveType.LID).withProperty(isFoot, true).withProperty(BlockGraveStone.FACING, EnumFacing.NORTH));
@@ -40,7 +40,6 @@ public class BlockGraveSlave extends BlockBase {
         setTileEntity(TileEntityGraveSlave.class);
     }
 
-	@SuppressWarnings("Duplicates")
 	public static IBlockState getActualStatePre(IBlockState state, IBlockAccess worldIn, BlockPos pos, BlockPos masterPos)
 	{
 		if(masterPos != null)
@@ -273,7 +272,7 @@ public class BlockGraveSlave extends BlockBase {
 
     }
 
-	public enum SlaveType implements IStringSerializable
+	private enum SlaveType implements IStringSerializable
 	{
 		LID,
 		BOX,

@@ -15,7 +15,9 @@ public class TileTools {
 	 * @return The TileEntity or Null if not the TileEntity
 	 */
     public static <T> T getTileEntity(IBlockAccess world, BlockPos blockPos, Class<T> tClass) {
-        TileEntity tileEntity = world.getTileEntity(blockPos);
+		if(world == null || blockPos == null)
+		{ return null; }
+		TileEntity tileEntity = world.getTileEntity(blockPos);
 		return !tClass.isInstance(tileEntity) ? null : tClass.cast(tileEntity);
 	}
 }

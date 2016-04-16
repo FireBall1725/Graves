@@ -2,6 +2,7 @@ package com.fireball1725.graves.block;
 
 import com.fireball1725.graves.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.util.TileTools;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -25,7 +26,7 @@ import java.util.List;
 import java.util.Random;
 
 public class BlockGraveStone extends BlockBase {
-    public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	public static final PropertyBool HASLID = PropertyBool.create("haslid");
 
     public BlockGraveStone() {

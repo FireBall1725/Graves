@@ -78,6 +78,12 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
         setSize(0.6F, 1.8F);
     }
 
+	public EntityPlayerZombie(World world, BlockPos pos)
+	{
+		this(world);
+		graveMaster = pos;
+	}
+
     public void setPlayer(EntityPlayer player) {
         this.player = player;
     }
@@ -386,7 +392,8 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
     @Override
     public void writeEntityToNBT(NBTTagCompound nbt) {
         super.writeEntityToNBT(nbt);
-		nbt.setLong("graveMaster", graveMaster.toLong());
+		if(graveMaster != null)
+		{ nbt.setLong("graveMaster", graveMaster.toLong()); }
 
         String username = getUsername();
         if (!StringUtils.isBlank(username))
@@ -403,9 +410,9 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
         } else
             username = "FireBall1725";
         setUsername(username);
-
-		graveMaster = BlockPos.fromLong(nbt.getLong("graveMaster"));
-    }
+		if(nbt.hasKey("graveMaster"))
+		{ graveMaster = BlockPos.fromLong(nbt.getLong("graveMaster")); }
+	}
 
     @Override
     public boolean attackEntityAsMob(Entity target) {
@@ -553,11 +560,6 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	public BlockPos getGraveMaster()
 	{
 		return graveMaster;
-	}
-
-	public void setGraveMaster(BlockPos graveMaster)
-	{
-		this.graveMaster = graveMaster;
 	}
 
 	/**
