@@ -1,6 +1,38 @@
 {
-  "graveZombieSpawn": {"category": "master","sounds": [{"name": "Grave_Zombie_Spawn","stream":false}]},
-  "graveZombieIdle": {"category": "master","sounds": [{"name": "Grave_Zombie_Idle","stream":false}]},
-  "graveZombieAttack": {"category": "master","sounds": [{"name": "Grave_Zombie_Attack","stream":false}]},
-  "graveZombieDeath": {"category": "master","sounds": [{"name": "Grave_Zombie_Death","stream":false}]}
+  "playerzombie.spawn": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "graves:playerzombie/spawn",
+        "stream": false
+      }
+    ]
+  },
+  "playerzombie.idle": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "graves:playerzombie/idle",
+        "stream": false
+      }
+    ]
+  },
+  "playerzombie.attack": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "graves:playerzombie/attack",
+        "stream": false
+      }
+    ]
+  },
+  "playerzombie.death": {
+    "category": "master",
+    "sounds": [
+      {
+        "name": "graves:playerzombie/death",
+        "stream": false
+      }
+    ]
+  }
 }

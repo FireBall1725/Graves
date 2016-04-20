@@ -3,6 +3,7 @@ package com.fireball1725.graves.entity;
 import com.fireball1725.graves.configuration.ConfigZombie;
 import com.fireball1725.graves.helpers.IDeadPlayerEntity;
 import com.fireball1725.graves.helpers.LogHelper;
+import com.fireball1725.graves.helpers.SoundHelper;
 import com.google.common.base.Predicate;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.*;
@@ -17,9 +18,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntitySkull;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -42,12 +41,12 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	private static final DataParameter<Byte> CHILD = EntityDataManager.createKey(EntityPlayerZombie.class, DataSerializers.BYTE);
 	private static final DataParameter<Float> WIDTH = EntityDataManager.createKey(EntityPlayerZombie.class, DataSerializers.FLOAT);
 	private static final DataParameter<Float> HEIGHT = EntityDataManager.createKey(EntityPlayerZombie.class, DataSerializers.FLOAT);
+	private static Map<String, SoundEvent> sounds = new HashMap<String, SoundEvent>();
 	private final EntityAIBreakDoor breakDoorAI = new EntityAIBreakDoor(this);
 	private double prevCapeX, prevCapeY, prevCapeZ;
     private double capeX, capeY, capeZ;
     private GameProfile profile;
     private EntityPlayer player;
-
 	private BlockPos graveMaster;
 
 	public EntityPlayerZombie(World world) {
@@ -82,6 +81,14 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	{
 		this(world);
 		graveMaster = pos;
+	}
+
+	public static void registerSounds()
+	{
+		SoundHelper.registerSound("playerzombie.spawn", sounds);
+		SoundHelper.registerSound("playerzombie.idle", sounds);
+		SoundHelper.registerSound("playerzombie.attack", sounds);
+		SoundHelper.registerSound("playerzombie.death", sounds);
 	}
 
     public void setPlayer(EntityPlayer player) {
@@ -175,31 +182,33 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 		dataWatcher.register(CHILD, (byte) 0);
 		dataWatcher.register(WIDTH, width);
 		dataWatcher.register(HEIGHT, height);
+		playSound(getSound("spawn"), getSoundVolume(), getSoundPitch());
 	}
 
 	//TODO: Add Sounds when not completely broken.
-	//	@Override
-	//	protected SoundEvent getAmbientSound()
-	//	{
-	//		return SoundHelper.getRegisteredSoundEvent("graves:graveZombieIdle");
-	//	}
-	//
-	//	@Override
-	//	protected SoundEvent getHurtSound()
-	//	{
-	//		return SoundHelper.getRegisteredSoundEvent("graves:graveZombieAttack");
-	//	}
-	//
-	//	@Override
-	//	public SoundCategory getSoundCategory()
-	//	{
-	//		return SoundCategory.HOSTILE;
-	//	}
-	//
-	//	@Override
-	//    protected String getDeathSound() {
-	//        return "graves:graveZombieDeath";
-	//    }
+	@Override
+	public SoundCategory getSoundCategory()
+	{
+		return SoundCategory.HOSTILE;
+	}
+
+	@Override
+	protected SoundEvent getAmbientSound()
+	{
+		return getSound("idle");
+	}
+
+	@Override
+	protected SoundEvent getHurtSound()
+	{
+		return getSound("attack");
+	}
+
+	@Override
+	protected SoundEvent getDeathSound()
+	{
+		return getSound("death");
+	}
 
     @Override
     protected void dropFewItems(boolean recentHit, int looting) {
@@ -569,6 +578,13 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	{
 		return false;
 	}
+
+	public SoundEvent getSound(String name)
+	{
+		return sounds.get("playerzombie." + name);
+	}
+
+
 
 	class PlayerZombieMoveTargetPos
 	{

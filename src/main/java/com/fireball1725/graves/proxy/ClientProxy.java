@@ -37,6 +37,7 @@ public class ClientProxy extends CommonProxy {
 	{
 		super.registerEntities();
 		EntityRenderers.registerEntityRenderer(EntityPlayerZombie.class, RenderPlayerZombie.class);
+		EntityPlayerZombie.registerSounds();
 	}
 
 	@Override

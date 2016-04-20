@@ -1,21 +1,17 @@
 package com.fireball1725.graves.helpers;
 
+import com.fireball1725.graves.reference.ModInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+
+import java.util.Map;
 
 public class SoundHelper
 {
-	public static SoundEvent getRegisteredSoundEvent(String id)
+	public static void registerSound(String soundName, Map<String, SoundEvent> map)
 	{
-		SoundEvent soundevent = SoundEvent.soundEventRegistry.getObject(new ResourceLocation(id));
-
-		if(soundevent == null)
-		{
-			throw new IllegalStateException("Invalid Sound requested: " + id);
-		}
-		else
-		{
-			return soundevent;
-		}
+		final ResourceLocation soundID = new ResourceLocation(ModInfo.MOD_ID, soundName);
+		map.put(soundName, GameRegistry.register(new SoundEvent(soundID).setRegistryName(soundID)));
 	}
 }
