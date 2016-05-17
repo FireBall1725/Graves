@@ -1,7 +1,7 @@
 package com.fireball1725.graves.client.render.entity;
 
-import com.fireball1725.graves.entity.EntityPlayerZombie;
-import com.fireball1725.graves.util.TextureUtils;
+import com.fireball1725.graves.common.entity.EntityPlayerZombie;
+import com.fireball1725.graves.common.util.TextureUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.ResourceLocation;

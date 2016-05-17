@@ -1,10 +1,10 @@
 package com.fireball1725.graves;
 
-import com.fireball1725.graves.helpers.LogHelper;
-import com.fireball1725.graves.network.PacketHandler;
+import com.fireball1725.graves.common.helpers.LogHelper;
+import com.fireball1725.graves.common.network.PacketHandler;
 import com.fireball1725.graves.proxy.IProxy;
-import com.fireball1725.graves.reference.ModInfo;
-import com.fireball1725.graves.util.GuiHandler;
+import com.fireball1725.graves.common.reference.ModInfo;
+import com.fireball1725.graves.common.util.GuiHandler;
 import com.google.common.base.Stopwatch;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;

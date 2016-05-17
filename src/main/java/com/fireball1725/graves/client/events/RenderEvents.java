@@ -1,10 +1,10 @@
 package com.fireball1725.graves.client.events;
 
-import com.fireball1725.graves.block.BlockGraveSlave;
-import com.fireball1725.graves.block.BlockGraveStone;
-import com.fireball1725.graves.tileentity.TileEntityGraveSlave;
-import com.fireball1725.graves.tileentity.TileEntityGraveStone;
-import com.fireball1725.graves.util.TileTools;
+import com.fireball1725.graves.common.block.BlockGraveSlave;
+import com.fireball1725.graves.common.block.BlockGraveStone;
+import com.fireball1725.graves.common.tileentity.TileEntityGraveSlave;
+import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
+import com.fireball1725.graves.common.util.TileTools;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

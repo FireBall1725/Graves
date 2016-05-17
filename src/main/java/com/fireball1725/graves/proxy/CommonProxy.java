@@ -1,16 +1,14 @@
 package com.fireball1725.graves.proxy;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.block.Blocks;
-import com.fireball1725.graves.configuration.ConfigurationFile;
-import com.fireball1725.graves.entity.Entities;
-import com.fireball1725.graves.event.EventBlockBreak;
-import com.fireball1725.graves.event.EventDeathHandler;
-import com.fireball1725.graves.helpers.BreakableWhiteListHelper;
-import net.minecraft.block.Block;
+import com.fireball1725.graves.common.block.Blocks;
+import com.fireball1725.graves.common.configuration.ConfigurationFile;
+import com.fireball1725.graves.common.entity.Entities;
+import com.fireball1725.graves.common.event.EventBlockBreak;
+import com.fireball1725.graves.common.event.EventDeathHandler;
+import com.fireball1725.graves.common.helpers.BreakableWhiteListHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import java.io.File;

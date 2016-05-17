@@ -1,8 +1,8 @@
 package com.fireball1725.graves.client.render.entity;
 
-import com.fireball1725.graves.configuration.ConfigZombie;
-import com.fireball1725.graves.entity.EntityPlayerZombie;
-import com.fireball1725.graves.util.TextureUtils;
+import com.fireball1725.graves.common.configuration.ConfigZombie;
+import com.fireball1725.graves.common.entity.EntityPlayerZombie;
+import com.fireball1725.graves.common.util.TextureUtils;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;

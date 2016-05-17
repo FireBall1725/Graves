@@ -1,13 +1,13 @@
 package com.fireball1725.graves.proxy;
 
-import com.fireball1725.graves.block.Blocks;
+import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.client.events.RenderEvents;
 import com.fireball1725.graves.client.render.TileEntityHeadStoneRenderer;
 import com.fireball1725.graves.client.render.entity.EntityRenderers;
 import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
-import com.fireball1725.graves.entity.EntityPlayerZombie;
-import com.fireball1725.graves.reference.ModInfo;
-import com.fireball1725.graves.tileentity.TileEntityHeadStone;
+import com.fireball1725.graves.common.entity.EntityPlayerZombie;
+import com.fireball1725.graves.common.reference.ModInfo;
+import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.IReloadableResourceManager;

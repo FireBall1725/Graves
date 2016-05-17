@@ -1,8 +1,8 @@
 package com.fireball1725.graves.client.render;
 
-import com.fireball1725.graves.block.BlockHeadStone;
-import com.fireball1725.graves.helpers.OpenGLHelper;
-import com.fireball1725.graves.tileentity.TileEntityHeadStone;
+import com.fireball1725.graves.common.block.BlockHeadStone;
+import com.fireball1725.graves.common.helpers.OpenGLHelper;
+import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;

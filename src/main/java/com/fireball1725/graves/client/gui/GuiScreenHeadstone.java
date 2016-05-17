@@ -1,8 +1,8 @@
 package com.fireball1725.graves.client.gui;
 
-import com.fireball1725.graves.network.PacketHandler;
-import com.fireball1725.graves.network.messages.MessageSetHeadstoneName;
-import com.fireball1725.graves.tileentity.TileEntityHeadStone;
+import com.fireball1725.graves.common.network.PacketHandler;
+import com.fireball1725.graves.common.network.messages.MessageSetHeadstoneName;
+import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatAllowedCharacters;
 
