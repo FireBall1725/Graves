@@ -6,6 +6,8 @@ import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.common.util.TileTools;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -17,6 +19,7 @@ public class EventBlockBreak {
 	{
 		if(!(event.getState().getBlock() instanceof BlockGraveStone || event.getState().getBlock() instanceof BlockGraveSlave))
 		{ return; }
+		//		if (event.getWorld().isRemote) return;
 
 		TileEntityGraveStone graveStone = null;
 
@@ -42,6 +45,15 @@ public class EventBlockBreak {
 		else
 		{
 			List<ReplaceableBlock> blocks = graveStone.getReplaceableBlocks();
+			EntityPlayer player = event.getPlayer();
+			InventoryPlayer inventoryPlayer = player.inventory;
+			for(int i = 0; i < inventoryPlayer.getSizeInventory(); i++)
+			{
+				player.dropItem(inventoryPlayer.getStackInSlot(i), true, true);
+			}
+
+			graveStone.replaceItems(player.inventory);
+
 			event.getWorld().destroyBlock(graveStone.getPos().down(), false);
 			event.getWorld().destroyBlock(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)), false);
 			event.getWorld().destroyBlock(graveStone.getPos().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)), false);

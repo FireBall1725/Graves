@@ -13,8 +13,8 @@ import com.fireball1725.graves.common.util.TileTools;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,6 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.EnumDifficulty;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -34,19 +35,97 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
     private InternalDynamicInventory internalInventory = new InternalDynamicInventory(this);
     private GameProfile playerProfile;
 	private List<ReplaceableBlock> replaceableBlocks = Lists.newArrayList();
+	private ItemStack[] replaceableItems = new ItemStack[14];
 
-    @Override
-    public Packet getDescriptionPacket() {
-        LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile == null ? "null" : this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
+	private static List<BlockPos> getSlaves(BlockPos pos, EnumFacing facing)
+	{
+		List<BlockPos> poses = Lists.newArrayList();
+		poses.add(pos.down());
+		poses.add(pos.down().offset(facing));
+		poses.add(pos.offset(facing));
+		return poses;
+	}
+
+	public static List<BlockPos> getPositions(BlockPos pos, EnumFacing facing)
+	{
+		List<BlockPos> poses = getSlaves(pos, facing);
+		poses.add(pos);
+		poses.add(pos.offset(facing.getOpposite()));
+		return poses;
+	}
+
+	@Override
+	public Packet getDescriptionPacket()
+	{
+		LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile == null ? "null" : this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
 
         return super.getDescriptionPacket();
     }
 
-    public void addGraveItems(List<EntityItem> itemsList) {
-        for (EntityItem item : itemsList) {
-            internalInventory.addInventorySlotContents(item.getEntityItem());
-        }
-    }
+	public void addGraveItems(List<ItemStack> itemsList)
+	{
+		for(ItemStack stack : itemsList)
+		{
+			internalInventory.addInventorySlotContents(stack);
+		}
+	}
+
+	public void addGraveItemsWithReplaceables(InventoryPlayer inventory, List<ItemStack> itemsList)
+	{
+		replaceableItems = new ItemStack[InventoryPlayer.getHotbarSize() + inventory.armorInventory.length + inventory.offHandInventory.length];
+		ItemStack itemStack;
+		int placeAt;
+		for(int i = 0; i < InventoryPlayer.getHotbarSize(); i++)
+		{
+			placeAt = i;
+			itemStack = inventory.mainInventory[i];
+			replaceableItems[placeAt] = itemStack;
+		}
+		for(int i = 0; i < inventory.armorInventory.length; i++)
+		{
+			placeAt = i + InventoryPlayer.getHotbarSize();
+			itemStack = inventory.armorInventory[i];
+			replaceableItems[placeAt] = itemStack;
+		}
+		for(int i = 0; i < inventory.offHandInventory.length; i++)
+		{
+			placeAt = i + InventoryPlayer.getHotbarSize() + inventory.armorInventory.length;
+			itemStack = inventory.offHandInventory[i];
+			replaceableItems[placeAt] = itemStack;
+		}
+		Iterator<ItemStack> listIterator = itemsList.listIterator();
+		listIterator:
+		while(listIterator.hasNext())
+		{
+			ItemStack stack1 = listIterator.next();
+			if(stack1 != null)
+			{
+				for(ItemStack stack : replaceableItems)
+				{
+					if(stack != null)
+					{
+						if(stack1.isItemEqual(stack))
+						{
+							if(stack1.hasTagCompound() && stack.hasTagCompound())
+							{
+								if(stack1.getTagCompound().equals(stack.getTagCompound()))
+								{
+									listIterator.remove();
+									continue listIterator;
+								}
+							}
+							else
+							{
+								listIterator.remove();
+								continue listIterator;
+							}
+						}
+					}
+				}
+			}
+		}
+		addGraveItems(itemsList);
+	}
 
     public boolean getHasLid() {
         return hasLid;
@@ -72,14 +151,21 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
         this.hasLid = nbtTagCompound.getBoolean("hasLid");
         this.playerProfile = NBTUtil.readGameProfileFromNBT(nbtTagCompound.getCompoundTag("playerProfile"));
 
-		NBTTagCompound replaceableTag = nbtTagCompound.getCompoundTag("replaceableTag");
+		NBTTagCompound replaceableTag = nbtTagCompound.getCompoundTag("replaceableBlocks");
 		int size = replaceableTag.getInteger("size");
 		replaceableBlocks = Lists.newArrayList();
 		for (int i = 0; i < size; i++)
 		{
 			replaceableBlocks.add(ReplaceableBlock.readNBT((NBTTagCompound) replaceableTag.getTag("block:" + i)));
 		}
-    }
+		NBTTagCompound tag = nbtTagCompound.getCompoundTag("replaceableItems");
+		replaceableItems = new ItemStack[tag.getInteger("size")];
+		for(int i = 0; i < replaceableItems.length; i++)
+		{
+			if(tag.hasKey("item:" + i))
+			{ replaceableItems[i] = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("item:" + i)); }
+		}
+	}
 
     @Override
     public void writeToNBT(NBTTagCompound nbtTagCompound) {
@@ -93,40 +179,38 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
             nbtTagCompound.setTag("playerProfile", profileTag);
         }
 
-		NBTTagCompound replaceableTag = new NBTTagCompound();
-		replaceableTag.setInteger("size", replaceableBlocks.size());
+		NBTTagCompound replaceableBlocksTag = new NBTTagCompound();
+		replaceableBlocksTag.setInteger("size", replaceableBlocks.size());
 		for (int i = 0; i < replaceableBlocks.size(); i++)
 		{
-			replaceableTag.setTag("block:" + i, replaceableBlocks.get(i).writeNBT());
+			replaceableBlocksTag.setTag("block:" + i, replaceableBlocks.get(i).writeNBT());
 		}
-		nbtTagCompound.setTag("replaceableTag", replaceableTag);
-    }
+		nbtTagCompound.setTag("replaceableBlocks", replaceableBlocksTag);
+		NBTTagCompound replaceableItemsTag = new NBTTagCompound();
+		replaceableItemsTag.setInteger("size", replaceableItems.length);
+		for(int i = 0; i < replaceableItems.length; i++)
+		{
+			if(replaceableItems[i] != null)
+			{ replaceableItemsTag.setTag("item:" + i, replaceableItems[i].writeToNBT(new NBTTagCompound())); }
+		}
+		nbtTagCompound.setTag("replaceableItems", replaceableItemsTag);
+	}
 
     public void breakBlocks() {
         // Adding slaves
         EnumFacing facing = worldObj.getBlockState(pos).getValue(BlockGraveStone.FACING);
-        IBlockState state;
-        TileEntityGraveSlave tileEntityGraveSlave;
-        state = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
+		IBlockState state = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
+		TileEntityGraveSlave tileEntityGraveSlave;
 
-		worldObj.removeTileEntity(pos.down());
-		worldObj.setBlockState(pos.down(), BlockGraveSlave.getActualStatePre(state, worldObj, pos.down(), pos));
+		for(BlockPos slavePos : getSlaves(pos, facing))
+		{
+			worldObj.removeTileEntity(slavePos);
+			worldObj.setBlockState(slavePos, BlockGraveSlave.getActualStatePre(state, worldObj, slavePos, pos));
 
-        tileEntityGraveSlave = TileTools.getTileEntity(worldObj, pos.down(), TileEntityGraveSlave.class);
-        tileEntityGraveSlave.setMasterBlock(pos);
-
-		worldObj.removeTileEntity(pos.down().offset(facing));
-		worldObj.setBlockState(pos.down().offset(facing), BlockGraveSlave.getActualStatePre(state, worldObj, pos.down().offset(facing), pos));
-
-        tileEntityGraveSlave = TileTools.getTileEntity(worldObj, pos.down().offset(facing), TileEntityGraveSlave.class);
-        tileEntityGraveSlave.setMasterBlock(pos);
-
-		worldObj.removeTileEntity(pos.offset(facing));
-		worldObj.setBlockState(pos.offset(facing), BlockGraveSlave.getActualStatePre(state, worldObj, pos.offset(facing), pos));
-
-        tileEntityGraveSlave = TileTools.getTileEntity(worldObj, pos.offset(facing), TileEntityGraveSlave.class);
-        tileEntityGraveSlave.setMasterBlock(pos);
-        // End of adding slaves
+			tileEntityGraveSlave = TileTools.getTileEntity(worldObj, slavePos, TileEntityGraveSlave.class);
+			tileEntityGraveSlave.setMasterBlock(pos);
+		}
+		// End of adding slaves
 
     }
 
@@ -186,7 +270,6 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 		IBlockState state = getBlockState();
 		if(state.getValue(BlockGraveStone.HASLID))
 		{
-			LogHelper.info("breaking lid");
 			hasLid = false;
 			worldObj.notifyBlockUpdate(pos, state, state.withProperty(BlockGraveStone.HASLID, false), 3);
 			updateSlaves();
@@ -274,23 +357,6 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 		return getBlockState().getValue(BlockGraveStone.FACING);
 	}
 
-	private static List<BlockPos> getSlaves(BlockPos pos, EnumFacing facing)
-	{
-		List<BlockPos> poses = Lists.newArrayList();
-		poses.add(pos.down());
-		poses.add(pos.down().offset(facing));
-		poses.add(pos.offset(facing));
-		return poses;
-	}
-
-	public static List<BlockPos> getPositions(BlockPos pos, EnumFacing facing)
-	{
-		List<BlockPos> poses = getSlaves(pos, facing);
-		poses.add(pos);
-		poses.add(pos.offset(facing.getOpposite()));
-		return poses;
-	}
-
 	public List<ReplaceableBlock> getReplaceableBlocks()
 	{
 		return replaceableBlocks;
@@ -299,5 +365,13 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 	public void setReplaceableBlocks(List<ReplaceableBlock> replaceableBlocks)
 	{
 		this.replaceableBlocks = replaceableBlocks;
+	}
+
+	public void replaceItems(InventoryPlayer inventory)
+	{
+		System.arraycopy(replaceableItems, 0, inventory.mainInventory, 0, InventoryPlayer.getHotbarSize());
+		System.arraycopy(replaceableItems, InventoryPlayer.getHotbarSize(), inventory.armorInventory, 0, inventory.armorInventory.length);
+		System.arraycopy(replaceableItems, InventoryPlayer.getHotbarSize() + inventory.armorInventory.length, inventory.offHandInventory, 0, inventory.offHandInventory.length);
+		inventory.markDirty();
 	}
 }

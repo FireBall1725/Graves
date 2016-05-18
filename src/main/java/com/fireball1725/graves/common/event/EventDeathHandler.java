@@ -6,28 +6,35 @@ import com.fireball1725.graves.common.block.BlockHeadStone;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.helpers.LogHelper;
-import com.fireball1725.graves.common.helpers.SafeBlockReplacer;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class EventDeathHandler {
+	private Map<UUID, InventoryPlayer> inventories = Maps.newHashMap();
+
 	/**
 	 * @param mod    Your @Mod.instance object.
 	 * @param player The player we are setting the gps for.
@@ -35,7 +42,7 @@ public class EventDeathHandler {
 	 * @param text   The short description of the destination
 	 */
 
-	public static void sendTomTomPos(Object mod, EntityPlayer player, BlockPos pos, String text)
+	private static void sendTomTomPos(Object mod, EntityPlayer player, BlockPos pos, String text)
 	{
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setLong("location", pos.toLong());
@@ -43,6 +50,18 @@ public class EventDeathHandler {
 		tag.setLong("uuid-least", player.getUniqueID().getLeastSignificantBits());
 		tag.setString("text", text);
 		FMLInterModComms.sendRuntimeMessage(mod, "tomtom", "setPointer", tag);
+	}
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+	public void onLivingDeath(LivingDeathEvent event)
+	{
+		if(event.getEntityLiving() instanceof EntityPlayer)
+		{
+			EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+			InventoryPlayer inv = new InventoryPlayer(player);
+			inv.copyInventory(player.inventory);
+			inventories.put(player.getPersistentID(), inv);
+		}
 	}
 
     @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
@@ -64,7 +83,12 @@ public class EventDeathHandler {
                 return;
         }
 
-		final List<EntityItem> itemsList = event.getDrops();
+		EntityPlayer player = event.getEntityPlayer();
+		List<ItemStack> itemsList = Lists.newArrayList();
+		for(EntityItem entityItem : event.getDrops())
+		{
+			itemsList.add(entityItem.getEntityItem());
+		}
 
         // If there are no items, then cancel spawning a grave
         if (itemsList.isEmpty())
@@ -89,11 +113,10 @@ public class EventDeathHandler {
 			}
 		}
 
-        if (spawnGrave) {
-
-			EnumFacing playerFacing = event.getEntityPlayer().getHorizontalFacing();
-			LogHelper.info(String.format(">>>>>>>>>>  %s, %s, %s, %s", event.getEntityPlayer().getPosition(), event.getEntityPlayer().posX, event.getEntityPlayer().posY, event.getEntityPlayer().posZ));
-			BlockPos playerPos = event.getEntityPlayer().getPosition();
+		if(spawnGrave)
+		{
+			EnumFacing playerFacing = player.getHorizontalFacing();
+			BlockPos playerPos = player.getPosition();
 			IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, playerFacing);
 
 			List<ReplaceableBlock> blocks = Lists.newArrayList();
@@ -110,20 +133,21 @@ public class EventDeathHandler {
 
 			world.setBlockState(playerPos, state);
 
-            TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, playerPos, TileEntityGraveStone.class);
-            graveStoneTileEntity.addGraveItems(itemsList);
+			TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, playerPos, TileEntityGraveStone.class);
+			graveStoneTileEntity.addGraveItemsWithReplaceables(inventories.remove(player.getPersistentID()), itemsList);
 			graveStoneTileEntity.setReplaceableBlocks(blocks);
-            graveStoneTileEntity.breakBlocks();
-			graveStoneTileEntity.setPlayerProfile(event.getEntityPlayer().getGameProfile());
+			graveStoneTileEntity.breakBlocks();
+			graveStoneTileEntity.setPlayerProfile(player.getGameProfile());
 
-            // Adding Headstone
-            world.setBlockState(playerPos.offset(playerFacing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, playerFacing));
-            TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, playerPos.offset(playerFacing.getOpposite()), TileEntityHeadStone.class);
-            if (tileEntityHeadStone != null) {
-				tileEntityHeadStone.setCustomName(event.getEntityPlayer().getDisplayName().getFormattedText());
-            }
-			sendTomTomPos(Graves.instance, event.getEntityPlayer(), playerPos, "Grave this way!");
-        }
+			// Adding Headstone
+			world.setBlockState(playerPos.offset(playerFacing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, playerFacing));
+			TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, playerPos.offset(playerFacing.getOpposite()), TileEntityHeadStone.class);
+			if(tileEntityHeadStone != null)
+			{
+				tileEntityHeadStone.setCustomName(player.getDisplayName().getFormattedText());
+			}
+			sendTomTomPos(Graves.instance, player, playerPos, "Grave this way!");
+		}
 
 		event.getDrops().clear();
 	}

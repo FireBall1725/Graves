@@ -12,7 +12,7 @@ repositories {
 
     maven {
         name "FireBall API Depot"
-        url "http://dl.tsr.me/artifactory/libs-release-local"
+        url "http://dl.tsr.me/artifactory/libs-release"
     }
 
     maven {
@@ -48,6 +48,7 @@ configurations {
 }
 
 dependencies {
+    mods "com.fireball1725.devworld:devworld:1.9-b10-universal"
     //mods(group: 'journeymap', name: 'journeymap', version: '1.8.8-5.1.3')
     //compile(group: 'journeymap-api', name: 'journeymap-api', version: '1.8.9-0.9')
 }
