@@ -8,12 +8,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -26,9 +26,11 @@ public class TileEntityBase extends TileEntity {
         myItem.put(c, wat);
     }
 
-    @Override
-    public Packet getDescriptionPacket() {
-        NBTTagCompound data = new NBTTagCompound();
+	@Nullable
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket()
+	{
+		NBTTagCompound data = new NBTTagCompound();
         writeToNBT(data);
 		return new SPacketUpdateTileEntity(this.pos, 1, data);
 	}
@@ -122,14 +124,14 @@ public class TileEntityBase extends TileEntity {
         this.customName = name;
     }
 
-    @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
-        super.writeToNBT(nbtTagCompound);
-
-        if (this.customName != null) {
-            nbtTagCompound.setString("CustomName", this.customName);
-        }
-    }
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
+	{
+		if (this.customName != null) {
+			compound.setString("CustomName", this.customName);
+		}
+		return super.writeToNBT(compound);
+	}
 
     @Override
     public void readFromNBT(NBTTagCompound nbtTagCompound) {

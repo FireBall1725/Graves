@@ -96,10 +96,10 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
     }
 
 	@Override
-	public void writeToNBT(NBTTagCompound tagCompund)
+	public NBTTagCompound writeToNBT(NBTTagCompound tagCompund)
 	{
 		tagCompund.setBoolean("[GoldenLassoPrevent]", true); // Make it so ExU2 cursed lassos are disabled
-		super.writeToNBT(tagCompund);
+		return super.writeToNBT(tagCompund);
 	}
 
     @Override
@@ -149,10 +149,10 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
         capeY += y * 0.25;
 
         if (worldObj.isRemote) {
-			float w = dataWatcher.get(WIDTH);
+			float w = dataManager.get(WIDTH);
 			if(w != width)
 				width = w;
-			float h = dataWatcher.get(HEIGHT);
+			float h = dataManager.get(HEIGHT);
 			if(h != height)
 				height = h;
         }
@@ -178,10 +178,10 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
     @Override
     protected void entityInit() {
         super.entityInit();
-		dataWatcher.register(NAME, "");
-		dataWatcher.register(CHILD, (byte) 0);
-		dataWatcher.register(WIDTH, width);
-		dataWatcher.register(HEIGHT, height);
+		dataManager.register(NAME, "");
+		dataManager.register(CHILD, (byte) 0);
+		dataManager.register(WIDTH, width);
+		dataManager.register(HEIGHT, height);
 		playSound(getSound("spawn"), getSoundVolume(), getSoundPitch());
 	}
 
@@ -223,9 +223,9 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
             int i = rand.nextInt(3);
 
 			if(i == 0)
-			{ setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.stone_sword)); }
+			{ setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD)); }
 			else if(i == 1)
-			{ setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.bow)); }
+			{ setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW)); }
 		}
 	}
 
@@ -238,10 +238,10 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
     @Override
 	public ItemStack getPickedResult(RayTraceResult target)
 	{
-		ItemStack stack = new ItemStack(Items.spawn_egg);
+		ItemStack stack = new ItemStack(Items.SPAWN_EGG);
 		NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("entity_name", EntityList.classToStringMapping.get(getClass()));
-        stack.setTagCompound(nbt);
+		nbt.setString("entity_name", EntityList.CLASS_TO_NAME.get(getClass()));
+		stack.setTagCompound(nbt);
         return stack;
     }
 
@@ -337,32 +337,32 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
         }
 
         if (rng > rngNothing + rngSword + rngLeatherKit + rngIronKit + rngGoldKit) { // Diamond Kit
-            slot0 = new ItemStack(Items.diamond_sword);
-            slot1 = new ItemStack(Items.diamond_boots);
-            slot2 = new ItemStack(Items.diamond_leggings);
-            slot3 = new ItemStack(Items.diamond_chestplate);
-            slot4 = new ItemStack(Items.diamond_helmet);
-        } else if (rng > rngNothing + rngSword + rngLeatherKit + rngIronKit) { // Gold Kit
-            slot0 = new ItemStack(Items.golden_sword);
-            slot1 = new ItemStack(Items.golden_boots);
-            slot2 = new ItemStack(Items.golden_leggings);
-            slot3 = new ItemStack(Items.golden_chestplate);
-            slot4 = new ItemStack(Items.golden_helmet);
-        } else if (rng > rngNothing + rngSword + rngLeatherKit) { // Iron Kit
-            slot0 = new ItemStack(Items.iron_sword);
-            slot1 = new ItemStack(Items.iron_boots);
-            slot2 = new ItemStack(Items.iron_leggings);
-            slot3 = new ItemStack(Items.iron_chestplate);
-            slot4 = new ItemStack(Items.iron_helmet);
-        } else if (rng > rngNothing + rngSword) { // Leather Kit
-            slot0 = new ItemStack(Items.wooden_sword);
-            slot1 = new ItemStack(Items.leather_boots);
-            slot2 = new ItemStack(Items.leather_leggings);
-            slot3 = new ItemStack(Items.leather_chestplate);
-            slot4 = new ItemStack(Items.leather_helmet);
-        } else if (rng > rngNothing) { // Wooden Sword
-            slot0 = new ItemStack(Items.wooden_sword);
-        }
+			slot0 = new ItemStack(Items.DIAMOND_SWORD);
+			slot1 = new ItemStack(Items.DIAMOND_BOOTS);
+			slot2 = new ItemStack(Items.DIAMOND_LEGGINGS);
+			slot3 = new ItemStack(Items.DIAMOND_CHESTPLATE);
+			slot4 = new ItemStack(Items.DIAMOND_HELMET);
+		} else if (rng > rngNothing + rngSword + rngLeatherKit + rngIronKit) { // Gold Kit
+			slot0 = new ItemStack(Items.GOLDEN_SWORD);
+			slot1 = new ItemStack(Items.GOLDEN_BOOTS);
+			slot2 = new ItemStack(Items.GOLDEN_LEGGINGS);
+			slot3 = new ItemStack(Items.GOLDEN_CHESTPLATE);
+			slot4 = new ItemStack(Items.GOLDEN_HELMET);
+		} else if (rng > rngNothing + rngSword + rngLeatherKit) { // Iron Kit
+			slot0 = new ItemStack(Items.IRON_SWORD);
+			slot1 = new ItemStack(Items.IRON_BOOTS);
+			slot2 = new ItemStack(Items.IRON_LEGGINGS);
+			slot3 = new ItemStack(Items.IRON_CHESTPLATE);
+			slot4 = new ItemStack(Items.IRON_HELMET);
+		} else if (rng > rngNothing + rngSword) { // Leather Kit
+			slot0 = new ItemStack(Items.WOODEN_SWORD);
+			slot1 = new ItemStack(Items.LEATHER_BOOTS);
+			slot2 = new ItemStack(Items.LEATHER_LEGGINGS);
+			slot3 = new ItemStack(Items.LEATHER_CHESTPLATE);
+			slot4 = new ItemStack(Items.LEATHER_HELMET);
+		} else if (rng > rngNothing) { // Wooden Sword
+			slot0 = new ItemStack(Items.WOODEN_SWORD);
+		}
 
         if (ConfigZombie.configZombieArmorEnabled) {
 			if(slot0 != null)
@@ -458,8 +458,8 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 
 			private Style style;
 
-            @Override
-			public Style getChatStyle()
+			@Override
+			public Style getStyle()
 			{
 				if(style == null)
 				{
@@ -477,7 +477,7 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 
                     while (iterator.hasNext()) {
 						ITextComponent ITextComponent = (ITextComponent) iterator.next();
-						ITextComponent.getChatStyle().setParentStyle(style);
+						ITextComponent.getStyle().setParentStyle(style);
 					}
 				}
 
@@ -505,9 +505,9 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 
     @Override
     public String getUsername() {
-		String username = dataWatcher.get(NAME);
+		String username = dataManager.get(NAME);
 		if(StringUtils.isBlank(username))
-		{ dataWatcher.set(NAME, "FireBall1725"); }
+		{ dataManager.set(NAME, "FireBall1725"); }
 		if(username.equals("Soaryn"))
 			return "direwolf20";
         if (username.equals("direwolf20"))
@@ -536,7 +536,7 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 		{
 			name = newName;
 		}
-		dataWatcher.set(NAME, name);
+		dataManager.set(NAME, name);
 	}
 
     @Override
@@ -556,14 +556,14 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 
     @Override
     public boolean isChild() {
-		return dataWatcher.get(CHILD) == 1;
+		return dataManager.get(CHILD) == 1;
 	}
 
     @Override
     protected void setSize(float width, float height) {
         super.setSize(width, height);
-		dataWatcher.set(WIDTH, this.width);
-		dataWatcher.set(HEIGHT, this.height);
+		dataManager.set(WIDTH, this.width);
+		dataManager.set(HEIGHT, this.height);
 	}
 
 	public BlockPos getGraveMaster()

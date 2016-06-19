@@ -19,12 +19,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.EnumDifficulty;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -54,13 +55,14 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 		return poses;
 	}
 
+	@Nullable
 	@Override
-	public Packet getDescriptionPacket()
+	public SPacketUpdateTileEntity getUpdatePacket()
 	{
 		LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile == null ? "null" : this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
 
-        return super.getDescriptionPacket();
-    }
+		return super.getUpdatePacket();
+	}
 
 	public void addGraveItems(List<ItemStack> itemsList)
 	{
@@ -168,8 +170,8 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 	}
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
-        super.writeToNBT(nbtTagCompound);
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound)
+	{
 
         nbtTagCompound.setBoolean("hasLid", this.hasLid);
 
@@ -194,18 +196,20 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 			{ replaceableItemsTag.setTag("item:" + i, replaceableItems[i].writeToNBT(new NBTTagCompound())); }
 		}
 		nbtTagCompound.setTag("replaceableItems", replaceableItemsTag);
+		return super.writeToNBT(nbtTagCompound);
 	}
 
     public void breakBlocks() {
         // Adding slaves
-        EnumFacing facing = worldObj.getBlockState(pos).getValue(BlockGraveStone.FACING);
-		IBlockState state = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
+		IBlockState defSlaveState = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
+		IBlockState state = worldObj.getBlockState(pos);
+		EnumFacing facing = state.getBlock().getActualState(state, worldObj, pos).getValue(BlockGraveStone.FACING);
 		TileEntityGraveSlave tileEntityGraveSlave;
 
 		for(BlockPos slavePos : getSlaves(pos, facing))
 		{
 			worldObj.removeTileEntity(slavePos);
-			worldObj.setBlockState(slavePos, BlockGraveSlave.getActualStatePre(state, worldObj, slavePos, pos));
+			worldObj.setBlockState(slavePos, BlockGraveSlave.getActualStatePre(defSlaveState, worldObj, slavePos, pos));
 
 			tileEntityGraveSlave = TileTools.getTileEntity(worldObj, slavePos, TileEntityGraveSlave.class);
 			tileEntityGraveSlave.setMasterBlock(pos);

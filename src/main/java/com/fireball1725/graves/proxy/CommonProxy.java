@@ -53,33 +53,33 @@ public abstract class CommonProxy implements IProxy {
                 " x ",
                 "xzx",
                 "xxx",
-                'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 4),
-                'z', new ItemStack(net.minecraft.init.Blocks.stone, 1, 6));
-    }
+				'x', new ItemStack(net.minecraft.init.Blocks.STONE, 1, 4),
+				'z', new ItemStack(net.minecraft.init.Blocks.STONE, 1, 6));
+	}
 
     @Override
     public void registerWhiteList() {
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.dirt.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.dirt.getStateFromMeta(2));
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.grass.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getStateFromMeta(1));
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getStateFromMeta(3));
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getStateFromMeta(5));
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.cobblestone.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.sand.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.sand.getStateFromMeta(1));
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.gravel.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.soul_sand.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.netherrack.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.clay.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.water.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.lava.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.flowing_water.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.flowing_lava.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.snow_layer.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.ice.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.packed_ice.getDefaultState());
-        BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.mycelium.getDefaultState());
-    }
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.DIRT.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.DIRT.getStateFromMeta(2));
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.GRASS.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.STONE.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.STONE.getStateFromMeta(1));
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.STONE.getStateFromMeta(3));
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.STONE.getStateFromMeta(5));
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.COBBLESTONE.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.SAND.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.SAND.getStateFromMeta(1));
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.GRAVEL.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.SOUL_SAND.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.NETHERRACK.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.CLAY.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.WATER.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.LAVA.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.FLOWING_WATER.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.FLOWING_LAVA.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.SNOW_LAYER.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.ICE.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.PACKED_ICE.getDefaultState());
+		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.MYCELIUM.getDefaultState());
+	}
 }

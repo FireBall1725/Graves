@@ -20,6 +20,25 @@ public class ReplaceableBlock
 		this.tagCompound = tagCompound;
 	}
 
+	public static ReplaceableBlock readNBT(NBTTagCompound tag)
+	{
+		if(!tag.hasKey("blockID") || !tag.hasKey("blockMeta"))
+		{ return null; }
+		IBlockState state;
+		NBTTagCompound tileTag = null;
+
+		Block block = Block.getBlockById(tag.getInteger("blockID"));
+		state = block.getStateFromMeta(tag.getInteger("blockMeta"));
+		BlockPos pos = BlockPos.fromLong(tag.getLong("blockPos"));
+
+		if(tag.hasKey("tileData"))
+		{
+			tileTag = tag.getCompoundTag("tileData");
+		}
+
+		return new ReplaceableBlock(state, pos, tileTag);
+	}
+
 	public boolean placeBlock(World world)
 	{
 		if (state == null) return false;
@@ -37,7 +56,7 @@ public class ReplaceableBlock
 		NBTTagCompound tag = new NBTTagCompound();
 		if (state != null)
 		{
-			tag.setInteger("blockID", Block.blockRegistry.getIDForObject(state.getBlock()));
+			tag.setInteger("blockID", Block.REGISTRY.getIDForObject(state.getBlock()));
 			tag.setInteger("blockMeta", state.getBlock().getMetaFromState(state));
 			tag.setLong("blockPos", pos.toLong());
 		}
@@ -46,23 +65,5 @@ public class ReplaceableBlock
 			tag.setTag("tileData", tagCompound);
 		}
 		return tag;
-	}
-
-	public static ReplaceableBlock readNBT(NBTTagCompound tag)
-	{
-		if (!tag.hasKey("blockID") || !tag.hasKey("blockMeta")) return null;
-		IBlockState state;
-		NBTTagCompound tileTag = null;
-
-		Block block = Block.getBlockById(tag.getInteger("blockID"));
-		state = block.getStateFromMeta(tag.getInteger("blockMeta"));
-		BlockPos pos = BlockPos.fromLong(tag.getLong("blockPos"));
-
-		if (tag.hasKey("tileData"))
-		{
-			tileTag = tag.getCompoundTag("tileData");
-		}
-
-		return new ReplaceableBlock(state, pos, tileTag);
 	}
 }

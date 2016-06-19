@@ -32,9 +32,9 @@ public class BlockGraveSlave extends BlockBase {
 
 	BlockGraveSlave()
 	{
-		super(Material.cloth);
+		super(Material.CLOTH);
 		setDefaultState(blockState.getBaseState().withProperty(slaveType, SlaveType.LID).withProperty(isFoot, true).withProperty(BlockGraveStone.FACING, EnumFacing.NORTH));
-		setStepSound(SoundType.STONE);
+		setSoundType(SoundType.STONE);
 		setHardness(1.0F);
 		setResistance(10000.0F);
         setTileEntity(TileEntityGraveSlave.class);

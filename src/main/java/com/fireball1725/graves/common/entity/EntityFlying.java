@@ -28,16 +28,16 @@ public abstract class EntityFlying extends EntityMob
     {
         if (this.isInWater())
         {
-            this.moveFlying(strafe, forward, 0.02F);
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+			this.moveRelative(strafe, forward, 0.02F);
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.800000011920929D;
             this.motionY *= 0.800000011920929D;
             this.motionZ *= 0.800000011920929D;
         }
         else if (this.isInLava())
         {
-            this.moveFlying(strafe, forward, 0.02F);
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+			this.moveRelative(strafe, forward, 0.02F);
+			this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.5D;
             this.motionY *= 0.5D;
             this.motionZ *= 0.5D;
@@ -52,8 +52,8 @@ public abstract class EntityFlying extends EntityMob
             }
 
             float f1 = 0.16277136F / (f * f * f);
-            this.moveFlying(strafe, forward, this.onGround ? 0.1F * f1 : 0.02F);
-            f = 0.91F;
+			this.moveRelative(strafe, forward, this.onGround ? 0.1F * f1 : 0.02F);
+			f = 0.91F;
 
             if (this.onGround)
             {

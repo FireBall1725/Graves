@@ -119,6 +119,9 @@ public class EventDeathHandler {
 			BlockPos playerPos = player.getPosition();
 			IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, playerFacing);
 
+			if(playerPos.getY() < 2)
+			{ playerPos = new BlockPos(playerPos.getX(), 2, playerPos.getZ()); }
+
 			List<ReplaceableBlock> blocks = Lists.newArrayList();
 			for (BlockPos pos : TileEntityGraveStone.getPositions(playerPos, playerFacing))
 			{

@@ -3,6 +3,7 @@ package com.fireball1725.graves.common.block;
 import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
@@ -28,9 +29,10 @@ public class BlockHeadStone extends BlockBase {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
     protected BlockHeadStone() {
-        super(Material.rock);
-        this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-        this.setHardness(1.5F);
+		super(Material.ROCK);
+		this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+		this.setSoundType(SoundType.STONE);
+		this.setHardness(1.5F);
         this.setResistance(10.0F);
         this.setHarvestLevel("pickaxe", 0);
         this.setTileEntity(TileEntityHeadStone.class);
