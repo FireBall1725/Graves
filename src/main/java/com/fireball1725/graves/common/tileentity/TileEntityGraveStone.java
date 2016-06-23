@@ -198,7 +198,13 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 
     public void breakBlocks() {
         // Adding slaves
-        EnumFacing facing = worldObj.getBlockState(pos).getValue(BlockGraveStone.FACING);
+		if(worldObj == null)
+		{
+			LogHelper.info("World is null??");
+			return;
+		}
+		IBlockState state2 = worldObj.getBlockState(pos);
+		EnumFacing facing = state2.getValue(BlockGraveStone.FACING);
 		IBlockState state = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
 		TileEntityGraveSlave tileEntityGraveSlave;
 

@@ -51,7 +51,7 @@ if (hasProperty("teamcity")) {
 }
 
 minecraft {
-    version = minecraft_version + "-" + forge_version + "-" + minecraft_version
+    version = minecraft_version + "-" + forge_version
 
     replaceIn "ModInfo.java"
 
