@@ -137,6 +137,7 @@ public class EventDeathHandler {
 			world.setBlockState(playerPos, state);
 
 			TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, playerPos, TileEntityGraveStone.class);
+			//			if (graveStoneTileEntity.getWorld() == null) graveStoneTileEntity.setWorldObj(world);
 			graveStoneTileEntity.addGraveItemsWithReplaceables(inventories.remove(player.getPersistentID()), itemsList);
 			graveStoneTileEntity.setReplaceableBlocks(blocks);
 			graveStoneTileEntity.breakBlocks();

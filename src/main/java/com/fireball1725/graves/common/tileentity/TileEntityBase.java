@@ -35,13 +35,31 @@ public class TileEntityBase extends TileEntity {
 		return new SPacketUpdateTileEntity(this.pos, 1, data);
 	}
 
-    @Override
+	@Override
 	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity sPacketUpdateTileEntity)
 	{
 		readFromNBT(sPacketUpdateTileEntity.getNbtCompound());
 		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
 		markForUpdate();
     }
+
+	@Override
+	public NBTTagCompound getUpdateTag()
+	{
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("x", pos.getX());
+		tag.setInteger("y", pos.getY());
+		tag.setInteger("z", pos.getZ());
+		return writeToNBT(tag);
+	}
+
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag)
+	{
+		readFromNBT(tag);
+		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
+		markForUpdate();
+	}
 
     public void markForUpdate() {
         if (this.renderedFragment > 0) {

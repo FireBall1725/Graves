@@ -5,7 +5,6 @@ import com.fireball1725.graves.common.block.BlockGraveStone;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
-import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.fireball1725.graves.common.tileentity.inventory.InternalDynamicInventory;
 import com.fireball1725.graves.common.tileentity.inventory.InventoryOperation;
@@ -19,13 +18,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.EnumDifficulty;
 
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -53,15 +50,6 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 		poses.add(pos);
 		poses.add(pos.offset(facing.getOpposite()));
 		return poses;
-	}
-
-	@Nullable
-	@Override
-	public SPacketUpdateTileEntity getUpdatePacket()
-	{
-		LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile == null ? "null" : this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
-
-		return super.getUpdatePacket();
 	}
 
 	public void addGraveItems(List<ItemStack> itemsList)
