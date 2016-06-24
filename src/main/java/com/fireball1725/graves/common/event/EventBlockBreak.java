@@ -7,7 +7,6 @@ import com.fireball1725.graves.common.tileentity.TileEntityGraveSlave;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.common.util.TileTools;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -46,14 +45,7 @@ public class EventBlockBreak {
 		{
 			List<ReplaceableBlock> blocks = graveStone.getReplaceableBlocks();
 			EntityPlayer player = event.getPlayer();
-			InventoryPlayer inventoryPlayer = player.inventory;
-			for(int i = 0; i < inventoryPlayer.getSizeInventory(); i++)
-			{
-				if(inventoryPlayer.getStackInSlot(i) != null)
-				{
-					player.dropItem(inventoryPlayer.getStackInSlot(i), true, true);
-				}
-			}
+			player.inventory.dropAllItems();
 
 			graveStone.replaceItems(player.inventory);
 
