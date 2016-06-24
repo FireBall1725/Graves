@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -46,7 +47,7 @@ public class ReplaceableBlock
 		Block block = state.getBlock();
 		if (block instanceof ITileEntityProvider && tagCompound != null)
 		{
-			world.getTileEntity(pos).readFromNBT(tagCompound);
+			world.setTileEntity(pos, TileEntity.func_190200_a(world, tagCompound));
 		}
 		return true;
 	}
