@@ -9,5 +9,5 @@ public class ModInfo {
     public static final String SERVER_PROXY_CLASS = "com.fireball1725." + MOD_ID + ".proxy.ServerProxy";
     public static final String CLIENT_PROXY_CLASS = "com.fireball1725." + MOD_ID + ".proxy.ClientProxy";
     public static final String FINGERPRINT = "@FINGERPRINT@";
-    public static final String GUI_FACTORY = "com.fireball1725." + MOD_ID + ".configuration.GravesConfigGuiFactory";
+	public static final String GUI_FACTORY = "com.fireball1725." + MOD_ID + ".common.configuration.GravesConfigGuiFactory";
 }

@@ -49,7 +49,10 @@ public class EventBlockBreak {
 			InventoryPlayer inventoryPlayer = player.inventory;
 			for(int i = 0; i < inventoryPlayer.getSizeInventory(); i++)
 			{
-				player.dropItem(inventoryPlayer.getStackInSlot(i), true, true);
+				if(inventoryPlayer.getStackInSlot(i) != null)
+				{
+					player.dropItem(inventoryPlayer.getStackInSlot(i), true, true);
+				}
 			}
 
 			graveStone.replaceItems(player.inventory);
