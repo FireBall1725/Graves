@@ -1,5 +1,6 @@
 package com.fireball1725.graves.client.events;
 
+import com.fireball1725.graves.client.render.TileEntityHeadStoneRenderer;
 import com.fireball1725.graves.common.block.BlockGraveSlave;
 import com.fireball1725.graves.common.block.BlockGraveStone;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveSlave;
@@ -34,7 +35,6 @@ import java.util.List;
 
 public class RenderEvents implements IResourceManagerReloadListener
 {
-
 	private final TextureAtlasSprite[] destroyBlockIcons = new TextureAtlasSprite[10];
 
 	@SubscribeEvent
@@ -143,11 +143,13 @@ public class RenderEvents implements IResourceManagerReloadListener
 
 	@Override
 	public void onResourceManagerReload(IResourceManager resourceManager) {
-		TextureMap texturemap = Minecraft.getMinecraft().getTextureMapBlocks();
+		TextureMap textureMap = Minecraft.getMinecraft().getTextureMapBlocks();
 
 		for (int i = 0; i < this.destroyBlockIcons.length; ++i)
 		{
-			this.destroyBlockIcons[i] = texturemap.getAtlasSprite("minecraft:blocks/destroy_stage_" + i);
+			this.destroyBlockIcons[i] = textureMap.getAtlasSprite("minecraft:blocks/destroy_stage_" + i);
 		}
+
+		TileEntityHeadStoneRenderer.bakeModel(textureMap);
 	}
 }

@@ -25,6 +25,10 @@
         }
       }
     ],
+    "render": {
+      "true": {},
+      "false": {}
+    },
     "facing": {
       "north": {},
       "south": {

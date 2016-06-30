@@ -2,11 +2,10 @@ package com.fireball1725.graves.common.block;
 
 import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.chiselsandbits.GraveCapability;
-import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -14,7 +13,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -30,11 +28,12 @@ import java.util.List;
 
 public class BlockHeadStone extends BlockBase {
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyBool RENDER = PropertyBool.create("render");
 
     protected BlockHeadStone() {
         super(Material.rock);
-        this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-        this.setHardness(1.5F);
+		this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(RENDER, true));
+		this.setHardness(1.5F);
         this.setResistance(10.0F);
         this.setHarvestLevel("pickaxe", 0);
         this.setTileEntity(TileEntityHeadStone.class);
@@ -43,7 +42,7 @@ public class BlockHeadStone extends BlockBase {
     @Override
 	public EnumBlockRenderType getRenderType(IBlockState state)
 	{
-		return EnumBlockRenderType.MODEL;
+		return EnumBlockRenderType.INVISIBLE;
 	}
 
 	@Override
@@ -78,29 +77,27 @@ public class BlockHeadStone extends BlockBase {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		if(playerIn.isSneaking() && playerIn.capabilities.isCreativeMode)
+		if(playerIn.capabilities.isCreativeMode)
 		{
 			playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
 		}
-		else if(ModInfo.chiselsAndBits)
+		if(worldIn.isRemote)
+		{ return true; }
+
+		final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
+		if(grave != null)
 		{
-			if(heldItem.hasTagCompound() && heldItem.getTagCompound().hasKey("BlockEntityTag")) // Chisel and Bits Support
+			grave.setGraveItemStack(heldItem);
+			TileEntity te = worldIn.getTileEntity(pos);
+			if(te instanceof TileEntityHeadStone)
 			{
-				final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
-				if(grave != null)
-				{
-					NBTTagCompound tag = heldItem.getTagCompound().getCompoundTag("BlockEntityTag");
-					Block block = Block.getBlockFromItem(heldItem.getItem());
-					grave.setGraveBlock(block);
-					grave.setGraveMeta(heldItem.getMetadata());
-					grave.setGraveTag(tag);
-					if(block != null)
-					{
-						worldIn.setBlockState(pos, block.getDefaultState());
-						worldIn.setTileEntity(pos, TileEntity.createTileEntity(null, tag));
-					}
-				}
+				((TileEntityHeadStone) te).setDisplayStack(heldItem);
+				te.markDirty();
+				worldIn.notifyBlockUpdate(pos, state, ((TileEntityHeadStone) te).getBlockState(), 3);
+				worldIn.notifyBlockOfStateChange(pos, state.getBlock());
+				worldIn.markChunkDirty(pos, te);
 			}
+			return true;
 		}
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
@@ -108,7 +105,7 @@ public class BlockHeadStone extends BlockBase {
     @Override
 	protected BlockStateContainer createBlockState()
 	{
-		return new BlockStateContainer(this, FACING);
+		return new BlockStateContainer(this, FACING, RENDER);
 	}
 
     @Override
@@ -133,6 +130,18 @@ public class BlockHeadStone extends BlockBase {
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
     }
+
+	@Override
+	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+	{
+		TileEntity te = worldIn.getTileEntity(pos);
+		if(te instanceof TileEntityHeadStone)
+		{
+			TileEntityHeadStone headStone = (TileEntityHeadStone) te;
+			return state.withProperty(RENDER, headStone.getDisplayStack() == null);
+		}
+		return state;
+	}
 
 	@Override
 	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity p_185477_6_)

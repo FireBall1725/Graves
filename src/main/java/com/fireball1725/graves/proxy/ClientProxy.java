@@ -1,10 +1,10 @@
 package com.fireball1725.graves.proxy;
 
-import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.client.events.RenderEvents;
 import com.fireball1725.graves.client.render.TileEntityHeadStoneRenderer;
 import com.fireball1725.graves.client.render.entity.EntityRenderers;
 import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
+import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
@@ -46,6 +46,7 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHeadStone.class, TileEntityHeadStoneRenderer.instance());
 		RenderEvents renderEvents = new RenderEvents();
 		MinecraftForge.EVENT_BUS.register(renderEvents);
+
 		((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(renderEvents);
     }
 }

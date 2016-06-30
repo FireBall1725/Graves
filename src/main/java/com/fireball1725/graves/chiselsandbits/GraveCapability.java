@@ -1,8 +1,8 @@
 package com.fireball1725.graves.chiselsandbits;
 
 import com.fireball1725.graves.common.reference.ModInfo;
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -14,9 +14,8 @@ import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class GraveCapability
 {
@@ -25,12 +24,16 @@ public class GraveCapability
 
 	public static void register()
 	{
-		boolean load = ModInfo.chiselsAndBits = Loader.isModLoaded("chiselsandbits");
-		if(load)
-		{
-			CapabilityManager.INSTANCE.register(IGraveCapability.class, new Storage(), DefaultImpl.class);
-			MinecraftForge.EVENT_BUS.register(new GraveCapability());
-		}
+		CapabilityManager.INSTANCE.register(IGraveCapability.class, new Storage(), DefaultImpl.class);
+		MinecraftForge.EVENT_BUS.register(new GraveCapability());
+	}
+
+	// Handles playerData props from being wiped on death
+	@SubscribeEvent
+	public void cloneEvent(PlayerEvent.Clone evt)
+	{
+		NBTTagCompound grave = evt.getOriginal().getCapability(GRAVE_CAP, null).serializeNBT();
+		evt.getEntityPlayer().getCapability(GRAVE_CAP, null).deserializeNBT(grave);
 	}
 
 	@SubscribeEvent
@@ -71,100 +74,57 @@ public class GraveCapability
 
 	public interface IGraveCapability
 	{
-		Block getGraveBlock();
+		ItemStack getGraveItemStack();
 
-		void setGraveBlock(Block block);
+		void setGraveItemStack(ItemStack itemStack);
 
-		int getGraveMeta();
+		NBTTagCompound serializeNBT();
 
-		void setGraveMeta(int meta);
-
-		NBTTagCompound getGraveTag();
-
-		void setGraveTag(NBTTagCompound tag);
-
-		boolean hasTag();
+		void deserializeNBT(NBTTagCompound tag);
 	}
-
-
 
 	public static class Storage implements IStorage<IGraveCapability>
 	{
 		@Override
 		public NBTBase writeNBT(Capability<IGraveCapability> capability, IGraveCapability instance, EnumFacing side)
 		{
-			NBTTagCompound tagCompound = new NBTTagCompound();
-			if(instance.getGraveBlock() == null)
-			{ return tagCompound; }
-
-			tagCompound.setString("graveBlock", ForgeRegistries.BLOCKS.getKey(instance.getGraveBlock()).toString());
-			tagCompound.setInteger("graveMeta", instance.getGraveMeta());
-			if(instance.hasTag())
-			{ tagCompound.setTag("graveTag", instance.getGraveTag()); }
-			return tagCompound;
+			return instance.serializeNBT();
 		}
 
 		@Override
 		public void readNBT(Capability<IGraveCapability> capability, IGraveCapability instance, EnumFacing side, NBTBase nbt)
 		{
-			if(nbt.hasNoTags())
-			{ return; }
-
-			instance.setGraveBlock(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(((NBTTagCompound) nbt).getString("graveBlock"))));
-			instance.setGraveMeta(((NBTTagCompound) nbt).getInteger("graveMeta"));
-			if(((NBTTagCompound) nbt).hasKey("graveTag"))
-			{ instance.setGraveTag(((NBTTagCompound) nbt).getCompoundTag("graveTag")); }
+			instance.deserializeNBT((NBTTagCompound) nbt);
 		}
 	}
 
-
-
 	public static class DefaultImpl implements IGraveCapability
 	{
-		Block graveBlock;
-		int graveMeta;
-		NBTTagCompound graveTag;
-
+		ItemStack stack;
 		@Override
-		public NBTTagCompound getGraveTag()
+		public ItemStack getGraveItemStack()
 		{
-			return graveTag;
+			return stack;
 		}
 
 		@Override
-		public void setGraveTag(NBTTagCompound chiselAndBitsGrave)
+		public void setGraveItemStack(ItemStack stack)
 		{
-			this.graveTag = chiselAndBitsGrave;
+			this.stack = stack;
 		}
 
 		@Override
-		public boolean hasTag()
+		public NBTTagCompound serializeNBT()
 		{
-			return graveTag != null;
+			return stack == null ? new NBTTagCompound() : stack.serializeNBT();
 		}
 
 		@Override
-		public Block getGraveBlock()
+		public void deserializeNBT(NBTTagCompound tag)
 		{
-			return graveBlock;
-		}
-
-		@Override
-		public void setGraveBlock(Block block)
-		{
-			graveBlock = block;
-		}
-
-		@Override
-		public int getGraveMeta()
-		{
-			return graveMeta;
-		}
-
-		@Override
-		public void setGraveMeta(int meta)
-		{
-			this.graveMeta = meta;
+			if(tag.hasNoTags())
+			{ return; }
+			setGraveItemStack(ItemStack.loadItemStackFromNBT(tag));
 		}
 	}
 }

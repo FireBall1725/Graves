@@ -62,13 +62,6 @@ public class TileEntityBase extends TileEntity {
         }
     }
 
-    public void onChunkLoad() {
-        if (this.isInvalid())
-            this.validate();
-
-        markForUpdate();
-    }
-
     @Override
     public void onChunkUnload() {
         if (!this.isInvalid())
