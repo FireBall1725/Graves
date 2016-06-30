@@ -1,23 +1,27 @@
 package com.fireball1725.graves.common.event;
 
 import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.chiselsandbits.GraveCapability;
 import com.fireball1725.graves.common.block.BlockGraveStone;
 import com.fireball1725.graves.common.block.BlockHeadStone;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.helpers.LogHelper;
+import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
@@ -115,9 +119,9 @@ public class EventDeathHandler {
 
 		if(spawnGrave)
 		{
-			EnumFacing playerFacing = player.getHorizontalFacing();
+			EnumFacing facing = player.getHorizontalFacing();
 			BlockPos playerPos = player.getPosition();
-			IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, playerFacing);
+			IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
 
 			if(playerPos.getY() <= 2)
 			{ playerPos = new BlockPos(playerPos.getX(), 3, playerPos.getZ()); }
@@ -126,7 +130,7 @@ public class EventDeathHandler {
 			{ playerPos = new BlockPos(playerPos.getX(), 253, playerPos.getZ()); }
 
 			List<ReplaceableBlock> blocks = Lists.newArrayList();
-			for (BlockPos pos : TileEntityGraveStone.getPositions(playerPos, playerFacing))
+			for(BlockPos pos : TileEntityGraveStone.getPositions(playerPos, facing))
 			{
 				NBTTagCompound tag = null;
 				if (world.getTileEntity(pos) != null)
@@ -149,15 +153,48 @@ public class EventDeathHandler {
 			graveStoneTileEntity.setPlayerProfile(player.getGameProfile());
 
 			// Adding Headstone
-			world.setBlockState(playerPos.offset(playerFacing.getOpposite()), Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, playerFacing));
-			TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, playerPos.offset(playerFacing.getOpposite()), TileEntityHeadStone.class);
-			if(tileEntityHeadStone != null)
+
+			BlockPos pos = playerPos.offset(facing.getOpposite());
+
+			boolean success = false;
+			if(ModInfo.chiselsAndBits)
 			{
-				tileEntityHeadStone.setCustomName(player.getDisplayName().getFormattedText());
+				final GraveCapability.IGraveCapability graveCap = player.getCapability(GraveCapability.GRAVE_CAP, null);
+				if(graveCap != null)
+				{
+					System.out.println("test0");
+					NBTTagCompound tag = graveCap.getGraveTag();
+					graveCap.setGraveTag(tag);
+					Block block = graveCap.getGraveBlock();
+					if(block != null)
+					{
+						System.out.println("test1 - " + block.getUnlocalizedName());
+						world.setBlockState(pos, block.getStateFromMeta(graveCap.getGraveMeta()));
+						if(graveCap.hasTag())
+						{
+							System.out.println("test2");
+							world.setTileEntity(pos, TileEntity.createTileEntity(null, tag));
+						}
+						success = true;
+					}
+				}
 			}
+			if(!success)
+			{ placeDefaultGrave(world, pos, facing, player.getDisplayName().getFormattedText()); }
+
 			sendTomTomPos(Graves.instance, player, playerPos, "Grave this way!");
 		}
 
 		event.getDrops().clear();
+	}
+
+	private void placeDefaultGrave(World world, BlockPos pos, EnumFacing facing, String text)
+	{
+		world.setBlockState(pos, Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
+		TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
+		if(tileEntityHeadStone != null)
+		{
+			tileEntityHeadStone.setCustomName(text);
+		}
 	}
 }

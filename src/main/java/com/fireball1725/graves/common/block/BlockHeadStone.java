@@ -1,8 +1,11 @@
 package com.fireball1725.graves.common.block;
 
 import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.chiselsandbits.GraveCapability;
+import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
@@ -11,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
@@ -74,9 +78,29 @@ public class BlockHeadStone extends BlockBase {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
 	{
-		if(playerIn.capabilities.isCreativeMode)
+		if(playerIn.isSneaking() && playerIn.capabilities.isCreativeMode)
 		{
 			playerIn.openGui(Graves.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+		}
+		else if(ModInfo.chiselsAndBits)
+		{
+			if(heldItem.hasTagCompound() && heldItem.getTagCompound().hasKey("BlockEntityTag")) // Chisel and Bits Support
+			{
+				final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
+				if(grave != null)
+				{
+					NBTTagCompound tag = heldItem.getTagCompound().getCompoundTag("BlockEntityTag");
+					Block block = Block.getBlockFromItem(heldItem.getItem());
+					grave.setGraveBlock(block);
+					grave.setGraveMeta(heldItem.getMetadata());
+					grave.setGraveTag(tag);
+					if(block != null)
+					{
+						worldIn.setBlockState(pos, block.getDefaultState());
+						worldIn.setTileEntity(pos, TileEntity.createTileEntity(null, tag));
+					}
+				}
+			}
 		}
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
