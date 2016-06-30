@@ -8,7 +8,6 @@ import com.fireball1725.graves.common.util.GuiHandler;
 import com.fireball1725.graves.proxy.IProxy;
 import com.google.common.base.Stopwatch;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -30,11 +29,7 @@ public class Graves {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-		boolean load = ModInfo.chiselsAndBits = Loader.isModLoaded("chiselsandbits");
-		if(load)
-		{
-			GraveCapability.register();
-		}
+		GraveCapability.register();
 		final Stopwatch stopWatch = Stopwatch.createStarted();
         LogHelper.info("Pre Initialization ( started )");
 

@@ -4,6 +4,7 @@ import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.chiselsandbits.GraveCapability;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -12,6 +13,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -22,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,20 +87,23 @@ public class BlockHeadStone extends BlockBase {
 		if(worldIn.isRemote)
 		{ return true; }
 
-		final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
-		if(grave != null)
+		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(Block.getBlockFromItem(heldItem.getItem())).getResourceDomain().equals("chiselsandbits")))
 		{
-			grave.setGraveItemStack(heldItem);
-			TileEntity te = worldIn.getTileEntity(pos);
-			if(te instanceof TileEntityHeadStone)
+			final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
+			if(grave != null)
 			{
-				((TileEntityHeadStone) te).setDisplayStack(heldItem);
-				te.markDirty();
-				worldIn.notifyBlockUpdate(pos, state, ((TileEntityHeadStone) te).getBlockState(), 3);
-				worldIn.notifyBlockOfStateChange(pos, state.getBlock());
-				worldIn.markChunkDirty(pos, te);
+				grave.setGraveItemStack(heldItem);
+				TileEntity te = worldIn.getTileEntity(pos);
+				if(te instanceof TileEntityHeadStone)
+				{
+					((TileEntityHeadStone) te).setDisplayStack(heldItem);
+					te.markDirty();
+					worldIn.notifyBlockUpdate(pos, state, ((TileEntityHeadStone) te).getBlockState(), 3);
+					worldIn.notifyBlockOfStateChange(pos, state.getBlock());
+					worldIn.markChunkDirty(pos, te);
+				}
+				return true;
 			}
-			return true;
 		}
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
