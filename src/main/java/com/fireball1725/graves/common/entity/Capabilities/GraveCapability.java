@@ -1,4 +1,4 @@
-package com.fireball1725.graves.common.entity;
+package com.fireball1725.graves.common.entity.capabilities;
 
 import com.fireball1725.graves.common.reference.ModInfo;
 import net.minecraft.entity.player.EntityPlayer;
