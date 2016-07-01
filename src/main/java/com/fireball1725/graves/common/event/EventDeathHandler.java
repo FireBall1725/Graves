@@ -1,10 +1,10 @@
 package com.fireball1725.graves.common.event;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.chiselsandbits.GraveCapability;
 import com.fireball1725.graves.common.block.BlockGraveStone;
 import com.fireball1725.graves.common.block.BlockHeadStone;
 import com.fireball1725.graves.common.block.Blocks;
+import com.fireball1725.graves.common.entity.Capabilities.GraveCapability;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;

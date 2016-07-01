@@ -1,4 +1,4 @@
-package com.fireball1725.graves.chiselsandbits;
+package com.fireball1725.graves.common.entity.Capabilities;
 
 import com.fireball1725.graves.common.reference.ModInfo;
 import net.minecraft.entity.player.EntityPlayer;

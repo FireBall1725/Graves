@@ -1,7 +1,7 @@
 package com.fireball1725.graves.common.block;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.chiselsandbits.GraveCapability;
+import com.fireball1725.graves.common.entity.Capabilities.GraveCapability;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
 import net.minecraft.block.Block;
