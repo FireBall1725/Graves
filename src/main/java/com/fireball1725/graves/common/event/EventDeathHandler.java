@@ -1,11 +1,12 @@
 package com.fireball1725.graves.common.event;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.chiselsandbits.GraveCapability;
 import com.fireball1725.graves.common.block.BlockGraveStone;
 import com.fireball1725.graves.common.block.BlockHeadStone;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
+import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
+import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
 import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
@@ -168,7 +169,7 @@ public class EventDeathHandler {
 		if(tileEntityHeadStone != null)
 		{
 			tileEntityHeadStone.setCustomName(text);
-			GraveCapability.IGraveCapability grave = player.getCapability(GraveCapability.GRAVE_CAP, null);
+			IGraveCapability grave = player.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
 			if(grave != null)
 			{
 				tileEntityHeadStone.setDisplayStack(grave.getGraveItemStack());

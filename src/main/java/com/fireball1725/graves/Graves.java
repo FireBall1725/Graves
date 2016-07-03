@@ -1,6 +1,6 @@
 package com.fireball1725.graves;
 
-import com.fireball1725.graves.chiselsandbits.GraveCapability;
+import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
 import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.network.PacketHandler;
 import com.fireball1725.graves.common.reference.ModInfo;

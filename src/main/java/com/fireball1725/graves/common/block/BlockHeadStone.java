@@ -1,10 +1,10 @@
 package com.fireball1725.graves.common.block;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.chiselsandbits.GraveCapability;
+import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
+import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -87,9 +87,9 @@ public class BlockHeadStone extends BlockBase {
 		if(worldIn.isRemote)
 		{ return true; }
 
-		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(Block.getBlockFromItem(heldItem.getItem())).getResourceDomain().equals("chiselsandbits")))
+		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits")))
 		{
-			final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
+			final IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
 			if(grave != null)
 			{
 				grave.setGraveItemStack(heldItem);

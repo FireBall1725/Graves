@@ -21,7 +21,7 @@ import java.awt.*;
 
 public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
     public static TileEntityHeadStoneRenderer _instance = null;
-	public static IBakedModel bakedModel;// = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getModelForState(Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState());
+	public static IBakedModel bakedModel;
 
 	public TileEntityHeadStoneRenderer()
 	{
@@ -63,7 +63,7 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
 	{
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(x + .5, y + .5, z + .5);
-		if(te instanceof TileEntityHeadStone)
+		if(te instanceof TileEntityHeadStone && getWorld().getBlockState(te.getPos()).getBlock() instanceof BlockHeadStone)
 		{
 			TileEntityHeadStone headStone = (TileEntityHeadStone) te;
 			IBlockState state = headStone.getWorld().getBlockState(te.getPos());
