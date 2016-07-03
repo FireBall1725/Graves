@@ -89,7 +89,7 @@ public class BlockHeadStone extends BlockBase {
 		if(worldIn.isRemote)
 		{ return true; }
 
-		if(heldItem != null && heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits"))
+		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits")))
 		{
 			final IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
 			if(grave != null)
