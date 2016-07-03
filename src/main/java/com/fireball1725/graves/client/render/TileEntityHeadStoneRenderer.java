@@ -1,6 +1,7 @@
 package com.fireball1725.graves.client.render;
 
 import com.fireball1725.graves.common.block.BlockHeadStone;
+import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.google.common.base.Function;
@@ -78,24 +79,22 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
 			if(headStone.getDisplayStack() != null)
 			{
 				ItemStack stack = headStone.getDisplayStack();
-				if(ModInfo.chiselsAndBits)
-				{
-					IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(stack, null, null);
-					GlStateManager.pushMatrix();
-					GlStateManager.enableLighting();
-					GlStateManager.enableRescaleNormal();
-					GlStateManager.enableAlpha();
-					GlStateManager.alphaFunc(516, 0.1F);
-					GlStateManager.enableBlend();
-					GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-					GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-					bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-					mc.getRenderItem().renderItem(stack, model);
-					GlStateManager.disableAlpha();
-					GlStateManager.disableRescaleNormal();
-					GlStateManager.disableLighting();
-					GlStateManager.popMatrix();
-				}
+				IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(stack, null, null);
+				GlStateManager.pushMatrix();
+				GlStateManager.enableLighting();
+				GlStateManager.enableRescaleNormal();
+				GlStateManager.enableAlpha();
+				GlStateManager.alphaFunc(516, 0.1F);
+				GlStateManager.enableBlend();
+				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+				bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				mc.getRenderItem().renderItem(stack, model);
+				GlStateManager.disableAlpha();
+				GlStateManager.disableRescaleNormal();
+				GlStateManager.disableLighting();
+				GlStateManager.popMatrix();
+				LogHelper.info("Rendering!...");
 			}
 			else
 			{
