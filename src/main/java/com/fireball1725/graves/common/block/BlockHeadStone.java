@@ -1,7 +1,6 @@
 package com.fireball1725.graves.common.block;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.chiselsandbits.GraveCapability;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
 import net.minecraft.block.material.Material;
@@ -86,21 +85,21 @@ public class BlockHeadStone extends BlockBase {
 		if(worldIn.isRemote)
 		{ return true; }
 
-		final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
-		if(grave != null)
-		{
-			grave.setGraveItemStack(heldItem);
-			TileEntity te = worldIn.getTileEntity(pos);
-			if(te instanceof TileEntityHeadStone)
-			{
-				((TileEntityHeadStone) te).setDisplayStack(heldItem);
-				te.markDirty();
-				worldIn.notifyBlockUpdate(pos, state, ((TileEntityHeadStone) te).getBlockState(), 3);
-				worldIn.notifyBlockOfStateChange(pos, state.getBlock());
-				worldIn.markChunkDirty(pos, te);
-			}
-			return true;
-		}
+		//		final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
+		//		if(grave != null)
+		//		{
+		//			grave.setGraveItemStack(heldItem);
+		//			TileEntity te = worldIn.getTileEntity(pos);
+		//			if(te instanceof TileEntityHeadStone)
+		//			{
+		//				((TileEntityHeadStone) te).setDisplayStack(heldItem);
+		//				te.markDirty();
+		//				worldIn.notifyBlockUpdate(pos, state, ((TileEntityHeadStone) te).getBlockState(), 3);
+		//				worldIn.notifyBlockOfStateChange(pos, state.getBlock());
+		//				worldIn.markChunkDirty(pos, te);
+		//			}
+		//			return true;
+		//		}
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 
