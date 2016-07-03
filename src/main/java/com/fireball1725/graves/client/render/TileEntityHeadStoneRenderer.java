@@ -20,7 +20,7 @@ import net.minecraftforge.client.model.obj.OBJModel;
 import java.awt.*;
 
 public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
-    public static TileEntityHeadStoneRenderer _instance = null;
+	public static TileEntityHeadStoneRenderer _instance = null;
 	public static IBakedModel bakedModel;
 
 	public TileEntityHeadStoneRenderer()
@@ -54,12 +54,12 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
 		if(_instance == null)
 		{
 			_instance = new TileEntityHeadStoneRenderer();
-        }
-        return _instance;
-    }
+		}
+		return _instance;
+	}
 
-    @Override
-    public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage)
+	@Override
+	public void renderTileEntityAt(TileEntity te, double x, double y, double z, float partialTicks, int destroyStage)
 	{
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(x + .5, y + .5, z + .5);
@@ -128,23 +128,26 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
 	public void renderTextOnHeadstone(String[] text, int color, boolean shadow)
 	{
 
-        int i = 0;
-        for (String s : text) {
-            int stringWidth = mc.fontRendererObj.getStringWidth(s);
-            if (stringWidth == 0) {
-                stringWidth = 1;
-            }
-            int xCenter = stringWidth / 2;
-            int yCenter = mc.fontRendererObj.FONT_HEIGHT / 2;
+		int i = 0;
+		for(String s : text)
+		{
+			int stringWidth = mc.fontRendererObj.getStringWidth(s);
+			if(stringWidth == 0)
+			{
+				stringWidth = 1;
+			}
+			int xCenter = stringWidth / 2;
+			int yCenter = mc.fontRendererObj.FONT_HEIGHT / 2;
 			if(i == 7)
 			{ GlStateManager.translate(0, 8, -.01); }
-			if (shadow) {
-                mc.fontRendererObj.drawString(s, -xCenter - 1, -yCenter + 1 + (renderFont.FONT_HEIGHT * i + 2), (color & 16579836) >> 2 | color & -16777216);
-                GlStateManager.translate(0f, 0f, -.001f);
-            }
-            mc.fontRendererObj.drawString(s, -xCenter, -yCenter + (renderFont.FONT_HEIGHT * i + 2), color);
+			if(shadow)
+			{
+				mc.fontRendererObj.drawString(s, -xCenter - 1, -yCenter + 1 + (renderFont.FONT_HEIGHT * i + 2), (color & 16579836) >> 2 | color & -16777216);
+				GlStateManager.translate(0f, 0f, -.001f);
+			}
+			mc.fontRendererObj.drawString(s, -xCenter, -yCenter + (renderFont.FONT_HEIGHT * i + 2), color);
 
-            i++;
-        }
-    }
+			i++;
+		}
+	}
 }

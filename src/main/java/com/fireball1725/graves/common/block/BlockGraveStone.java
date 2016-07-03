@@ -3,6 +3,7 @@ package com.fireball1725.graves.common.block;
 import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
 import com.fireball1725.graves.common.util.TileTools;
 import net.minecraft.block.BlockHorizontal;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -30,9 +31,10 @@ public class BlockGraveStone extends BlockBase {
 	public static final PropertyBool HASLID = PropertyBool.create("haslid");
 
     public BlockGraveStone() {
-        super(Material.cloth);
+		super(Material.cloth);
 		setDefaultState(this.blockState.getBaseState().withProperty(HASLID, true).withProperty(FACING, EnumFacing.NORTH));
 		setHardness(1F);
+		setStepSound(SoundType.STONE);
 		this.setResistance(10000F);
         this.setTileEntity(TileEntityGraveStone.class);
     }

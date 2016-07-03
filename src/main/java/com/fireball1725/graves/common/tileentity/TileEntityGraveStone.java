@@ -5,6 +5,7 @@ import com.fireball1725.graves.common.block.BlockGraveStone;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
+import com.fireball1725.graves.common.helpers.ItemHelper;
 import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.fireball1725.graves.common.tileentity.inventory.InternalDynamicInventory;
@@ -13,6 +14,7 @@ import com.fireball1725.graves.common.util.TileTools;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
@@ -25,15 +27,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.EnumDifficulty;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Random;
 
 public class TileEntityGraveStone extends TileEntityInventoryBase
 {
 	private boolean hasLid = true;
-    private InternalDynamicInventory internalInventory = new InternalDynamicInventory(this);
-    private GameProfile playerProfile;
+	private InternalDynamicInventory internalInventory = new InternalDynamicInventory(this);
+	private GameProfile playerProfile;
 	private List<ReplaceableBlock> replaceableBlocks = Lists.newArrayList();
 	private ItemStack[] replaceableItems = new ItemStack[14];
 
@@ -55,12 +58,12 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 	}
 
 	@Override
-	public Packet getDescriptionPacket()
+	public Packet<?> getDescriptionPacket()
 	{
 		LogHelper.info(String.format("Gravestone (%s) at W=%s X=%s Y=%s Z=%s", this.playerProfile == null ? "null" : this.playerProfile.getName(), this.worldObj.getWorldInfo().getWorldName(), this.pos.getX(), this.pos.getY(), this.pos.getZ()));
 
-        return super.getDescriptionPacket();
-    }
+		return super.getDescriptionPacket();
+	}
 
 	public void addGraveItems(List<ItemStack> itemsList)
 	{
@@ -72,84 +75,86 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 
 	public void addGraveItemsWithReplaceables(InventoryPlayer inventory, List<ItemStack> itemsList)
 	{
-		replaceableItems = new ItemStack[InventoryPlayer.getHotbarSize() + inventory.armorInventory.length + inventory.offHandInventory.length];
-		ItemStack itemStack;
-		int placeAt;
-		for(int i = 0; i < InventoryPlayer.getHotbarSize(); i++)
+		System.arraycopy(inventory.mainInventory, 0, replaceableItems, 0, InventoryPlayer.getHotbarSize());
+
+		rItems:
+		for(ItemStack stack : replaceableItems)
 		{
-			placeAt = i;
-			itemStack = inventory.mainInventory[i];
-			replaceableItems[placeAt] = itemStack;
-		}
-		for(int i = 0; i < inventory.armorInventory.length; i++)
-		{
-			placeAt = i + InventoryPlayer.getHotbarSize();
-			itemStack = inventory.armorInventory[i];
-			replaceableItems[placeAt] = itemStack;
-		}
-		for(int i = 0; i < inventory.offHandInventory.length; i++)
-		{
-			placeAt = i + InventoryPlayer.getHotbarSize() + inventory.armorInventory.length;
-			itemStack = inventory.offHandInventory[i];
-			replaceableItems[placeAt] = itemStack;
-		}
-		Iterator<ItemStack> listIterator = itemsList.listIterator();
-		listIterator:
-		while(listIterator.hasNext())
-		{
-			ItemStack stack1 = listIterator.next();
-			if(stack1 != null)
+			ListIterator<ItemStack> iterator = itemsList.listIterator();
+			ItemStack stack1;
+			while(iterator.hasNext())
 			{
-				for(ItemStack stack : replaceableItems)
+				stack1 = iterator.next();
+
+				if(ItemHelper.doesItemHaveEnchant(stack1, "soulBound"))
 				{
-					if(stack != null)
-					{
-						if(stack1.isItemEqual(stack))
-						{
-							if(stack1.hasTagCompound() && stack.hasTagCompound())
-							{
-								if(stack1.getTagCompound().equals(stack.getTagCompound()))
-								{
-									listIterator.remove();
-									continue listIterator;
-								}
-							}
-							else
-							{
-								listIterator.remove();
-								continue listIterator;
-							}
-						}
-					}
+					iterator.remove();
+					continue;
 				}
+
+				if(areItemEqual(stack, stack1))
+				{
+					iterator.remove();
+					continue rItems;
+				}
+			}
+		}
+		for(int i = 0; i < replaceableItems.length; i++)
+		{
+			ItemStack stack = replaceableItems[i];
+			if(ItemHelper.doesItemHaveEnchant(stack, "soulBound"))
+			{
+				replaceableItems[i] = null;
 			}
 		}
 		addGraveItems(itemsList);
 	}
 
-    public boolean getHasLid() {
-        return hasLid;
-    }
+	private boolean areItemEqual(ItemStack stack, ItemStack stack1)
+	{
+		boolean flag = ItemStack.areItemsEqual(stack, stack1);
+		if(stack != null && stack1 != null)
+		{
+			if((stack.hasTagCompound() && !stack1.hasTagCompound()) || (!stack.hasTagCompound() && stack1.hasTagCompound()))
+			{
+				return false;
+			}
+			if(stack.hasTagCompound() && stack1.hasTagCompound())
+			{
+				return flag && stack.getTagCompound().equals(stack1.getTagCompound());
+			}
+		}
+		return flag;
+	}
 
-    public void setHasLid(boolean hasLid) {
-        this.hasLid = hasLid;
+	public boolean getHasLid()
+	{
+		return hasLid;
+	}
+
+	public void setHasLid(boolean hasLid)
+	{
+		this.hasLid = hasLid;
 		worldObj.notifyBlockUpdate(pos, getBlockState(), getBlockState().withProperty(BlockGraveStone.HASLID, false), 3);
 	}
 
-    private GameProfile getPlayerProfile() {
-        return playerProfile;
-    }
+	private GameProfile getPlayerProfile()
+	{
+		return playerProfile;
+	}
 
-    public void setPlayerProfile(GameProfile playerProfile) {
-        this.playerProfile = playerProfile;
-    }
+	public void setPlayerProfile(GameProfile playerProfile)
+	{
+		this.playerProfile = playerProfile;
+	}
 
-    @Override
-    public void readFromNBT(NBTTagCompound nbtTagCompound) {
-        super.readFromNBT(nbtTagCompound);
+	@Override
+	public void readFromNBT(NBTTagCompound nbtTagCompound)
+	{
+		super.readFromNBT(nbtTagCompound);
 
-        this.hasLid = nbtTagCompound.getBoolean("hasLid");
-        this.playerProfile = NBTUtil.readGameProfileFromNBT(nbtTagCompound.getCompoundTag("playerProfile"));
+		this.hasLid = nbtTagCompound.getBoolean("hasLid");
+		this.playerProfile = NBTUtil.readGameProfileFromNBT(nbtTagCompound.getCompoundTag("playerProfile"));
 
 		NBTTagCompound replaceableTag = nbtTagCompound.getCompoundTag("replaceableBlocks");
 		int size = replaceableTag.getInteger("size");
@@ -163,21 +168,24 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 		for(int i = 0; i < replaceableItems.length; i++)
 		{
 			if(tag.hasKey("item:" + i))
-			{ replaceableItems[i] = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("item:" + i)); }
+			{
+				replaceableItems[i] = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("item:" + i));
+			}
 		}
 	}
 
-    @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
-        super.writeToNBT(nbtTagCompound);
+	@Override
+	public void writeToNBT(NBTTagCompound nbtTagCompound)
+	{
 
-        nbtTagCompound.setBoolean("hasLid", this.hasLid);
+		nbtTagCompound.setBoolean("hasLid", this.hasLid);
 
-        if (playerProfile != null) {
-            NBTTagCompound profileTag = new NBTTagCompound();
-            NBTUtil.writeGameProfile(profileTag, playerProfile);
-            nbtTagCompound.setTag("playerProfile", profileTag);
-        }
+		if(playerProfile != null)
+		{
+			NBTTagCompound profileTag = new NBTTagCompound();
+			NBTUtil.writeGameProfile(profileTag, playerProfile);
+			nbtTagCompound.setTag("playerProfile", profileTag);
+		}
 
 		NBTTagCompound replaceableBlocksTag = new NBTTagCompound();
 		replaceableBlocksTag.setInteger("size", replaceableBlocks.size());
@@ -194,78 +202,84 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 			{ replaceableItemsTag.setTag("item:" + i, replaceableItems[i].writeToNBT(new NBTTagCompound())); }
 		}
 		nbtTagCompound.setTag("replaceableItems", replaceableItemsTag);
+		super.writeToNBT(nbtTagCompound);
 	}
 
-    public void breakBlocks() {
-        // Adding slaves
-		if(worldObj == null)
-		{
-			LogHelper.info("World is null??");
-			return;
-		}
-		IBlockState state2 = worldObj.getBlockState(pos);
-		EnumFacing facing = state2.getValue(BlockGraveStone.FACING);
-		IBlockState state = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
+	public void breakBlocks()
+	{
+		// Adding slaves
+		IBlockState defSlaveState = Blocks.BLOCK_GRAVESTONE_SLAVE.block.getDefaultState();
+		IBlockState state = worldObj.getBlockState(pos);
+		EnumFacing facing = state.getBlock().getActualState(state, worldObj, pos).getValue(BlockGraveStone.FACING);
 		TileEntityGraveSlave tileEntityGraveSlave;
 
 		for(BlockPos slavePos : getSlaves(pos, facing))
 		{
 			worldObj.removeTileEntity(slavePos);
-			worldObj.setBlockState(slavePos, BlockGraveSlave.getActualStatePre(state, worldObj, slavePos, pos));
+			worldObj.setBlockState(slavePos, BlockGraveSlave.getActualStatePre(defSlaveState, worldObj, slavePos, pos));
 
 			tileEntityGraveSlave = TileTools.getTileEntity(worldObj, slavePos, TileEntityGraveSlave.class);
 			tileEntityGraveSlave.setMasterBlock(pos);
 		}
 		// End of adding slaves
 
-    }
+	}
 
 	@Override
-    public IInventory getInternalInventory() {
-        return this.internalInventory;
-    }
+	public IInventory getInternalInventory()
+	{
+		return this.internalInventory;
+	}
 
-    @Override
-    public void saveChanges() {
+	@Override
+	public void saveChanges()
+	{
 
-    }
+	}
 
-    @Override
-    public void onChangeInventory(IInventory inv, int slot, InventoryOperation operation, ItemStack removed, ItemStack added) {
+	@Override
+	public void onChangeInventory(IInventory inv, int slot, InventoryOperation operation, ItemStack removed, ItemStack added)
+	{
 
-    }
+	}
 
-    @Override
-    public int[] getAccessibleSlotsBySide(EnumFacing side) {
-        return new int[0];
-    }
+	@Override
+	public int[] getAccessibleSlotsBySide(EnumFacing side)
+	{
+		return new int[0];
+	}
 
-    @Override
-    public ItemStack removeStackFromSlot(int index) {
-        return null;
-    }
+	@Override
+	public ItemStack removeStackFromSlot(int index)
+	{
+		return null;
+	}
 
-    @Override
-    public int getField(int id) {
-        return 0;
-    }
+	@Override
+	public int getField(int id)
+	{
+		return 0;
+	}
 
-    @Override
-    public void setField(int id, int value) {
+	@Override
+	public void setField(int id, int value)
+	{
 
-    }
+	}
 
-    @Override
-    public int getFieldCount() {
-        return 0;
-    }
+	@Override
+	public int getFieldCount()
+	{
+		return 0;
+	}
 
-    @Override
-    public void clear() {
+	@Override
+	public void clear()
+	{
 
-    }
+	}
 
-    @Override
+	@Override
 	public ITextComponent getDisplayName()
 	{
 		return null;
@@ -373,11 +387,44 @@ public class TileEntityGraveStone extends TileEntityInventoryBase
 		this.replaceableBlocks = replaceableBlocks;
 	}
 
-	public void replaceItems(InventoryPlayer inventory)
+	public void replaceItems(EntityPlayer player)
 	{
-		System.arraycopy(replaceableItems, 0, inventory.mainInventory, 0, InventoryPlayer.getHotbarSize());
-		System.arraycopy(replaceableItems, InventoryPlayer.getHotbarSize(), inventory.armorInventory, 0, inventory.armorInventory.length);
-		System.arraycopy(replaceableItems, InventoryPlayer.getHotbarSize() + inventory.armorInventory.length, inventory.offHandInventory, 0, inventory.offHandInventory.length);
+		InventoryPlayer inventory = player.inventory;
+		List<ItemStack> remaining = new ArrayList<ItemStack>();
+		for(int i = 0; i < inventory.mainInventory.length; i++)
+		{
+			if(i >= replaceableItems.length)
+			{ break; }
+			ItemStack currentItem = inventory.mainInventory[i];
+			ItemStack replaceItem = replaceableItems[i];
+			if(InventoryPlayer.isHotbar(i))
+			{
+				LogHelper.info(String.format("CurrentItem: %s, replaceItem: %s", currentItem, replaceItem));
+				if(currentItem == null && replaceItem != null)
+				{
+					inventory.mainInventory[i] = replaceItem;
+				}
+				else
+				{
+					remaining.add(replaceItem);
+				}
+			}
+			else
+			{
+				remaining.add(replaceItem);
+			}
+		}
+
+		for(ItemStack remainingStack : remaining)
+		{
+			LogHelper.info(String.format("remainingStack: %s", remainingStack));
+			if(!inventory.addItemStackToInventory(remainingStack))
+			{
+				if(remainingStack != null && remainingStack.stackSize >= 1)
+				{ worldObj.spawnEntityInWorld(new EntityItem(worldObj, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), remainingStack)); }
+			}
+		}
+
 		inventory.markDirty();
 	}
 }

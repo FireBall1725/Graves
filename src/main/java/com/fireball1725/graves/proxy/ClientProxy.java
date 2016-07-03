@@ -46,7 +46,6 @@ public class ClientProxy extends CommonProxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityHeadStone.class, TileEntityHeadStoneRenderer.instance());
 		RenderEvents renderEvents = new RenderEvents();
 		MinecraftForge.EVENT_BUS.register(renderEvents);
-
 		((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(renderEvents);
     }
 }

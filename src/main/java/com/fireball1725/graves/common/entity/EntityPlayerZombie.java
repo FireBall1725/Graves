@@ -240,9 +240,9 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	{
 		ItemStack stack = new ItemStack(Items.spawn_egg);
 		NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setString("entity_name", EntityList.classToStringMapping.get(getClass()));
-        stack.setTagCompound(nbt);
-        return stack;
+		nbt.setString("entity_name", EntityList.classToStringMapping.get(getClass()));
+		stack.setTagCompound(nbt);
+		return stack;
     }
 
     @Override
@@ -337,32 +337,40 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
         }
 
         if (rng > rngNothing + rngSword + rngLeatherKit + rngIronKit + rngGoldKit) { // Diamond Kit
-            slot0 = new ItemStack(Items.diamond_sword);
-            slot1 = new ItemStack(Items.diamond_boots);
-            slot2 = new ItemStack(Items.diamond_leggings);
-            slot3 = new ItemStack(Items.diamond_chestplate);
-            slot4 = new ItemStack(Items.diamond_helmet);
-        } else if (rng > rngNothing + rngSword + rngLeatherKit + rngIronKit) { // Gold Kit
-            slot0 = new ItemStack(Items.golden_sword);
-            slot1 = new ItemStack(Items.golden_boots);
-            slot2 = new ItemStack(Items.golden_leggings);
-            slot3 = new ItemStack(Items.golden_chestplate);
-            slot4 = new ItemStack(Items.golden_helmet);
-        } else if (rng > rngNothing + rngSword + rngLeatherKit) { // Iron Kit
-            slot0 = new ItemStack(Items.iron_sword);
-            slot1 = new ItemStack(Items.iron_boots);
-            slot2 = new ItemStack(Items.iron_leggings);
-            slot3 = new ItemStack(Items.iron_chestplate);
-            slot4 = new ItemStack(Items.iron_helmet);
-        } else if (rng > rngNothing + rngSword) { // Leather Kit
-            slot0 = new ItemStack(Items.wooden_sword);
-            slot1 = new ItemStack(Items.leather_boots);
-            slot2 = new ItemStack(Items.leather_leggings);
-            slot3 = new ItemStack(Items.leather_chestplate);
-            slot4 = new ItemStack(Items.leather_helmet);
-        } else if (rng > rngNothing) { // Wooden Sword
-            slot0 = new ItemStack(Items.wooden_sword);
-        }
+			slot0 = new ItemStack(Items.diamond_sword);
+			slot1 = new ItemStack(Items.diamond_boots);
+			slot2 = new ItemStack(Items.diamond_leggings);
+			slot3 = new ItemStack(Items.diamond_chestplate);
+			slot4 = new ItemStack(Items.diamond_helmet);
+		}
+		else if(rng > rngNothing + rngSword + rngLeatherKit + rngIronKit)
+		{ // Gold Kit
+			slot0 = new ItemStack(Items.golden_sword);
+			slot1 = new ItemStack(Items.golden_boots);
+			slot2 = new ItemStack(Items.golden_leggings);
+			slot3 = new ItemStack(Items.golden_chestplate);
+			slot4 = new ItemStack(Items.golden_helmet);
+		}
+		else if(rng > rngNothing + rngSword + rngLeatherKit)
+		{ // Iron Kit
+			slot0 = new ItemStack(Items.iron_sword);
+			slot1 = new ItemStack(Items.iron_boots);
+			slot2 = new ItemStack(Items.iron_leggings);
+			slot3 = new ItemStack(Items.iron_chestplate);
+			slot4 = new ItemStack(Items.iron_helmet);
+		}
+		else if(rng > rngNothing + rngSword)
+		{ // Leather Kit
+			slot0 = new ItemStack(Items.wooden_sword);
+			slot1 = new ItemStack(Items.leather_boots);
+			slot2 = new ItemStack(Items.leather_leggings);
+			slot3 = new ItemStack(Items.leather_chestplate);
+			slot4 = new ItemStack(Items.leather_helmet);
+		}
+		else if(rng > rngNothing)
+		{ // Wooden Sword
+			slot0 = new ItemStack(Items.wooden_sword);
+		}
 
         if (ConfigZombie.configZombieArmorEnabled) {
 			if(slot0 != null)
@@ -458,7 +466,7 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 
 			private Style style;
 
-            @Override
+			@Override
 			public Style getChatStyle()
 			{
 				if(style == null)

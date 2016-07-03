@@ -14,10 +14,10 @@ public class TileEntityHeadStone extends TileEntityBase
 	public TileEntityHeadStone()
 	{
 		super();
-    }
+	}
 
 	@Override
-	public Packet getDescriptionPacket()
+	public Packet<?> getDescriptionPacket()
 	{
 		return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), serializeNBT());
 	}
@@ -29,9 +29,10 @@ public class TileEntityHeadStone extends TileEntityBase
 	}
 
 	@Override
-	public String getCustomName() {
-        return hasCustomName() ? this.customName : "";
-    }
+	public String getCustomName()
+	{
+		return hasCustomName() ? this.customName : "";
+	}
 
 	public ItemStack getDisplayStack()
 	{
@@ -46,9 +47,9 @@ public class TileEntityHeadStone extends TileEntityBase
 	@Override
 	public void writeToNBT(NBTTagCompound nbtTagCompound)
 	{
-		super.writeToNBT(nbtTagCompound);
 		if(displayStack != null)
 		{ nbtTagCompound.setTag("displayStack", displayStack.serializeNBT()); }
+		super.writeToNBT(nbtTagCompound);
 	}
 
 	@Override

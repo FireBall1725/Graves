@@ -26,20 +26,39 @@ public class TileEntityBase extends TileEntity {
         myItem.put(c, wat);
     }
 
-    @Override
-    public Packet getDescriptionPacket() {
-        NBTTagCompound data = new NBTTagCompound();
-        writeToNBT(data);
+	@Override
+	public Packet<?> getDescriptionPacket()
+	{
+		NBTTagCompound data = new NBTTagCompound();
+		writeToNBT(data);
 		return new SPacketUpdateTileEntity(this.pos, 1, data);
 	}
 
-    @Override
+	@Override
 	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity sPacketUpdateTileEntity)
 	{
 		readFromNBT(sPacketUpdateTileEntity.getNbtCompound());
 		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
 		markForUpdate();
     }
+
+	//	@Override
+	//	public NBTTagCompound getUpdateTag()
+	//	{
+	//		NBTTagCompound tag = new NBTTagCompound();
+	//		tag.setInteger("x", pos.getX());
+	//		tag.setInteger("y", pos.getY());
+	//		tag.setInteger("z", pos.getZ());
+	//		return writeToNBT(tag);
+	//	}
+	//
+	//	@Override
+	//	public void handleUpdateTag(NBTTagCompound tag)
+	//	{
+	//		readFromNBT(tag);
+	//		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
+	//		markForUpdate();
+	//	}
 
     public void markForUpdate() {
         if (this.renderedFragment > 0) {
@@ -61,6 +80,14 @@ public class TileEntityBase extends TileEntity {
             this.worldObj.notifyBlockOfStateChange(new BlockPos(xCoord, yCoord - 1, zCoord + 1), block);
         }
     }
+
+	public void onChunkLoad()
+	{
+		if(this.isInvalid())
+		{ this.validate(); }
+
+		markForUpdate();
+	}
 
     @Override
     public void onChunkUnload() {
@@ -115,14 +142,15 @@ public class TileEntityBase extends TileEntity {
         this.customName = name;
     }
 
-    @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
-        super.writeToNBT(nbtTagCompound);
-
-        if (this.customName != null) {
-            nbtTagCompound.setString("CustomName", this.customName);
-        }
-    }
+	@Override
+	public void writeToNBT(NBTTagCompound compound)
+	{
+		if(this.customName != null)
+		{
+			compound.setString("CustomName", this.customName);
+		}
+		super.writeToNBT(compound);
+	}
 
     @Override
     public void readFromNBT(NBTTagCompound nbtTagCompound) {

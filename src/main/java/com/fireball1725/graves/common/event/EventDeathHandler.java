@@ -66,24 +66,27 @@ public class EventDeathHandler {
 		}
 	}
 
-    @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
-    public void onPlayerDrops(PlayerDropsEvent event) {
+	@SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
+	public void onPlayerDrops(PlayerDropsEvent event)
+	{
 
 		World world = event.getEntityPlayer().worldObj;
-		if (world.isRemote)
-            return;
+		if(world.isRemote)
+		{ return; }
 
-        if (event.isCanceled()) {
-            LogHelper.warn(">>>");
-            return;
-        }
+		if(event.isCanceled())
+		{
+			LogHelper.warn(">>>");
+			return;
+		}
 
-        // Check to see if the gamerule keep inventory is enabled
-        final GameRules gameRules = world.getGameRules();
-        if (gameRules.hasRule("keepInventory")) {
-            if (gameRules.getBoolean("keepInventory"))
-                return;
-        }
+		// Check to see if the gamerule keep inventory is enabled
+		final GameRules gameRules = world.getGameRules();
+		if(gameRules.hasRule("keepInventory"))
+		{
+			if(gameRules.getBoolean("keepInventory"))
+			{ return; }
+		}
 
 		EntityPlayer player = event.getEntityPlayer();
 		List<ItemStack> itemsList = Lists.newArrayList();
@@ -92,11 +95,11 @@ public class EventDeathHandler {
 			itemsList.add(entityItem.getEntityItem());
 		}
 
-        // If there are no items, then cancel spawning a grave
-        if (itemsList.isEmpty())
-            return;
+		// If there are no items, then cancel spawning a grave
+		if(itemsList.isEmpty())
+		{ return; }
 
-        boolean spawnGrave = true;
+		boolean spawnGrave = true;
 
 		if(event.getEntityLiving() instanceof EntityPlayer)
 		{

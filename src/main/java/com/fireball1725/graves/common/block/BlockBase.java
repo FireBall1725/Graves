@@ -41,10 +41,12 @@ public class BlockBase extends BlockContainer {
     }
 
     @Override
-    public TileEntity createNewTileEntity(World var1, int var2) {
-        if (hasBlockTileEntity()) {
-            try {
-				return this.tileEntityType.newInstance();
+	public TileEntity createNewTileEntity(World world, int meta)
+	{
+		if(hasBlockTileEntity())
+		{
+			try {
+				return tileEntityType.newInstance();
 			} catch (Throwable e) {
                 throw new RuntimeException(e);
             }

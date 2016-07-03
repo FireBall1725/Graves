@@ -35,6 +35,7 @@ import java.util.List;
 
 public class RenderEvents implements IResourceManagerReloadListener
 {
+
 	private final TextureAtlasSprite[] destroyBlockIcons = new TextureAtlasSprite[10];
 
 	@SubscribeEvent

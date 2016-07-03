@@ -30,22 +30,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockHeadStone extends BlockBase {
-    public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
+	public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 	public static final PropertyBool RENDER = PropertyBool.create("render");
 
-    protected BlockHeadStone() {
-        super(Material.rock);
+	protected BlockHeadStone()
+	{
+		super(Material.rock);
 		this.setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(RENDER, true));
 		this.setHardness(1.5F);
-        this.setResistance(10.0F);
-        this.setHarvestLevel("pickaxe", 0);
-        this.setTileEntity(TileEntityHeadStone.class);
-    }
+		this.setResistance(10.0F);
+		this.setHarvestLevel("pickaxe", 0);
+		this.setTileEntity(TileEntityHeadStone.class);
+	}
 
-    @Override
+	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state)
 	{
-		return EnumBlockRenderType.INVISIBLE;
+		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
@@ -54,21 +55,22 @@ public class BlockHeadStone extends BlockBase {
 		return willHarvest || super.removedByPlayer(state, world, pos, player, false);
 	}
 
-    @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
+	@Override
+	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
+	{
+		TileEntityHeadStone headStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
 		if(headStone != null && !headStone.getCustomName().isEmpty())
 		{
 			final ItemStack itemStack = new ItemStack(this);
 			itemStack.setStackDisplayName(headStone.getCustomName());
 
-            ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
-            drops.add(itemStack);
+			ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
+			drops.add(itemStack);
 
-            return drops;
-        }
-        return super.getDrops(world, pos, state, fortune);
-    }
+			return drops;
+		}
+		return super.getDrops(world, pos, state, fortune);
+	}
 
 	@Override
 	public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
@@ -87,7 +89,7 @@ public class BlockHeadStone extends BlockBase {
 		if(worldIn.isRemote)
 		{ return true; }
 
-		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits")))
+		if(heldItem != null && heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits"))
 		{
 			final IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
 			if(grave != null)
@@ -108,34 +110,35 @@ public class BlockHeadStone extends BlockBase {
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 
-    @Override
+	@Override
 	protected BlockStateContainer createBlockState()
 	{
 		return new BlockStateContainer(this, FACING, RENDER);
 	}
 
-    @Override
+	@Override
 	public boolean isOpaqueCube(IBlockState state)
 	{
 		return false;
 	}
 
-    @Override
+	@Override
 	public boolean isFullBlock(IBlockState state)
 	{
 		return false;
 	}
 
-    @Override
+	@Override
 	public boolean isFullCube(IBlockState state)
 	{
 		return false;
 	}
 
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
-    }
+	@Override
+	public IBlockState getStateFromMeta(int meta)
+	{
+		return getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta));
+	}
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
@@ -168,7 +171,7 @@ public class BlockHeadStone extends BlockBase {
 				addCollisionBoxToList(pos, mask, list, new AxisAlignedBB(.7f, 0f, .1f, 1f, .95f, .9f));
 				break;
 		}
-    }
+	}
 
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -195,16 +198,17 @@ public class BlockHeadStone extends BlockBase {
 	public int getMetaFromState(IBlockState state)
 	{
 		return state.getValue(FACING).getHorizontalIndex();
-    }
+	}
 
+	@Override
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+	{
+		return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+	}
 
-    @Override
-    public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-        return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
-    }
+	@Override
+	public void onBlockExploded(World world, BlockPos pos, Explosion explosion)
+	{
 
-    @Override
-    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
-
-    }
+	}
 }

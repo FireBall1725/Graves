@@ -27,10 +27,12 @@ public class TileEntityGraveSlave extends TileEntityBase {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound compound) {
-        super.writeToNBT(compound);
-        if (masterBlock != null) {
-            compound.setLong("masterBlock", masterBlock.toLong());
+	public void writeToNBT(NBTTagCompound compound)
+	{
+		if(masterBlock != null)
+		{
+			compound.setLong("masterBlock", masterBlock.toLong());
         }
-    }
+		super.writeToNBT(compound);
+	}
 }
