@@ -1,7 +1,6 @@
 package com.fireball1725.graves.client.render;
 
 import com.fireball1725.graves.common.block.BlockHeadStone;
-import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.google.common.base.Function;
@@ -94,7 +93,6 @@ public class TileEntityHeadStoneRenderer extends TileEntityBaseRenderer {
 				GlStateManager.disableRescaleNormal();
 				GlStateManager.disableLighting();
 				GlStateManager.popMatrix();
-				LogHelper.info("Rendering!...");
 			}
 			else
 			{
