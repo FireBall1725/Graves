@@ -1,8 +1,11 @@
 package com.fireball1725.graves.common.block;
 
 import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
+import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
 import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
 import com.fireball1725.graves.common.util.TileTools;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -11,6 +14,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -21,6 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +49,7 @@ public class BlockHeadStone extends BlockBase {
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state)
 	{
-		return EnumBlockRenderType.INVISIBLE;
+		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
 	}
 
 	@Override
@@ -87,24 +92,24 @@ public class BlockHeadStone extends BlockBase {
 		if(worldIn.isRemote)
 		{ return true; }
 
-		//		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(Block.getBlockFromItem(heldItem.getItem())).getResourceDomain().equals("chiselsandbits")))
-		//		{
-		//			final GraveCapability.IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAP, null);
-		//			if(grave != null)
-		//			{
-		//				grave.setGraveItemStack(heldItem);
-		//				TileEntity te = worldIn.getTileEntity(pos);
-		//				if(te instanceof TileEntityHeadStone)
-		//				{
-		//					((TileEntityHeadStone) te).setDisplayStack(heldItem);
-		//					te.markDirty();
-		//					worldIn.notifyBlockUpdate(pos, state, ((TileEntityHeadStone) te).getBlockState(), 3);
-		//					worldIn.notifyBlockOfStateChange(pos, state.getBlock());
-		//					worldIn.markChunkDirty(pos, te);
-		//				}
-		//				return true;
-		//			}
-		//		}
+		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(Block.getBlockFromItem(heldItem.getItem())).getResourceDomain().equals("chiselsandbits")))
+		{
+			final IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
+			if(grave != null)
+			{
+				grave.setGraveItemStack(heldItem);
+				TileEntity te = worldIn.getTileEntity(pos);
+				if(te instanceof TileEntityHeadStone)
+				{
+					((TileEntityHeadStone) te).setDisplayStack(heldItem);
+					te.markDirty();
+					worldIn.notifyBlockUpdate(pos, state, ((TileEntityHeadStone) te).getBlockState(), 3);
+					worldIn.notifyBlockOfStateChange(pos, state.getBlock());
+					worldIn.markChunkDirty(pos, te);
+				}
+				return true;
+			}
+		}
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 
