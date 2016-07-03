@@ -45,8 +45,8 @@ public class EventBlockBreak {
 		{
 			List<ReplaceableBlock> blocks = graveStone.getReplaceableBlocks();
 			EntityPlayer player = event.getPlayer();
-			player.inventory.dropAllItems();
-			graveStone.replaceItems(player.inventory);
+			//			player.inventory.dropAllItems();
+			graveStone.replaceItems(player);
 
 			event.getWorld().destroyBlock(graveStone.getPos().down(), false);
 			event.getWorld().destroyBlock(graveStone.getPos().down().offset(graveStone.getBlockState().getValue(BlockGraveStone.FACING)), false);
