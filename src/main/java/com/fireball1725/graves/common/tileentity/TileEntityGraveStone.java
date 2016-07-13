@@ -14,28 +14,17 @@ public class TileEntityGraveStone extends TileEntity implements ITickable
 	private List<ReplaceableBlock> blocks = Lists.newArrayList();
 	private NBTTagCompound tagCompound;
 
-	public TileEntityGraveStone()
-	{
-	}
-
 	@Override
 	public void update()
 	{
-		for(ReplaceableBlock block : blocks)
-		{
-			if(block.getPos().equals(getPos()))
-			{ continue; }
-			//			block.placeBlock(worldObj);
-			Graves.logger.info(">>>: TICK! " + block.getPos());
-		}
-		//		worldObj.setBlockState(getPos(), Blocks.BLOCK_GRAVE.block.getDefaultState(), 3);
-		//		worldObj.setTileEntity(getPos(), TileEntity.func_190200_a(worldObj, tagCompound));
+		Graves.logger.info(">>>: TICK!");
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound)
 	{
 		super.readFromNBT(compound);
+
 		tagCompound = compound;
 		Graves.logger.info("Loading Legacy Grave!");
 		if(compound.hasKey("replaceableBlocks"))
