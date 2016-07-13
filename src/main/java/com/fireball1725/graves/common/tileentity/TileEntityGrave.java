@@ -1,5 +1,6 @@
 package com.fireball1725.graves.common.tileentity;
 
+import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.helpers.ItemHelper;
@@ -296,6 +297,11 @@ public class TileEntityGrave extends TileEntityBase
 	public void readFromNBT(NBTTagCompound nbtTagCompound)
 	{
 		super.readFromNBT(nbtTagCompound);
+		Graves.logger.info("Loading Grave:");
+		for(String key : nbtTagCompound.getKeySet())
+		{
+			Graves.logger.info(String.format("%s: %s", key, nbtTagCompound.getTag(key).toString()));
+		}
 		displayStack = null;
 		if(nbtTagCompound.hasKey("displayStack"))
 		{ displayStack = ItemStack.loadItemStackFromNBT(nbtTagCompound.getCompoundTag("displayStack")); }
@@ -324,10 +330,11 @@ public class TileEntityGrave extends TileEntityBase
 				}
 			}
 		}
+		//Legacy Support
+		boolean isLegacy = nbtTagCompound.hasKey("hasLid");
+		if(isLegacy)
+		{
 
-		{ //Legacy Support
-			if(nbtTagCompound.hasKey("hasLid"))
-			{ ghostDefeated = nbtTagCompound.getBoolean("hasLid"); }
 			if(nbtTagCompound.hasKey("playerProfile"))
 			{ profile = NBTUtil.readGameProfileFromNBT(nbtTagCompound.getCompoundTag("playerProfile")); }
 			if(nbtTagCompound.hasKey("replaceableBlocks"))
@@ -342,11 +349,6 @@ public class TileEntityGrave extends TileEntityBase
 						if(block.getPos().equals(getPos()))
 						{
 							originalBlock = block;
-						}
-						else
-						{
-							worldObj.setBlockToAir(block.getPos());
-							block.placeBlock(worldObj);
 						}
 					}
 				}

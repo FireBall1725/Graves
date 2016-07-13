@@ -1,10 +1,10 @@
 package com.fireball1725.graves.common.block;
 
+import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityBase;
 import com.fireball1725.graves.common.tileentity.TileEntityInventoryBase;
 import com.fireball1725.graves.common.util.TileTools;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -19,32 +19,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlockBase extends BlockContainer {
     protected boolean isInventory = false;
-    protected boolean hasSubtypes = false;
     private Class<? extends TileEntity> tileEntityType = null;
 
     protected BlockBase(Material material) {
         super(material);
-
-		//        setStepSound(SoundType.STONE);
 		setHardness(2.2F);
         setResistance(5.0F);
-        //setHarvestLevel("pickaxe", 0);
-
-
     }
 
     @Override
 	public TileEntity createNewTileEntity(World world, int meta)
 	{
-		if (hasBlockTileEntity()) {
-            try {
+		if(hasTileEntity())
+		{
+			try {
 				return tileEntityType.newInstance();
 			} catch (Throwable e) {
                 throw new RuntimeException(e);
@@ -53,25 +47,20 @@ public class BlockBase extends BlockContainer {
         return null;
     }
 
-    private boolean hasBlockTileEntity() {
-        return this.tileEntityType != null;
-    }
-
-    protected void setTileEntity(Class<? extends TileEntity> c) {
-        String tileName = "tileentity." + ModInfo.MOD_ID + "." + c.getSimpleName();
-
-        GameRegistry.registerTileEntity(this.tileEntityType = c, tileName);
-        this.isInventory = IInventory.class.isAssignableFrom(c);
-        setTileProvider(hasBlockTileEntity());
-    }
-
-    private void setTileProvider(boolean b) {
-		ReflectionHelper.setPrivateValue(Block.class, this, Boolean.valueOf(b), "isTileProvider");
+	@Override
+	public boolean hasTileEntity()
+	{
+		return this.tileEntityType != null;
 	}
 
-    public Class<? extends TileEntity> getTileEntityClass() {
-        return this.tileEntityType;
-    }
+	protected void setTileEntity(Class<? extends TileEntity> c)
+	{
+		String tileName = "tileentity." + ModInfo.MOD_ID + "." + c.getSimpleName();
+		this.tileEntityType = c;
+		try { GameRegistry.registerTileEntity(c, tileName); } catch(Exception ignored) {}
+		this.isInventory = IInventory.class.isAssignableFrom(c);
+		Graves.logger.info("Added tileEntity for " + this.getClass().getName());
+	}
 
 	@Override
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)

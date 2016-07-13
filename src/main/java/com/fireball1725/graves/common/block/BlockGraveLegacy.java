@@ -1,49 +1,26 @@
 package com.fireball1725.graves.common.block;
 
-import com.fireball1725.graves.common.tileentity.TileEntityGrave;
-import net.minecraft.block.BlockHorizontal;
+import com.fireball1725.graves.common.reference.ModInfo;
+import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class BlockGraveLegacy extends BlockBase
+public class BlockGraveLegacy extends BlockContainer
 {
-	public static final PropertyDirection FACING = BlockHorizontal.FACING;
-	public static final PropertyBool HASLID = PropertyBool.create("haslid");
-
 	public BlockGraveLegacy()
 	{
-		super(Material.CLOTH);
-		setDefaultState(this.blockState.getBaseState().withProperty(HASLID, true).withProperty(FACING, EnumFacing.NORTH));
-		this.setTileEntity(TileEntityGrave.class);
+		super(Material.ROCK);
+
+		String tileName = "tileentity." + ModInfo.MOD_ID + "." + TileEntityGraveStone.class.getSimpleName();
+		GameRegistry.registerTileEntity(TileEntityGraveStone.class, tileName);
 	}
 
 	@Override
-	protected BlockStateContainer createBlockState()
+	public TileEntity createNewTileEntity(World worldIn, int meta)
 	{
-		return new BlockStateContainer(this, HASLID, FACING);
-	}
-
-	@Override
-	public IBlockState getStateFromMeta(int meta)
-	{
-		return getDefaultState().withProperty(FACING, EnumFacing.values()[meta]);
-	}
-
-	public int getMetaFromState(IBlockState state)
-	{
-		return state.getValue(FACING).getIndex();
-	}
-
-	@Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-	{
-		return Blocks.BLOCK_GRAVE.block.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
+		return new TileEntityGraveStone();
 	}
 }

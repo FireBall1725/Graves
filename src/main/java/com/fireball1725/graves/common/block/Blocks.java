@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public enum Blocks {
 	BLOCK_GRAVE("grave", new BlockGrave(), CreativeTabs.DECORATIONS),
-	BLOCK_GRAVE_LEGACY("gravestone", new BlockGraveLegacy());
+	Block_GRAVE_LEGACY("gravestone", new BlockGraveLegacy());
 
     private static boolean registered = false;
     public final Block block;
