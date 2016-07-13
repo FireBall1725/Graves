@@ -1,0 +1,24 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "graves:nothing.obj"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ],
+    "haslid": {
+      "false": {},
+      "true": {}
+    },
+    "facing": {
+      "north": {},
+      "south": {},
+      "west": {},
+      "east": {}
+    }
+  }
+}
