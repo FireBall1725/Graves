@@ -1,8 +1,5 @@
 package com.fireball1725.graves.common.block;
 
-import com.fireball1725.graves.common.creativetab.ModCreativeTabs;
-import com.fireball1725.graves.common.helpers.LogHelper;
-import com.fireball1725.graves.common.item.ItemHeadStone;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
@@ -10,9 +7,8 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public enum Blocks {
-	BLOCK_GRAVESTONE("gravestone", new BlockGraveStone(), ModCreativeTabs.tabGraves),
-	BLOCK_GRAVESTONE_SLAVE("graveslave", new BlockGraveSlave()),
-    BLOCK_GRAVE_HEADSTONE("headstone", new BlockHeadStone(), ItemHeadStone.class, ModCreativeTabs.tabGraves);
+	BLOCK_GRAVE("grave", new BlockGrave(), CreativeTabs.DECORATIONS),
+	BLOCK_GRAVE_LEGACY("gravestone", new BlockGraveLegacy());
 
     private static boolean registered = false;
     public final Block block;
@@ -57,6 +53,5 @@ public enum Blocks {
 
     private void register() {
         GameRegistry.registerBlock(block.setCreativeTab(creativeTabs).setUnlocalizedName(internalName), itemBlockClass, internalName);
-        LogHelper.info("Registered Block: " + internalName);
     }
 }

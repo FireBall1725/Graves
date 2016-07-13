@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TileEntityBase extends TileEntity {
-    public static final HashMap<Class, ItemStackSrc> myItem = new HashMap();
-    public String customName;
-    public int renderedFragment = 0;
+	private static final HashMap<Class, ItemStackSrc> myItem = new HashMap();
+	private String customName;
+	private int renderedFragment = 0;
 
     public static void registerTileItem(Class c, ItemStackSrc wat) {
         myItem.put(c, wat);

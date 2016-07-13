@@ -47,7 +47,7 @@ public class ReplaceableBlock
 		Block block = state.getBlock();
 		if (block instanceof ITileEntityProvider && tagCompound != null)
 		{
-			world.setTileEntity(pos, TileEntity.func_190200_a(null, tagCompound));
+			world.setTileEntity(pos, TileEntity.func_190200_a(world, tagCompound));
 		}
 		return true;
 	}
@@ -66,5 +66,15 @@ public class ReplaceableBlock
 			tag.setTag("tileData", tagCompound);
 		}
 		return tag;
+	}
+
+	public ReplaceableBlock copy()
+	{
+		return new ReplaceableBlock(state, pos, tagCompound);
+	}
+
+	public BlockPos getPos()
+	{
+		return pos;
 	}
 }

@@ -1,6 +1,5 @@
 package com.fireball1725.graves.client.render.entity;
 
-import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.util.TextureUtils;
 import net.minecraft.client.model.ModelBiped;
@@ -44,10 +43,6 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     @Override
     public void doRender(EntityPlayerZombie entity, double x, double y, double z, float f0, float partialTickTime) {
         setModel(entity);
-        if (ConfigZombie.configZombieShowBossBar)
-		{
-			// TODO: Do what was done here...
-		}
 
 		if(entity.getHeldItem(EnumHand.MAIN_HAND) != null && entity.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemBow)
 		{ modelBipedMain.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW; }

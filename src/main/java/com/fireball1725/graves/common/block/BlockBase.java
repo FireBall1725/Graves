@@ -73,39 +73,6 @@ public class BlockBase extends BlockContainer {
         return this.tileEntityType;
     }
 
-	//    @Override
-	//    public void breakBlock(World world, BlockPos blockPos, IBlockState blockState) {
-	//        dropInventory(world, blockPos);
-	//
-	//        super.breakBlock(world, blockPos, blockState);
-	//    }
-	//
-	//    protected void dropInventory(World world, BlockPos blockPos) {
-	//        for (ItemStack itemStack : getDrops(world, blockPos, null, 0)) {
-	//
-	//            if (itemStack != null && itemStack.stackSize > 0) {
-	//                Random rand = new Random();
-	//
-	//                float dX = rand.nextFloat() * 0.8F + 0.1F;
-	//                float dY = rand.nextFloat() * 0.8F + 0.1F;
-	//                float dZ = rand.nextFloat() * 0.8F + 0.1F;
-	//
-	//                EntityItem entityItem = new EntityItem(world, blockPos.getX() + dX, blockPos.getY() + dY, blockPos.getZ() + dZ, itemStack.copy());
-	//
-	//                if (itemStack.hasTagCompound()) {
-	//                    entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
-	//                }
-	//
-	//                float factor = 0.05F;
-	//                entityItem.motionX = rand.nextGaussian() * factor;
-	//                entityItem.motionY = rand.nextGaussian() * factor + 0.2F;
-	//                entityItem.motionZ = rand.nextGaussian() * factor;
-	//                world.spawnEntityInWorld(entityItem);
-	//                itemStack.stackSize = 0;
-	//            }
-	//        }
-	//    }
-
 	@Override
 	public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
 	{
