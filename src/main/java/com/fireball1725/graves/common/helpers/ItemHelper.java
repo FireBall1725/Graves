@@ -1,32 +1,18 @@
 package com.fireball1725.graves.common.helpers;
 
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 
 public class ItemHelper
 {
-	public static boolean doesItemHaveEnchant(ItemStack stack, String enchant)
+	public static boolean doesItemHaveEnchant(String enchantment, ItemStack stack)
 	{
-		if(stack != null && stack.getTagCompound() != null && stack.getTagCompound().hasKey("ench"))
-		{
-			NBTTagList tagList = stack.getTagCompound().getTagList("ench", 10);
-			for(int i = 0; i < tagList.tagCount(); i++)
-			{
-				NBTTagCompound tag = tagList.getCompoundTagAt(i);
-				if(tag.getString("id").equals(enchant))
-				{
-					return true;
-				}
-			}
-		}
-
-		return false;
+		return doesItemHaveEnchant(Enchantment.getEnchantmentByLocation(enchantment), stack);
 	}
 
-	public static boolean doesItemHaveEnchant(ItemStack stack, Enchantment enchantment)
+	public static boolean doesItemHaveEnchant(Enchantment enchantment, ItemStack stack)
 	{
-		return doesItemHaveEnchant(stack, enchantment.getName());
+		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack) > 0;
 	}
 }

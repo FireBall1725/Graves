@@ -1,16 +1,11 @@
 package com.fireball1725.graves.common.event;
 
 import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.common.block.BlockGraveStone;
-import com.fireball1725.graves.common.block.BlockHeadStone;
+import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
-import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
-import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
-import com.fireball1725.graves.common.helpers.LogHelper;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
-import com.fireball1725.graves.common.tileentity.TileEntityGraveStone;
-import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
+import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.fireball1725.graves.common.util.TileTools;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -20,12 +15,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -34,7 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class EventDeathHandler {
+public class Events
+{
 	private Map<UUID, InventoryPlayer> inventories = Maps.newHashMap();
 
 	/**
@@ -69,14 +65,13 @@ public class EventDeathHandler {
 	@SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
 	public void onPlayerDrops(PlayerDropsEvent event)
 	{
-
 		World world = event.getEntityPlayer().worldObj;
 		if(world.isRemote)
 		{ return; }
 
 		if(event.isCanceled())
 		{
-			LogHelper.warn(">>>");
+			Graves.logger.warn(">>>");
 			return;
 		}
 
@@ -106,12 +101,11 @@ public class EventDeathHandler {
 			if(event.getSource().getEntity() != null && event.getSource().getEntity() instanceof EntityPlayerZombie)
 			{
 				EntityPlayerZombie zombie = (EntityPlayerZombie) event.getSource().getEntity();
-				BlockPos gravePos = zombie.getGraveMaster();
-				TileEntityGraveStone graveStone = TileTools.getTileEntity(event.getEntityLiving().worldObj, gravePos, TileEntityGraveStone.class);
+				BlockPos gravePos = zombie.getGravePos();
+				TileEntityGrave graveStone = TileTools.getTileEntity(event.getEntityLiving().worldObj, gravePos, TileEntityGrave.class);
 				if (graveStone != null)
 				{
-					graveStone.addGraveItems(itemsList);
-					graveStone.setHasLid(true);
+					graveStone.addItems(itemsList);
 					spawnGrave = false;
 					//					LogHelper.info(">>> : Killed by zombie added drops to grave");
 				}
@@ -120,63 +114,75 @@ public class EventDeathHandler {
 
 		if(spawnGrave)
 		{
-			EnumFacing facing = player.getHorizontalFacing();
-			BlockPos playerPos = player.getPosition();
-			IBlockState state = Blocks.BLOCK_GRAVESTONE.block.getDefaultState().withProperty(BlockGraveStone.FACING, facing);
+			BlockPos pos = player.getPosition();
+			IBlockState state = Blocks.BLOCK_GRAVE.block.getDefaultState();
 
-			if(playerPos.getY() <= 2)
-			{ playerPos = new BlockPos(playerPos.getX(), 3, playerPos.getZ()); }
+			if(pos.getY() <= 2)
+			{ pos = new BlockPos(pos.getX(), 3, pos.getZ()); }
 
-			if(playerPos.getY() >= 254)
-			{ playerPos = new BlockPos(playerPos.getX(), 253, playerPos.getZ()); }
+			if(pos.getY() >= 254)
+			{ pos = new BlockPos(pos.getX(), 253, pos.getZ()); }
 
-			List<ReplaceableBlock> blocks = Lists.newArrayList();
-			for(BlockPos pos : TileEntityGraveStone.getPositions(playerPos, facing))
+			ReplaceableBlock replaceableBlock;
+			NBTTagCompound tag = null;
+			if(world.getTileEntity(pos) != null)
 			{
-				NBTTagCompound tag = null;
-				if (world.getTileEntity(pos) != null)
-				{
-					tag = new NBTTagCompound();
-					world.getTileEntity(pos).writeToNBT(tag);
-				}
-				blocks.add(new ReplaceableBlock(world.getBlockState(pos), pos, tag));
+				tag = new NBTTagCompound();
+				world.getTileEntity(pos).writeToNBT(tag);
 			}
+			replaceableBlock = new ReplaceableBlock(world.getBlockState(pos), pos, tag);
 
-			//			world.setTileEntity(playerPos, state.getBlock().createTileEntity(world, state));
-			world.setBlockState(playerPos, state);
+			world.setBlockState(pos, state);
 
-			TileEntityGraveStone graveStoneTileEntity = TileTools.getTileEntity(world, playerPos, TileEntityGraveStone.class);
+			TileEntityGrave graveStoneTileEntity = TileTools.getTileEntity(world, pos, TileEntityGrave.class);
 			if(graveStoneTileEntity.getWorld() == null)
 			{ graveStoneTileEntity.setWorldObj(world); }
-			graveStoneTileEntity.addGraveItemsWithReplaceables(inventories.remove(player.getPersistentID()), itemsList);
-			graveStoneTileEntity.setReplaceableBlocks(blocks);
-			graveStoneTileEntity.breakBlocks();
-			graveStoneTileEntity.setPlayerProfile(player.getGameProfile());
+			graveStoneTileEntity.addGraveItemsWithHotbar(inventories.remove(player.getPersistentID()), itemsList);
+			graveStoneTileEntity.setOriginalBlock(replaceableBlock);
+			graveStoneTileEntity.setProfile(player.getGameProfile());
 
-			// Adding Headstone
-
-			BlockPos pos = playerPos.offset(facing.getOpposite());
-
-			placeHeadStone(world, pos, facing, player, player.getDisplayName().getFormattedText());
-
-			sendTomTomPos(Graves.instance, player, playerPos, "Grave this way!");
+			sendTomTomPos(Graves.instance, player, pos, "Grave this way!");
 		}
 
 		event.getDrops().clear();
 	}
 
-	private void placeHeadStone(World world, BlockPos pos, EnumFacing facing, EntityPlayer player, String text)
+	@SubscribeEvent
+	public void onBreakBlock(BlockEvent.BreakEvent event)
 	{
-		world.setBlockState(pos, Blocks.BLOCK_GRAVE_HEADSTONE.block.getDefaultState().withProperty(BlockHeadStone.FACING, facing));
-		TileEntityHeadStone tileEntityHeadStone = TileTools.getTileEntity(world, pos, TileEntityHeadStone.class);
-		if(tileEntityHeadStone != null)
+		World world = event.getWorld();
+		if(!(event.getState().getBlock() instanceof BlockGrave))
+		{ return; }
+
+		TileEntityGrave grave = (TileEntityGrave) world.getTileEntity(event.getPos());
+
+		if(grave == null)
+		{ return; }
+
+		if(!grave.isGhostDefeated() && !event.getPlayer().isCreative())
 		{
-			tileEntityHeadStone.setCustomName(text);
-			IGraveCapability grave = player.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
-			if(grave != null)
-			{
-				tileEntityHeadStone.setDisplayStack(grave.getGraveItemStack());
-			}
+			grave.summonGhost(event.getPlayer());
+			event.setCanceled(true);
+			return;
 		}
+
+		grave.replaceItems(event.getPlayer());
+
+		if(!event.getPlayer().isCreative())
+		{
+			grave.dropItems(event.getPlayer());
+			if(Blocks.BLOCK_GRAVE.block.canHarvestBlock(world, event.getPos(), event.getPlayer()))
+			{ world.spawnEntityInWorld(new EntityItem(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), new ItemStack(Blocks.BLOCK_GRAVE.block))); }
+		}
+		ReplaceableBlock block = null;
+		if(grave.getOriginalBlock() != null)
+		{ block = grave.getOriginalBlock().copy(); }
+
+		world.setBlockToAir(event.getPos());
+		world.removeTileEntity(event.getPos());
+
+		if(block != null)
+		{ block.placeBlock(world); }
+		event.setCanceled(true);
 	}
 }

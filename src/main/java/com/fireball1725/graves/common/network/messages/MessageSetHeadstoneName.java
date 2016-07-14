@@ -1,6 +1,6 @@
 package com.fireball1725.graves.common.network.messages;
 
-import com.fireball1725.graves.common.tileentity.TileEntityHeadStone;
+import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.fireball1725.graves.common.util.TileTools;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
@@ -36,10 +36,11 @@ public class MessageSetHeadstoneName implements IMessage {
     public static class HANDLER implements IMessageHandler<MessageSetHeadstoneName, IMessage> {
         @Override
         public IMessage onMessage(MessageSetHeadstoneName message, MessageContext ctx) {
-            TileEntityHeadStone headStone = TileTools.getTileEntity(ctx.getServerHandler().playerEntity.worldObj, message.pos, TileEntityHeadStone.class);
-            if (headStone != null) {
-                headStone.setCustomName(message.playerName);
-                headStone.markForUpdate();
+			TileEntityGrave headStone = TileTools.getTileEntity(ctx.getServerHandler().playerEntity.worldObj, message.pos, TileEntityGrave.class);
+			if(headStone != null)
+			{
+				headStone.setCustomName(message.playerName);
+				headStone.markForUpdate();
             }
             return null;
         }

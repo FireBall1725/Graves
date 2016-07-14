@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 
-public class EntityRenderers
+public class EntityRenderer
 {
 	public static <E extends Entity> void registerEntityRenderer(Class<E> entity, Class<? extends Render<E>> render)
 	{
