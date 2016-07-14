@@ -5,8 +5,10 @@ import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ReplaceableBlock
 {
@@ -28,7 +30,7 @@ public class ReplaceableBlock
 		IBlockState state;
 		NBTTagCompound tileTag = null;
 
-		Block block = Block.getBlockById(tag.getInteger("blockID"));
+		Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(tag.getString("blockID")));
 		state = block.getStateFromMeta(tag.getInteger("blockMeta"));
 		BlockPos pos = BlockPos.fromLong(tag.getLong("blockPos"));
 
@@ -47,7 +49,7 @@ public class ReplaceableBlock
 		Block block = state.getBlock();
 		if (block instanceof ITileEntityProvider && tagCompound != null)
 		{
-			world.setTileEntity(pos, TileEntity.func_190200_a(world, tagCompound));
+			world.setTileEntity(pos, TileEntity.createTileEntity(null, tagCompound));
 		}
 		return true;
 	}
@@ -57,7 +59,7 @@ public class ReplaceableBlock
 		NBTTagCompound tag = new NBTTagCompound();
 		if (state != null)
 		{
-			tag.setInteger("blockID", Block.REGISTRY.getIDForObject(state.getBlock()));
+			tag.setString("blockID", ForgeRegistries.BLOCKS.getKey(state.getBlock()).toString());
 			tag.setInteger("blockMeta", state.getBlock().getMetaFromState(state));
 			tag.setLong("blockPos", pos.toLong());
 		}

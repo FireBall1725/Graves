@@ -7,7 +7,7 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public enum Blocks {
-	BLOCK_GRAVE("grave", new BlockGrave(), CreativeTabs.DECORATIONS),
+	BLOCK_GRAVE("grave", new BlockGrave(), CreativeTabs.tabDecorations),
 	Block_GRAVE_LEGACY("gravestone", new BlockGraveStone());
 
     private static boolean registered = false;

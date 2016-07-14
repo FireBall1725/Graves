@@ -58,7 +58,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+				bindTexture(TextureMap.locationBlocksTexture);
 				IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(stack, mc.theWorld, mc.thePlayer);
 				mc.getRenderItem().renderItem(stack, model);
 				GlStateManager.disableAlpha();

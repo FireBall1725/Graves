@@ -33,7 +33,7 @@ public class BlockGrave extends BlockBase
 
 	protected BlockGrave()
 	{
-		super(Material.ROCK);
+		super(Material.rock);
 		this.setDefaultState(blockState.getBaseState().withProperty(RENDER, true));
 		this.setHardness(1.5F);
 		this.setResistance(10.0F);

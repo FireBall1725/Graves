@@ -37,9 +37,10 @@ public class MessageSetHeadstoneName implements IMessage {
         @Override
         public IMessage onMessage(MessageSetHeadstoneName message, MessageContext ctx) {
 			TileEntityGrave headStone = TileTools.getTileEntity(ctx.getServerHandler().playerEntity.worldObj, message.pos, TileEntityGrave.class);
-			if (headStone != null) {
-                headStone.setCustomName(message.playerName);
-                headStone.markForUpdate();
+			if(headStone != null)
+			{
+				headStone.setCustomName(message.playerName);
+				headStone.markForUpdate();
             }
             return null;
         }
