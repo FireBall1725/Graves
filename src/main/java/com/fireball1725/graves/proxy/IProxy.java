@@ -1,21 +1,13 @@
 package com.fireball1725.graves.proxy;
 
-import java.io.File;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public interface IProxy {
-    void registerBlocks();
+	void preInit(FMLPreInitializationEvent event);
 
-    void registerItems();
+	void init(FMLInitializationEvent event);
 
-    void registerEntities();
-
-    void registerEvents();
-
-    void registerConfiguration(File configFile);
-
-    void registerRenderers();
-
-    void registerRecipes();
-
-    void registerWhiteList();
+	void postInit(FMLPostInitializationEvent event);
 }

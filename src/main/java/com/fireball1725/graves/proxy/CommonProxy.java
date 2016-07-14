@@ -4,82 +4,49 @@ import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.configuration.ConfigurationFile;
 import com.fireball1725.graves.common.entity.Entities;
-import com.fireball1725.graves.common.event.EventBlockBreak;
-import com.fireball1725.graves.common.event.EventDeathHandler;
-import com.fireball1725.graves.common.helpers.BreakableWhiteListHelper;
+import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
+import com.fireball1725.graves.common.event.Events;
+import com.fireball1725.graves.common.network.PacketHandler;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-import java.io.File;
+public class CommonProxy implements IProxy
+{
 
-public abstract class CommonProxy implements IProxy {
-    @Override
-    public void registerBlocks() {
-        Blocks.registerAll();
-    }
-
-    @Override
-    public void registerItems() {
-
-    }
-
-    @Override
-    public void registerEntities() {
-        Entities.registerEntities();
-    }
-
-    @Override
-    public void registerEvents() {
-        MinecraftForge.EVENT_BUS.register(new EventDeathHandler());
-        MinecraftForge.EVENT_BUS.register(new EventBlockBreak());
-    }
-
-    @Override
-    public void registerConfiguration(File configFile) {
-        Graves.configuration = ConfigurationFile.init(configFile);
-        MinecraftForge.EVENT_BUS.register(new ConfigurationFile());
-    }
-
-    @Override
-    public void registerRenderers() {
-        /* Client Side Only */
-    }
-
-    @Override
-    public void registerRecipes() {
-        // Headstone
-        GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE_HEADSTONE.block),
-                " x ",
-                "xzx",
-                "xxx",
-				'x', new ItemStack(net.minecraft.init.Blocks.stone, 1, 4),
-				'z', new ItemStack(net.minecraft.init.Blocks.stone, 1, 6));
+	@Override
+	public void preInit(FMLPreInitializationEvent event)
+	{
+		//Config
+		Graves.configuration = ConfigurationFile.init(event.getSuggestedConfigurationFile());
+		MinecraftForge.EVENT_BUS.register(new ConfigurationFile());
+		//Capabilities
+		GraveCapability.register();
+		//Blocks
+		Blocks.registerAll();
+		//Items
+		//Items.registerAll();
+		//Entities
+		Entities.registerEntities();
+		//Events
+		MinecraftForge.EVENT_BUS.register(new Events());
+		//Recipes
+		GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE.block), "x x", "xzx", "xxx",
+				'x', new ItemStack(net.minecraft.init.Blocks.STONE), 'v', new ItemStack(net.minecraft.init.Blocks.OBSIDIAN));
 	}
 
-    @Override
-    public void registerWhiteList() {
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.dirt.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.dirt.getStateFromMeta(2));
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.grass.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getStateFromMeta(1));
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getStateFromMeta(3));
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.stone.getStateFromMeta(5));
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.cobblestone.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.sand.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.sand.getStateFromMeta(1));
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.gravel.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.soul_sand.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.netherrack.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.clay.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.water.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.lava.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.flowing_water.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.flowing_lava.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.snow_layer.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.ice.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.packed_ice.getDefaultState());
-		BreakableWhiteListHelper.addBlock(net.minecraft.init.Blocks.mycelium.getDefaultState());
+	@Override
+	public void init(FMLInitializationEvent event)
+	{
+		//Packet Handler
+		PacketHandler.init();
+	}
+
+	@Override
+	public void postInit(FMLPostInitializationEvent event)
+	{
 	}
 }

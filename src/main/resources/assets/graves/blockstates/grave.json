@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "#main": "minecraft:blocks/stone",
+      "#embellishment": "minecraft:blocks/obsidian",
+      "#lava": "minecraft:blocks/lava_still"
+    }
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {
+        "model": "graves:grave.obj",
+        "transform": "forge:default-block"
+      }
+    ],
+    "render": {
+      "true": {
+        "model": "graves:grave.obj"
+      },
+      "false": {
+        "model": "graves:nothing.obj"
+      }
+    }
+  }
+}

@@ -8,29 +8,30 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TileEntityBase extends TileEntity {
-    public static final HashMap<Class, ItemStackSrc> myItem = new HashMap();
-    public String customName;
-    public int renderedFragment = 0;
+	private static final HashMap<Class, ItemStackSrc> myItem = new HashMap();
+	private String customName;
+	private int renderedFragment = 0;
 
     public static void registerTileItem(Class c, ItemStackSrc wat) {
         myItem.put(c, wat);
     }
 
+	@Nullable
 	@Override
-	public Packet<?> getDescriptionPacket()
+	public SPacketUpdateTileEntity getUpdatePacket()
 	{
 		NBTTagCompound data = new NBTTagCompound();
-		writeToNBT(data);
+        writeToNBT(data);
 		return new SPacketUpdateTileEntity(this.pos, 1, data);
 	}
 
@@ -42,23 +43,23 @@ public class TileEntityBase extends TileEntity {
 		markForUpdate();
     }
 
-	//	@Override
-	//	public NBTTagCompound getUpdateTag()
-	//	{
-	//		NBTTagCompound tag = new NBTTagCompound();
-	//		tag.setInteger("x", pos.getX());
-	//		tag.setInteger("y", pos.getY());
-	//		tag.setInteger("z", pos.getZ());
-	//		return writeToNBT(tag);
-	//	}
-	//
-	//	@Override
-	//	public void handleUpdateTag(NBTTagCompound tag)
-	//	{
-	//		readFromNBT(tag);
-	//		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
-	//		markForUpdate();
-	//	}
+	@Override
+	public NBTTagCompound getUpdateTag()
+	{
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setInteger("x", pos.getX());
+		tag.setInteger("y", pos.getY());
+		tag.setInteger("z", pos.getZ());
+		return writeToNBT(tag);
+	}
+
+	@Override
+	public void handleUpdateTag(NBTTagCompound tag)
+	{
+		readFromNBT(tag);
+		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
+		markForUpdate();
+	}
 
     public void markForUpdate() {
         if (this.renderedFragment > 0) {
@@ -81,13 +82,12 @@ public class TileEntityBase extends TileEntity {
         }
     }
 
-	public void onChunkLoad()
-	{
-		if(this.isInvalid())
-		{ this.validate(); }
+    public void onChunkLoad() {
+        if (this.isInvalid())
+            this.validate();
 
-		markForUpdate();
-	}
+        markForUpdate();
+    }
 
     @Override
     public void onChunkUnload() {
@@ -143,13 +143,12 @@ public class TileEntityBase extends TileEntity {
     }
 
 	@Override
-	public void writeToNBT(NBTTagCompound compound)
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
-		if(this.customName != null)
-		{
+		if (this.customName != null) {
 			compound.setString("CustomName", this.customName);
 		}
-		super.writeToNBT(compound);
+		return super.writeToNBT(compound);
 	}
 
     @Override
