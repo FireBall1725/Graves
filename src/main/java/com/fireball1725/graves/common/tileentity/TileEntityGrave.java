@@ -1,6 +1,5 @@
 package com.fireball1725.graves.common.tileentity;
 
-import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.helpers.ItemHelper;
@@ -297,11 +296,6 @@ public class TileEntityGrave extends TileEntityBase
 	public void readFromNBT(NBTTagCompound nbtTagCompound)
 	{
 		super.readFromNBT(nbtTagCompound);
-		Graves.logger.info("Loading Grave:");
-		for(String key : nbtTagCompound.getKeySet())
-		{
-			Graves.logger.info(String.format("%s: %s", key, nbtTagCompound.getTag(key).toString()));
-		}
 		displayStack = null;
 		if(nbtTagCompound.hasKey("displayStack"))
 		{ displayStack = ItemStack.loadItemStackFromNBT(nbtTagCompound.getCompoundTag("displayStack")); }

@@ -18,7 +18,6 @@ public class TileEntityGraveStone extends TileEntity implements ITickable
 	@Override
 	public void update()
 	{
-		Graves.logger.info(">>>: TICK!");
 		for(ReplaceableBlock block : blocks)
 		{
 			if(block.getPos().equals(getPos()))
