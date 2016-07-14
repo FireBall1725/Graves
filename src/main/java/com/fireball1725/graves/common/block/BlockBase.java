@@ -38,7 +38,8 @@ public class BlockBase extends BlockContainer {
 	{
 		if(hasTileEntity())
 		{
-			try {
+			try
+			{
 				return tileEntityType.newInstance();
 			} catch (Throwable e) {
                 throw new RuntimeException(e);

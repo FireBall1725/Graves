@@ -8,7 +8,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -27,7 +26,7 @@ public class TileEntityBase extends TileEntity {
     }
 
 	@Override
-	public Packet<?> getDescriptionPacket()
+	public SPacketUpdateTileEntity getUpdatePacket()
 	{
 		NBTTagCompound data = new NBTTagCompound();
 		writeToNBT(data);
@@ -144,13 +143,13 @@ public class TileEntityBase extends TileEntity {
     }
 
 	@Override
-	public void writeToNBT(NBTTagCompound compound)
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
 		if(this.customName != null)
 		{
 			compound.setString("CustomName", this.customName);
 		}
-		super.writeToNBT(compound);
+		return super.writeToNBT(compound);
 	}
 
     @Override

@@ -36,7 +36,7 @@ public abstract class TileEntityInventoryBase extends TileEntityBase implements 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbtTagCompound)
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound)
 	{
 
 		if(getInternalInventory() instanceof IInventoryCustom)
@@ -58,7 +58,7 @@ public abstract class TileEntityInventoryBase extends TileEntityBase implements 
 			}
 			nbtTagCompound.setTag("Items", tagCompound);
 		}
-		super.writeToNBT(nbtTagCompound);
+		return super.writeToNBT(nbtTagCompound);
 	}
 
 	@Override

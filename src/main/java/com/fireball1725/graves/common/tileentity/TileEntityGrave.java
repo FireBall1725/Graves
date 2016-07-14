@@ -241,7 +241,7 @@ public class TileEntityGrave extends TileEntityBase
 	}
 
 	@Override
-	public SPacketUpdateTileEntity getDescriptionPacket()
+	public SPacketUpdateTileEntity getUpdatePacket()
 	{
 		return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), serializeNBT());
 	}
@@ -253,9 +253,8 @@ public class TileEntityGrave extends TileEntityBase
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbtTagCompound)
+	public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound)
 	{
-		super.writeToNBT(nbtTagCompound);
 		//Save Display Stack
 		if(displayStack != null)
 		{ nbtTagCompound.setTag("displayStack", displayStack.serializeNBT()); }
@@ -289,6 +288,7 @@ public class TileEntityGrave extends TileEntityBase
 				{ hotbarTag.setTag(String.valueOf(i), hotbar[i].serializeNBT()); }
 			nbtTagCompound.setTag("hotbarTag", hotbarTag);
 		}
+		return super.writeToNBT(nbtTagCompound);
 	}
 
 	@Override

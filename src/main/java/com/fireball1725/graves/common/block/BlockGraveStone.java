@@ -16,7 +16,7 @@ public class BlockGraveStone extends BlockBase
 
 	public BlockGraveStone()
 	{
-		super(Material.cloth);
+		super(Material.CLOTH);
 		this.setTileEntity(TileEntityGraveStone.class);
 	}
 

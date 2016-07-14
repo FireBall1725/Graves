@@ -41,8 +41,8 @@ public class MessageSetHeadstoneName implements IMessage {
 			{
 				headStone.setCustomName(message.playerName);
 				headStone.markForUpdate();
-            }
-            return null;
+			}
+			return null;
         }
     }
 }
