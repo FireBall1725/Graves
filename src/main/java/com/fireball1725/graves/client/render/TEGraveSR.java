@@ -58,13 +58,14 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 		specialText.put("e28850e0-25ab-47ff-9317-bc73bbbc98e1", "");                            // Vaygrim
 		specialText.put("64e7102f-e199-414f-90d7-ccbdaf82284a", "");                            // NikkiExDee
 		specialText.put("0f95811a-b3b6-4dba-ba03-4adfec7cf5ab", "");                            // azanor
-		specialText.put("5a8c3be3-2aa4-4e91-8d7f-4e7b0dc8223e", "#BlameAma");                    // amadornes
+		specialText.put("5a8c3be3-2aa4-4e91-8d7f-4e7b0dc8223e", "#BlameAma");                   // amadornes
 		specialText.put("6078f46a-bae3-496b-bbdc-dcc25aca75ba", "");                            // boni
 		specialText.put("b43d09c7-d356-4319-8d4d-afa6974eb665", "");                            // CrazyPants
 		specialText.put("b9a89002-b392-4545-ab4d-5b1ff60c88a6", "");                            // Arkember
 		specialText.put("8c826f34-113b-4238-a173-44639c53b6e6", "");                            // Vazkii
 		specialText.put("183baa71-8cd0-4acb-9a0c-ff06712430a5", "");                            // NewCastleGeek
 		specialText.put("2efa46fa-2948-4d98-b822-fa182d254870", "");                            // LordDusk
+		specialText.put("2dea7072-2bfe-4c8b-a819-a9b4444134fc", "Failed so hard!\\nand got so far\\nbut in the end\\nIt doesn't even matter.");                            // OneOldBlockHead
 
 		specialText.put("e43e9766-f903-48e1-818f-d41bb48d80d5", "Everything is " + ChatFormatting.RED + "AWESOME" + ChatFormatting.RESET + "!");                // FireBall1725
 		specialText.put("7ff65fdc-2837-4123-adfd-157b37527daf", ChatFormatting.GREEN + "\\☻/\\n" + ChatFormatting.GREEN + "|\\n" + ChatFormatting.GREEN + "/\\");            // FusionLord

@@ -18,8 +18,8 @@ public class Graves {
     @Mod.Instance(ModInfo.MOD_ID)
     public static Graves instance;
 
-    @SidedProxy(clientSide = ModInfo.CLIENT_PROXY_CLASS, serverSide = ModInfo.SERVER_PROXY_CLASS)
-    public static IProxy proxy;
+	@SidedProxy(clientSide = ModInfo.CLIENT_PROXY_CLASS, serverSide = ModInfo.COMMON_PROXY_CLASS)
+	public static IProxy proxy;
 
 	public static Logger logger;
 
