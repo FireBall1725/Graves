@@ -1,6 +1,7 @@
 package com.fireball1725.graves.common.tileentity;
 
 import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.google.common.collect.Lists;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,6 +19,17 @@ public class TileEntityGraveStone extends TileEntity implements ITickable
 	public void update()
 	{
 		Graves.logger.info(">>>: TICK!");
+		for(ReplaceableBlock block : blocks)
+		{
+			if(block.getPos().equals(getPos()))
+			{ continue; }
+			block.placeBlock(worldObj);
+		}
+		worldObj.setBlockState(getPos(), Blocks.BLOCK_GRAVE.block.getDefaultState(), 3);
+		worldObj.removeTileEntity(getPos());
+		TileEntityGrave grave = new TileEntityGrave();
+		grave.readFromNBT(tagCompound);
+		worldObj.setTileEntity(getPos(), grave);
 	}
 
 	@Override
