@@ -3,12 +3,14 @@ package com.fireball1725.graves.client.render;
 import com.fireball1725.graves.client.event.EventTick;
 import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.helpers.PatreonHelper;
+import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.model.ModelHumanoidHead;
 import net.minecraft.client.model.ModelSkeletonHead;
 import net.minecraft.client.renderer.GlStateManager;
@@ -28,6 +30,7 @@ import java.util.UUID;
 
 public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 {
+	private static final ResourceLocation patronIcon = new ResourceLocation(ModInfo.MOD_ID, "textures/patreon.png");
 	private static Map<String, Map<String, String>> specialText = Maps.newHashMap();
 
 	static
@@ -101,14 +104,26 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 						GlStateManager.color(1, 1, 1, .8f);
 						renderSkull(-.5f, 0, -.5f, grave.getProfile(), destroyStage, partialTicks);
 						GlStateManager.popMatrix();
-						if(Minecraft.getMinecraft().gameSettings.fancyGraphics)
-						{
+
+						for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+							GlStateManager.pushMatrix();
+							GlStateManager.disableLighting();
+							GlStateManager.rotate(180, 0, 0, 1);
+							GlStateManager.rotate((facing.getHorizontalIndex() * 90), 0, 1, 0);
+							GlStateManager.translate(0, .55, -.38);
+							GlStateManager.scale(.00625, .00625, .00625);
 							String text = "";
-							if(specialText.containsKey(profile.getId().toString()))
-							{
-								text = "\\n" + specialText.get(profile.getId().toString()).get("text").replace("%n%", String.valueOf(rand.nextInt()));
+							if (specialText.containsKey(profile.getId().toString())) {
+								Map<String, String> map = specialText.get(profile.getId().toString());
+								text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt()));
+								if (map.containsKey("patron") && Boolean.valueOf(map.get("patron"))) {
+									drawPatronIcon();
+								}
 							}
+
 							drawText(profile.getName() + text);
+							GlStateManager.enableLighting();
+							GlStateManager.popMatrix();
 						}
 						GlStateManager.disableBlend();
 						GlStateManager.disableAlpha();
@@ -122,26 +137,24 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 		GlStateManager.popMatrix();
 	}
 
+	private void drawPatronIcon() {
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(-8, -12, 0);
+		GlStateManager.color(1, 1, 1);
+		bindTexture(patronIcon);
+		Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 16, 16, 16, 16);
+		GlStateManager.popMatrix();
+	}
+
 	private void drawText(String text)
 	{
 		String[] strings = text.split("\\\\n");
 		GlStateManager.pushMatrix();
-		for(EnumFacing facing : EnumFacing.HORIZONTALS)
+		for (String s : strings)
 		{
-			GlStateManager.pushMatrix();
-			GlStateManager.disableLighting();
-			GlStateManager.rotate(180, 0, 0, 1);
-			GlStateManager.rotate((facing.getHorizontalIndex() * 90), 0, 1, 0);
-			GlStateManager.translate(0, .55, -.38);
-			GlStateManager.scale(.00625, .00625, .00625);
-			for(String s : strings)
-			{
-				GlStateManager.translate(0, mc.fontRendererObj.FONT_HEIGHT, 0);
-				int strWidth = mc.fontRendererObj.getStringWidth(s);
-				mc.fontRendererObj.drawString(s, -(int) ((float) strWidth / 2f), 0, Color.WHITE.hashCode());
-			}
-			GlStateManager.enableLighting();
-			GlStateManager.popMatrix();
+			GlStateManager.translate(0, mc.fontRendererObj.FONT_HEIGHT, 0);
+			int strWidth = mc.fontRendererObj.getStringWidth(s);
+			mc.fontRendererObj.drawString(s, -(int) ((float) strWidth / 2f), 0, Color.WHITE.hashCode());
 		}
 		GlStateManager.popMatrix();
 	}
