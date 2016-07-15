@@ -22,7 +22,7 @@ public class PatreonHelper
 		specialText.clear();
 		try
 		{
-			specialText = new Gson().fromJson(readUrl("http://pastebin.com/raw/" + ModInfo.SPECIAL_TEXT), new TypeToken<Map<String, Map<String, String>>>()
+			specialText = new Gson().fromJson(readUrl(ModInfo.SPECIAL_TEXT), new TypeToken<Map<String, Map<String, String>>>()
 			{
 			}.getType());
 		}
