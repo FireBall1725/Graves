@@ -34,8 +34,8 @@ public class CommonProxy implements IProxy
 		//Events
 		MinecraftForge.EVENT_BUS.register(new Events());
 		//Recipes
-		GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE.block), "x x", "xzx", "xxx",
-				'x', new ItemStack(net.minecraft.init.Blocks.STONE), 'v', new ItemStack(net.minecraft.init.Blocks.OBSIDIAN));
+		GameRegistry.addRecipe(new ItemStack(Blocks.BLOCK_GRAVE.block), " o ", " s ", "sss",
+				's', new ItemStack(net.minecraft.init.Blocks.STONE), 'o', new ItemStack(net.minecraft.init.Blocks.OBSIDIAN));
 	}
 
 	@Override

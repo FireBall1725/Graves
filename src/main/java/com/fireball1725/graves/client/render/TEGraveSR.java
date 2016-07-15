@@ -118,7 +118,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 								boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
 								GlStateManager.pushMatrix();
 								GlStateManager.translate(0, -12, 0);
-								if (true /*map.containsKey("icon") && Boolean.valueOf(map.get("icon"))*/) {
+								if (map.containsKey("icon") && Boolean.valueOf(map.get("icon"))) {
 									if (patron)
 										GlStateManager.translate(2, 0, 0);
 									else
