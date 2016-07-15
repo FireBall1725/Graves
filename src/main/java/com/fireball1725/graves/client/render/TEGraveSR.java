@@ -30,7 +30,6 @@ import java.util.UUID;
 
 public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 {
-	private static final ResourceLocation patronIcon = new ResourceLocation(ModInfo.MOD_ID, "textures/patreon.png");
 	private static Map<String, Map<String, String>> specialText = Maps.newHashMap();
 
 	static
@@ -116,9 +115,21 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 							if (specialText.containsKey(profile.getId().toString())) {
 								Map<String, String> map = specialText.get(profile.getId().toString());
 								text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt()));
-								if (map.containsKey("patron") && Boolean.valueOf(map.get("patron"))) {
+								boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
+								GlStateManager.pushMatrix();
+								GlStateManager.translate(0, -12, 0);
+								if (true /*map.containsKey("icon") && Boolean.valueOf(map.get("icon"))*/) {
+									if (patron)
+										GlStateManager.translate(2, 0, 0);
+									else
+										GlStateManager.translate(-8, 0, 0);
+									drawIcon(map.get("name").toLowerCase());
+									GlStateManager.translate(-20, 0, 0);
+								}
+								if (patron) {
 									drawPatronIcon();
 								}
+								GlStateManager.popMatrix();
 							}
 
 							drawText(profile.getName() + text);
@@ -137,13 +148,14 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 		GlStateManager.popMatrix();
 	}
 
-	private void drawPatronIcon() {
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(-8, -12, 0);
+	private void drawIcon(String icon) {
 		GlStateManager.color(1, 1, 1);
-		bindTexture(patronIcon);
-		Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 16, 16, 16, 16);
-		GlStateManager.popMatrix();
+		bindTexture(new ResourceLocation(ModInfo.MOD_ID, "textures/patrons/" + icon + ".png"));
+		Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 16, 16, 1, 1);
+	}
+
+	private void drawPatronIcon() {
+		drawIcon("patreon");
 	}
 
 	private void drawText(String text)
