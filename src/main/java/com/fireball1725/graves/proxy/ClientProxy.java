@@ -8,7 +8,9 @@ import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
@@ -36,8 +38,10 @@ public class ClientProxy extends CommonProxy {
 		EntityPlayerZombie.registerSounds();
 
 		//Register TileEntity Rendering
-		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGrave.class, new TEGraveSR());
+		TEGraveSR tesr = new TEGraveSR();
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGrave.class, tesr);
 		//Register Event
+		((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(tesr);
 	}
 
 	@Override

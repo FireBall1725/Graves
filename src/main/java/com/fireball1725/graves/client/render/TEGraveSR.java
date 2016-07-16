@@ -18,6 +18,8 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
+import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -28,18 +30,17 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
+public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implements IResourceManagerReloadListener
 {
 	private static Map<String, Map<String, String>> specialText = Maps.newHashMap();
-
-	static
-	{
-		specialText = PatreonHelper.getSpecialText();
-	}
-
 	private final ModelSkeletonHead humanoidHead = new ModelHumanoidHead();
 	private Minecraft mc = Minecraft.getMinecraft();
 	private Random rand = new Random();
+
+	@Override
+	public void onResourceManagerReload(IResourceManager resourceManager) {
+		specialText = PatreonHelper.getSpecialText();
+	}
 
 	@Override
 	public void renderTileEntityAt(TileEntityGrave grave, double x, double y, double z, float partialTicks, int destroyStage)
