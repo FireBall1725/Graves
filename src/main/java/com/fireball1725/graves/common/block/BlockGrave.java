@@ -4,6 +4,7 @@ import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
 import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.fireball1725.graves.common.util.TileTools;
+import com.mojang.authlib.GameProfile;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
@@ -56,7 +57,10 @@ public class BlockGrave extends BlockBase
 			TileEntityGrave grave = TileTools.getTileEntity(world, blockPos, TileEntityGrave.class);
 			if(grave != null)
 			{
-				grave.setProfile(((EntityPlayer) placer).getGameProfile());
+				if (!itemStack.hasDisplayName())
+					grave.setProfile(((EntityPlayer) placer).getGameProfile());
+				else
+					grave.setProfile(new GameProfile(null, itemStack.getDisplayName()));
 				grave.setGhostDefeated(true);
 				grave.markDirty();
 			}
