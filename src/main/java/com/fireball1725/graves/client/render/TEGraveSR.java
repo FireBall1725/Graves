@@ -132,7 +132,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 								GlStateManager.popMatrix();
 							}
 
-							drawText(profile.getName() + text);
+							drawText("§l§n" + profile.getName() + "§r" + text);
 							GlStateManager.enableLighting();
 							GlStateManager.popMatrix();
 						}
