@@ -31,16 +31,21 @@ import java.util.List;
 public class BlockGrave extends BlockBase
 {
 	public static final PropertyBool RENDER = PropertyBool.create("render");
+    public static final PropertyBool WORLDGEN = PropertyBool.create("worldgen");
 
 	protected BlockGrave()
 	{
 		super(Material.ROCK);
-		this.setDefaultState(blockState.getBaseState().withProperty(RENDER, true));
-		this.setHardness(1.5F);
-		this.setResistance(10.0F);
+        this.setDefaultState(blockState.getBaseState().withProperty(RENDER, true).withProperty(WORLDGEN, false));
+        this.setHardness(1.5F);
+        this.setResistance(10.0F);
 		this.setHarvestLevel("pickaxe", 0);
 		this.setTileEntity(TileEntityGrave.class);
 	}
+
+    public IBlockState getWorldGenState() {
+        return getDefaultState().withProperty(WORLDGEN, true);
+    }
 
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state)
@@ -127,8 +132,8 @@ public class BlockGrave extends BlockBase
 	@Override
 	protected BlockStateContainer createBlockState()
 	{
-		return new BlockStateContainer(this, RENDER);
-	}
+        return new BlockStateContainer(this, RENDER, WORLDGEN);
+    }
 
 	@Override
 	public boolean isOpaqueCube(IBlockState state)
@@ -175,14 +180,14 @@ public class BlockGrave extends BlockBase
 	@Override
 	public int getMetaFromState(IBlockState state)
 	{
-		return 0;
-	}
+        return state.getValue(WORLDGEN) ? 1 : 0;
+    }
 
 	@Override
 	public IBlockState getStateFromMeta(int meta)
 	{
-		return getDefaultState();
-	}
+        return getDefaultState().withProperty(WORLDGEN, meta == 1);
+    }
 
 	@Override
 	public void onBlockExploded(World world, BlockPos pos, Explosion explosion)

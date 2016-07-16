@@ -12,7 +12,7 @@
     "icon": "true"
   },
   "a2987599-a85d-47e8-a241-4eb20610adf3": {
-    "text": "Died as he lived, a N00B!",
+    "text": "Died as he lived,\\Na N00B!",
     "name": "Techno",
     "patron": "false",
     "icon": "false"
@@ -66,13 +66,13 @@
     "icon": "false"
   },
   "48a16fc8-bc1f-4e72-84e9-7ec73b7d8ea1": {
-    "text": "But what does it mean????",
+    "text": "But what does it mean??",
     "name": "TTFTCUTS",
     "patron": "false",
     "icon": "false"
   },
   "892017ed-e9a0-4f25-9a37-b8811614707d": {
-    "text": "Too many bits, Not enough bags.",
+    "text": "Too many bits,\\NNot enough bags.",
     "name": "AlgorithmX2",
     "patron": "false",
     "icon": "false"
@@ -127,7 +127,7 @@
   },
   "25d4006e-3475-4608-9c15-519b08525c11": {
     "text": "",
-    "name": "flamegoat",
+    "name": "MrFlameGoat",
     "patron": "false",
     "icon": "false"
   },

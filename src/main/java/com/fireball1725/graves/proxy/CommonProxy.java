@@ -7,6 +7,7 @@ import com.fireball1725.graves.common.entity.Entities;
 import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
 import com.fireball1725.graves.common.event.Events;
 import com.fireball1725.graves.common.network.PacketHandler;
+import com.fireball1725.graves.common.world.WorldGeneration;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -29,8 +30,10 @@ public class CommonProxy implements IProxy
 		Blocks.registerAll();
 		//Items
 		//Items.registerAll();
-		//Entities
-		Entities.registerEntities();
+        //WorldGen
+        GameRegistry.registerWorldGenerator(new WorldGeneration(), 1);
+        //Entities
+        Entities.registerEntities();
 		//Events
 		MinecraftForge.EVENT_BUS.register(new Events());
 		//Recipes

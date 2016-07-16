@@ -5,6 +5,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public interface IGraveCapability
 {
+    boolean hasSeenStartUp();
+
+    void setSeenStartUp(boolean hasSeenStartUp);
+
 	ItemStack getGraveItemStack();
 
 	void setGraveItemStack(ItemStack displayStack);

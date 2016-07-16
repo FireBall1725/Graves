@@ -32,9 +32,9 @@ import java.util.UUID;
 
 public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implements IResourceManagerReloadListener
 {
-	private static Map<String, Map<String, String>> specialText = Maps.newHashMap();
-	private final ModelSkeletonHead humanoidHead = new ModelHumanoidHead();
-	private Minecraft mc = Minecraft.getMinecraft();
+    public static Map<String, Map<String, String>> specialText = Maps.newHashMap();
+    private final ModelSkeletonHead humanoidHead = new ModelHumanoidHead();
+    private Minecraft mc = Minecraft.getMinecraft();
 	private Random rand = new Random();
 
 	@Override
@@ -88,9 +88,8 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 
 						int dir = rand.nextBoolean() ? 1 : -1;
 						GlStateManager.pushMatrix();
-						if(grave.getProfile().getId().toString().equals("4f3a8d1e-33c1-44e7-bce8-e683027c7dac"))
-						{
-							GlStateManager.rotate(EventTick.getTick() * 10, 0, dir, 0);
+                        if (profile.getId().toString().equals("4f3a8d1e-33c1-44e7-bce8-e683027c7dac")) {
+                            GlStateManager.rotate(EventTick.getTick() * 10, 0, dir, 0);
 						}
 						else
 						{
@@ -115,17 +114,17 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 							String text = "";
 							if (specialText.containsKey(profile.getId().toString())) {
 								Map<String, String> map = specialText.get(profile.getId().toString());
-								text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt()));
-								boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
-								GlStateManager.pushMatrix();
-								GlStateManager.translate(0, -12, 0);
-								if (map.containsKey("icon") && Boolean.valueOf(map.get("icon"))) {
-									if (patron)
+                                text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
+                                boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
+                                GlStateManager.pushMatrix();
+                                GlStateManager.translate(0, -20, 0);
+                                if (map.containsKey("icon") && Boolean.valueOf(map.get("icon"))) {
+                                    if (patron)
 										GlStateManager.translate(2, 0, 0);
 									else
-										GlStateManager.translate(-8, 0, 0);
-									drawIcon(map.get("name").toLowerCase());
-									GlStateManager.translate(-20, 0, 0);
+                                        GlStateManager.translate(-16, 0, 0);
+                                    drawIcon(map.get("name").toLowerCase());
+                                    GlStateManager.translate(-20, 0, 0);
 								}
 								if (patron) {
 									drawPatronIcon();
@@ -133,9 +132,9 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 								GlStateManager.popMatrix();
 							}
 
-							drawText("§l§n" + profile.getName() + "§r" + text);
-							GlStateManager.enableLighting();
-							GlStateManager.popMatrix();
+                            drawText("§n" + profile.getName() + "§r" + text);
+                            GlStateManager.enableLighting();
+                            GlStateManager.popMatrix();
 						}
 						GlStateManager.disableBlend();
 						GlStateManager.disableAlpha();
@@ -152,8 +151,8 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 	private void drawIcon(String icon) {
 		GlStateManager.color(1, 1, 1);
 		bindTexture(new ResourceLocation(ModInfo.MOD_ID, "textures/patrons/" + icon + ".png"));
-		Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 16, 16, 1, 1);
-	}
+        Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 32, 32, 1, 1);
+    }
 
 	private void drawPatronIcon() {
 		drawIcon("patreon");

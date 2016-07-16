@@ -24,6 +24,14 @@
       "false": {
         "model": "graves:nothing.obj"
       }
+    },
+    "worldgen": {
+      "true": {
+        "textures": {
+          "#main": "minecraft:blocks/cobblestone_mossy"
+        }
+      },
+      "false": {}
     }
   }
 }
