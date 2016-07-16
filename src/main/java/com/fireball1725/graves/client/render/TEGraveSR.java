@@ -164,7 +164,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave>
 		GlStateManager.pushMatrix();
 		for (String s : strings)
 		{
-			GlStateManager.translate(0, mc.fontRendererObj.FONT_HEIGHT, 0);
+			GlStateManager.translate(0, mc.fontRendererObj.FONT_HEIGHT + 1, 0);
 			int strWidth = mc.fontRendererObj.getStringWidth(s);
 			mc.fontRendererObj.drawString(s, -(int) ((float) strWidth / 2f), 0, Color.WHITE.hashCode());
 		}
