@@ -1,5 +1,6 @@
 package com.fireball1725.graves;
 
+import com.fireball1725.graves.common.network.PacketHandler;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.proxy.IProxy;
 import com.google.common.base.Stopwatch;
@@ -24,10 +25,12 @@ public class Graves {
 	public static Logger logger;
 
     public static Configuration configuration;
+    public static PacketHandler packetHandler;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
 		logger = event.getModLog();
+        packetHandler = new PacketHandler();
 
 		final Stopwatch stopWatch = Stopwatch.createStarted();
 		logger.info("Pre-Initialization ( started )");

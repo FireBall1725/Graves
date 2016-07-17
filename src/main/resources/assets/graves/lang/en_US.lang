@@ -1,3 +1,6 @@
 #Graves mod localization file for en_US
 #Blocks
 tile.grave.name=Headstone
+#Gui
+button.close=Close
+gui.startup.text=If you see a mossy cobblestone grave it is like a loot chest.

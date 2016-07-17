@@ -1,15 +1,27 @@
 package com.fireball1725.graves.common.network;
 
-import com.fireball1725.graves.common.network.messages.MessageSetHeadstoneName;
+import com.fireball1725.graves.common.network.packets.OpenStartupScreenPacket;
+import com.fireball1725.graves.common.network.packets.PacketStartup;
 import com.fireball1725.graves.common.reference.ModInfo;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class PacketHandler {
-    public static final SimpleNetworkWrapper INSTANCE = NetworkRegistry.INSTANCE.newSimpleChannel(ModInfo.MOD_ID.toLowerCase());
+public class PacketHandler extends SimpleNetworkWrapper {
+    private int packetCount = 0;
 
-    public static void init() {
-        INSTANCE.registerMessage(MessageSetHeadstoneName.HANDLER.class, MessageSetHeadstoneName.class, 0, Side.SERVER);
+    public PacketHandler() {
+        super(ModInfo.MOD_ID.toLowerCase());
+    }
+
+    public void init() {
+        registerMessage(PacketStartup.HANDLER.class, PacketStartup.class, Side.SERVER);
+        registerMessage(OpenStartupScreenPacket.HANDLER.class, OpenStartupScreenPacket.class, Side.SERVER);
+        registerMessage(OpenStartupScreenPacket.HANDLER.class, OpenStartupScreenPacket.class, Side.CLIENT);
+    }
+
+    private <REQ extends IMessage, REPLY extends IMessage> void registerMessage(Class<? extends IMessageHandler<REQ, REPLY>> messageHandler, Class<REQ> requestMessageType, Side side) {
+        registerMessage(messageHandler, requestMessageType, packetCount++, side);
     }
 }

@@ -1,6 +1,6 @@
 package com.fireball1725.graves.proxy;
 
-import com.fireball1725.graves.client.event.EventTick;
+import com.fireball1725.graves.client.event.ClientEvents;
 import com.fireball1725.graves.client.render.TEGraveSR;
 import com.fireball1725.graves.client.render.entity.EntityRenderer;
 import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
@@ -41,15 +41,15 @@ public class ClientProxy extends CommonProxy {
 		TEGraveSR tesr = new TEGraveSR();
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGrave.class, tesr);
 		//Register Event
-		((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(tesr);
-	}
+        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(tesr);
+    }
 
 	@Override
 	public void init(FMLInitializationEvent event)
 	{
 		super.init(event);
-		MinecraftForge.EVENT_BUS.register(new EventTick());
-	}
+        MinecraftForge.EVENT_BUS.register(new ClientEvents());
+    }
 
 	@Override
 	public void postInit(FMLPostInitializationEvent event)

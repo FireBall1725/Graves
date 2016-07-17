@@ -7,7 +7,7 @@ public interface IGraveCapability
 {
     boolean hasSeenStartUp();
 
-    void setSeenStartUp(boolean hasSeenStartUp);
+    void setSeenStartUp();
 
 	ItemStack getGraveItemStack();
 

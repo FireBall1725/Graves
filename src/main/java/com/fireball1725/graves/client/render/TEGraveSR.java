@@ -1,14 +1,12 @@
 package com.fireball1725.graves.client.render;
 
-import com.fireball1725.graves.client.event.EventTick;
-import com.fireball1725.graves.common.block.BlockGrave;
+import com.fireball1725.graves.client.event.ClientEvents;
 import com.fireball1725.graves.common.helpers.PatreonHelper;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.model.ModelHumanoidHead;
@@ -43,110 +41,95 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 	}
 
 	@Override
-	public void renderTileEntityAt(TileEntityGrave grave, double x, double y, double z, float partialTicks, int destroyStage)
-	{
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(x + .5, y + .5, z + .5);
-		if(getWorld().getBlockState(grave.getPos()).getBlock() instanceof BlockGrave)
-		{
-			GlStateManager.pushMatrix();
-			if(grave.getDisplayStack() != null)
-			{
-				ItemStack stack = grave.getDisplayStack();
-				GlStateManager.pushMatrix();
-				GlStateManager.enableLighting();
-				GlStateManager.enableRescaleNormal();
-				GlStateManager.enableAlpha();
-				GlStateManager.alphaFunc(516, 0.1F);
-				GlStateManager.enableBlend();
-				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-				bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-				IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(stack, mc.theWorld, mc.thePlayer);
-				mc.getRenderItem().renderItem(stack, model);
-				GlStateManager.disableAlpha();
-				GlStateManager.disableRescaleNormal();
-				GlStateManager.disableLighting();
-				GlStateManager.popMatrix();
-			}
-			else
-			{
-				if(grave.getProfile() != null)
-				{
-					GameProfile profile = grave.getProfile();
-					IBlockState state = getWorld().getBlockState(grave.getPos().offset(EnumFacing.UP));
-					if(!state.getBlock().isFullBlock(state.getActualState(getWorld(), grave.getPos().offset(EnumFacing.UP))))
-					{
-						GlStateManager.pushMatrix();
-						GlStateManager.enableRescaleNormal();
-						GlStateManager.enableAlpha();
-						GlStateManager.alphaFunc(516, 0.1F);
-						GlStateManager.enableBlend();
+    public void renderTileEntityAt(TileEntityGrave grave, double x, double y, double z, float partialTicks, int destroyStage) {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x + .5, y + .5, z + .5);
+        GlStateManager.pushMatrix();
+        if (grave.getDisplayStack() != null) {
+            ItemStack stack = grave.getDisplayStack();
+            GlStateManager.pushMatrix();
+            GlStateManager.enableLighting();
+            GlStateManager.enableRescaleNormal();
+            GlStateManager.enableAlpha();
+            GlStateManager.alphaFunc(516, 0.1F);
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(stack, mc.theWorld, mc.thePlayer);
+            mc.getRenderItem().renderItem(stack, model);
+            GlStateManager.disableAlpha();
+            GlStateManager.disableRescaleNormal();
+            GlStateManager.disableLighting();
+            GlStateManager.popMatrix();
+        } else {
+            if (grave.getProfile() != null) {
+                GameProfile profile = grave.getProfile();
+                GlStateManager.pushMatrix();
+                GlStateManager.enableRescaleNormal();
+                GlStateManager.enableAlpha();
+                GlStateManager.alphaFunc(516, 0.1F);
+                GlStateManager.enableBlend();
 
-						GlStateManager.translate(0, .5, 0);
-						rand.setSeed(grave.getPos().toLong());
+                GlStateManager.translate(0, .5, 0);
+                rand.setSeed(grave.getPos().toLong());
 
-						int dir = rand.nextBoolean() ? 1 : -1;
-						GlStateManager.pushMatrix();
-                        if (profile.getId().toString().equals("4f3a8d1e-33c1-44e7-bce8-e683027c7dac")) {
-                            GlStateManager.rotate(EventTick.getTick() * 10, 0, dir, 0);
-						}
-						else
-						{
-							GlStateManager.rotate(EventTick.getTick(), 0, dir, 0);
-						}
-						if(Minecraft.getMinecraft().gameSettings.fancyGraphics)
-						{
-							GlStateManager.rotate(rand.nextFloat() * 360f, 0, 1, 0);
-						}
-						GlStateManager.scale(.65, .65, .65);
-						GlStateManager.color(1, 1, 1, .8f);
-						renderSkull(-.5f, 0, -.5f, grave.getProfile(), destroyStage, partialTicks);
-						GlStateManager.popMatrix();
+                int dir = rand.nextBoolean() ? 1 : -1;
+                GlStateManager.pushMatrix();
+                if (profile.getId().toString().equals("4f3a8d1e-33c1-44e7-bce8-e683027c7dac")) {
+                    GlStateManager.rotate(ClientEvents.getTick() * 10, 0, dir, 0);
+                } else {
+                    GlStateManager.rotate(ClientEvents.getTick(), 0, dir, 0);
+                }
+                if (Minecraft.getMinecraft().gameSettings.fancyGraphics) {
+                    GlStateManager.rotate(rand.nextFloat() * 360f, 0, 1, 0);
+                }
+                GlStateManager.scale(.65, .65, .65);
+                GlStateManager.color(1, 1, 1, .8f);
+                renderSkull(-.5f, .0001f, -.5f, grave.getProfile(), destroyStage, partialTicks);
+                GlStateManager.popMatrix();
 
-						for (EnumFacing facing : EnumFacing.HORIZONTALS) {
-							GlStateManager.pushMatrix();
-							GlStateManager.disableLighting();
-							GlStateManager.rotate(180, 0, 0, 1);
-							GlStateManager.rotate((facing.getHorizontalIndex() * 90), 0, 1, 0);
-							GlStateManager.translate(0, .55, -.38);
-							GlStateManager.scale(.00625, .00625, .00625);
-							String text = "";
-							if (specialText.containsKey(profile.getId().toString())) {
-								Map<String, String> map = specialText.get(profile.getId().toString());
-                                text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
-                                boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
-                                GlStateManager.pushMatrix();
-                                GlStateManager.translate(0, -20, 0);
-                                if (map.containsKey("icon") && Boolean.valueOf(map.get("icon"))) {
-                                    if (patron)
-										GlStateManager.translate(2, 0, 0);
-									else
-                                        GlStateManager.translate(-16, 0, 0);
-                                    drawIcon(map.get("name").toLowerCase());
-                                    GlStateManager.translate(-20, 0, 0);
-								}
-								if (patron) {
-									drawPatronIcon();
-								}
-								GlStateManager.popMatrix();
-							}
+                for (EnumFacing facing : EnumFacing.HORIZONTALS) {
+                    GlStateManager.pushMatrix();
+                    GlStateManager.disableLighting();
+                    GlStateManager.rotate(180, 0, 0, 1);
+                    GlStateManager.rotate((facing.getHorizontalIndex() * 90), 0, 1, 0);
+                    GlStateManager.translate(0, .55, -.38);
+                    GlStateManager.scale(.00625, .00625, .00625);
+                    String text = "";
+                    if (specialText.containsKey(profile.getId().toString())) {
+                        Map<String, String> map = specialText.get(profile.getId().toString());
+                        text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
+                        boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
+                        GlStateManager.pushMatrix();
+                        GlStateManager.translate(0, -20, 0);
+                        if (map.containsKey("icon") && Boolean.valueOf(map.get("icon"))) {
+                            if (patron)
+                                GlStateManager.translate(2, 0, 0);
+                            else
+                                GlStateManager.translate(-16, 0, 0);
+                            drawIcon(map.get("name").toLowerCase());
+                            GlStateManager.translate(-20, 0, 0);
+                        }
+                        if (patron) {
+                            drawPatronIcon();
+                        }
+                        GlStateManager.popMatrix();
+                    }
 
-                            drawText("§n" + profile.getName() + "§r" + text);
-                            GlStateManager.enableLighting();
-                            GlStateManager.popMatrix();
-						}
-						GlStateManager.disableBlend();
-						GlStateManager.disableAlpha();
-						GlStateManager.disableRescaleNormal();
-						GlStateManager.popMatrix();
-					}
-				}
-			}
-			GlStateManager.popMatrix();
-		}
-		GlStateManager.popMatrix();
-	}
+                    drawText("§n" + profile.getName() + "§r" + text);
+                    GlStateManager.enableLighting();
+                    GlStateManager.popMatrix();
+                }
+                GlStateManager.disableBlend();
+                GlStateManager.disableAlpha();
+                GlStateManager.disableRescaleNormal();
+                GlStateManager.popMatrix();
+            }
+        }
+        GlStateManager.popMatrix();
+        GlStateManager.popMatrix();
+    }
 
 	private void drawIcon(String icon) {
 		GlStateManager.color(1, 1, 1);
@@ -209,7 +192,6 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 		GlStateManager.scale(-1.0F, -1.0F, 1.0F);
 		GlStateManager.enableAlpha();
 		GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
-
 		humanoidHead.render(null, animateTicks, 0.0F, 0.0F, 0, 0.0F, 0.0625F);
 		GlStateManager.popMatrix();
 
