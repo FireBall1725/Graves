@@ -1,8 +1,8 @@
 package com.fireball1725.graves.common.world;
 
-import com.fireball1725.graves.client.render.TEGraveSR;
 import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.block.Blocks;
+import com.fireball1725.graves.common.helpers.PatreonHelper;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.tileentity.TileEntity;
@@ -31,12 +31,12 @@ public class WorldGeneration implements IWorldGenerator {
                 TileEntity te = world.getTileEntity(pos);
                 if (te != null && te instanceof TileEntityGrave) {
                     TileEntityGrave grave = (TileEntityGrave) te;
-                    Iterator iterator = TEGraveSR.specialText.keySet().iterator();
-                    int idx = random.nextInt(TEGraveSR.specialText.keySet().size());
+                    Iterator iterator = PatreonHelper.specialText.keySet().iterator();
+                    int idx = random.nextInt(PatreonHelper.specialText.keySet().size());
                     while (iterator.hasNext()) {
                         String uuid = iterator.next().toString();
                         if (idx-- == 0) {
-                            grave.setProfile(new GameProfile(UUID.fromString(uuid), TEGraveSR.specialText.get(uuid).get("name")));
+                            grave.setProfile(new GameProfile(UUID.fromString(uuid), PatreonHelper.specialText.get(uuid).get("name")));
                             LootTable table = world.getLootTableManager().getLootTableFromLocation(LootTableList.CHESTS_SIMPLE_DUNGEON);
                             grave.addItems(table.generateLootForPools(random, new LootContext.Builder((WorldServer) world).build()));
                             break;

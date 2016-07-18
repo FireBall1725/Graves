@@ -4,7 +4,6 @@ import com.fireball1725.graves.client.event.ClientEvents;
 import com.fireball1725.graves.common.helpers.PatreonHelper;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
-import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
@@ -30,15 +29,14 @@ import java.util.UUID;
 
 public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implements IResourceManagerReloadListener
 {
-    public static Map<String, Map<String, String>> specialText = Maps.newHashMap();
     private final ModelSkeletonHead humanoidHead = new ModelHumanoidHead();
     private Minecraft mc = Minecraft.getMinecraft();
 	private Random rand = new Random();
 
 	@Override
 	public void onResourceManagerReload(IResourceManager resourceManager) {
-		specialText = PatreonHelper.getSpecialText();
-	}
+        PatreonHelper.getSpecialText();
+    }
 
 	@Override
     public void renderTileEntityAt(TileEntityGrave grave, double x, double y, double z, float partialTicks, int destroyStage) {
@@ -97,8 +95,8 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
                     GlStateManager.translate(0, .55, -.38);
                     GlStateManager.scale(.00625, .00625, .00625);
                     String text = "";
-                    if (specialText.containsKey(profile.getId().toString())) {
-                        Map<String, String> map = specialText.get(profile.getId().toString());
+                    if (PatreonHelper.specialText.containsKey(profile.getId().toString())) {
+                        Map<String, String> map = PatreonHelper.specialText.get(profile.getId().toString());
                         text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
                         boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
                         GlStateManager.pushMatrix();

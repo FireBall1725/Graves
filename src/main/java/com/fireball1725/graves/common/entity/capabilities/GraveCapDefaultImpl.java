@@ -5,7 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class GraveCapDefaultImpl implements IGraveCapability
 {
-	ItemStack displayStack;
+    private ItemStack displayStack;
     private boolean hasSeenStartUp = false;
 
     @Override
@@ -46,11 +46,9 @@ public class GraveCapDefaultImpl implements IGraveCapability
 	@Override
 	public void deserializeNBT(NBTTagCompound tagCompound)
 	{
-		if(!tagCompound.hasNoTags())
-		{
-            if (tagCompound.hasKey("displayTag"))
-                displayStack = ItemStack.loadItemStackFromNBT(tagCompound);
-            hasSeenStartUp = tagCompound.hasKey("hasSeenStartUp") && tagCompound.getBoolean("hasSeenStartUp");
-        }
+        if (tagCompound.hasKey("displayTag"))
+            displayStack = ItemStack.loadItemStackFromNBT(tagCompound);
+        if (tagCompound.hasKey("hasSeenStartUp"))
+            hasSeenStartUp = tagCompound.getBoolean("hasSeenStartUp");
     }
 }

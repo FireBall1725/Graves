@@ -54,4 +54,8 @@ public class CommonProxy implements IProxy
 	public void postInit(FMLPostInitializationEvent event)
 	{
 	}
+
+    @Override
+    public void openGui(int guiID) {
+    }
 }

@@ -1,8 +1,8 @@
 package com.fireball1725.graves.common.network.packets;
 
-import com.fireball1725.graves.client.gui.GuiStartUp;
+import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.common.helpers.GuiHelper;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -22,7 +22,7 @@ public class OpenStartupScreenPacket implements IMessage {
         @Override
         public OpenStartupScreenPacket onMessage(OpenStartupScreenPacket message, MessageContext ctx) {
             if (ctx.side == Side.CLIENT) {
-                Minecraft.getMinecraft().displayGuiScreen(new GuiStartUp());
+                Graves.proxy.openGui(GuiHelper.STARTUPSCREEN);
                 return null;
             } else {
                 return new OpenStartupScreenPacket();

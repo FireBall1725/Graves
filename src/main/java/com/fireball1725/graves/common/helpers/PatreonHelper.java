@@ -13,8 +13,9 @@ import java.util.Map;
 
 public class PatreonHelper
 {
-	public static Map<String, Map<String, String>> getSpecialText()
-	{
+    public static Map<String, Map<String, String>> specialText = Maps.newHashMap();
+
+    public static void getSpecialText() {
 		Map<String, Map<String, String>> specialText = Maps.newHashMap();
 		Graves.logger.info(new Gson().toJson(specialText, new TypeToken<Map<String, Map<String, String>>>()
 		{
@@ -30,8 +31,8 @@ public class PatreonHelper
 		{
 			e.printStackTrace();
 		}
-		return specialText;
-	}
+        PatreonHelper.specialText = specialText;
+    }
 
 	private static String readUrl(String urlString) throws Exception
 	{

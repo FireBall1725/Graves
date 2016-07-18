@@ -10,4 +10,6 @@ public interface IProxy {
 	void init(FMLInitializationEvent event);
 
 	void postInit(FMLPostInitializationEvent event);
+
+    void openGui(int guiID);
 }
