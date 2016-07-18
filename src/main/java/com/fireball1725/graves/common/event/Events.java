@@ -4,14 +4,19 @@ import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
+import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
+import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
+import com.fireball1725.graves.common.network.packets.OpenStartupScreenPacket;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.fireball1725.graves.common.util.TileTools;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,6 +29,7 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.List;
 import java.util.Map;
@@ -185,4 +191,18 @@ public class Events
 		{ block.placeBlock(world); }
 		event.setCanceled(true);
 	}
+
+    @SubscribeEvent
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            EntityPlayer player = event.player;
+            if (player != null && player instanceof EntityPlayerMP && player.hasCapability(GraveCapability.GRAVE_CAPABILITY, null)) {
+                IGraveCapability grave = player.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
+                if (!grave.hasSeenStartUp()) {
+                    if (Minecraft.getMinecraft().currentScreen == null)
+                        Graves.packetHandler.sendTo(new OpenStartupScreenPacket(), (EntityPlayerMP) player);
+                }
+            }
+        }
+    }
 }

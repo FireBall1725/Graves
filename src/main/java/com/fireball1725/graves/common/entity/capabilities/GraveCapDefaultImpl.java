@@ -1,5 +1,6 @@
 package com.fireball1725.graves.common.entity.capabilities;
 
+import com.fireball1725.graves.Graves;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -40,6 +41,7 @@ public class GraveCapDefaultImpl implements IGraveCapability
 
         tag.setBoolean("hasSeenStartUp", hasSeenStartUp);
 
+        Graves.logger.info("saving cap");
         return tag;
     }
 
