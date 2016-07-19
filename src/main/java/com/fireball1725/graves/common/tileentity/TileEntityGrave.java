@@ -31,11 +31,6 @@ public class TileEntityGrave extends TileEntityBase
 	private ReplaceableBlock originalBlock;
 	private boolean ghostDefeated;
 
-	public TileEntityGrave()
-	{
-		super();
-	}
-
 	public ItemStack getDisplayStack()
 	{
 		return displayStack;
@@ -48,13 +43,15 @@ public class TileEntityGrave extends TileEntityBase
 
 	public GameProfile getProfile()
 	{
-		return profile;
+        if (!profile.isComplete() || !profile.getProperties().containsKey("textures"))
+            profile = TileEntitySkull.updateGameprofile(profile);
+        return profile;
 	}
 
 	public void setProfile(GameProfile profile)
 	{
-		this.profile = TileEntitySkull.updateGameprofile(profile);
-	}
+        this.profile = profile;
+    }
 
 	public void replaceItems(EntityPlayer player)
 	{
@@ -89,8 +86,7 @@ public class TileEntityGrave extends TileEntityBase
 		inventory.markDirty();
 	}
 
-	public void summonGhost(EntityPlayer player)
-	{
+    public boolean summonGhost(EntityPlayer player) {
 		boolean spawnPlayerZombie = false;
 
 		int spawnChance = 40;
@@ -136,13 +132,10 @@ public class TileEntityGrave extends TileEntityBase
 			playerZombie.onInitialSpawn(worldObj.getDifficultyForLocation(new BlockPos(playerZombie)), null);
 			playerZombie.setPlayer(player);
 			worldObj.spawnEntityInWorld(playerZombie);
-		}
-		else
-		{
-			setGhostDefeated(true);
-		}
-
-	}
+            return true;
+        }
+        return false;
+    }
 
 	public boolean isGhostDefeated()
 	{
@@ -268,8 +261,8 @@ public class TileEntityGrave extends TileEntityBase
 		if(profile != null)
 		{
 			NBTTagCompound profileTag = new NBTTagCompound();
-			NBTUtil.writeGameProfile(profileTag, profile);
-			nbtTagCompound.setTag("profileTag", profileTag);
+            NBTUtil.writeGameProfile(profileTag, getProfile());
+            nbtTagCompound.setTag("profileTag", profileTag);
 		}
 		//Save Items
 		if(items != null && !items.isEmpty())
@@ -379,4 +372,8 @@ public class TileEntityGrave extends TileEntityBase
 			}
 		} // End of Legacy Support
 	}
+
+    public void updateProfile() {
+        profile = TileEntitySkull.updateGameprofile(profile);
+    }
 }

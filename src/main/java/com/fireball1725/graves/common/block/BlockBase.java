@@ -1,6 +1,5 @@
 package com.fireball1725.graves.common.block;
 
-import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityBase;
 import com.fireball1725.graves.common.tileentity.TileEntityInventoryBase;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BlockBase extends BlockContainer {
-    protected boolean isInventory = false;
+    private boolean isInventory = false;
     private Class<? extends TileEntity> tileEntityType = null;
 
     protected BlockBase(Material material) {
@@ -53,13 +52,11 @@ public class BlockBase extends BlockContainer {
 		return this.tileEntityType != null;
 	}
 
-	protected void setTileEntity(Class<? extends TileEntity> c)
-	{
+    void setTileEntity(Class<? extends TileEntity> c) {
 		String tileName = "tileentity." + ModInfo.MOD_ID + "." + c.getSimpleName();
 		this.tileEntityType = c;
 		try { GameRegistry.registerTileEntity(c, tileName); } catch(Exception ignored) {}
 		this.isInventory = IInventory.class.isAssignableFrom(c);
-		Graves.logger.info("Added tileEntity for " + this.getClass().getName());
 	}
 
 	@Override
@@ -85,7 +82,7 @@ public class BlockBase extends BlockContainer {
         return test.toLowerCase();
     }
 
-    protected String getUnwrappedUnlocalizedName(String unlocalizedName) {
+    private String getUnwrappedUnlocalizedName(String unlocalizedName) {
         return unlocalizedName.substring(unlocalizedName.indexOf(".") + 1);
     }
 

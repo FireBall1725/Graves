@@ -18,9 +18,12 @@ public class ConfigurationFile {
         return configuration;
     }
 
-    public static void loadConfiguration() {
+    private static void loadConfiguration() {
         // General Configuration
-        configuration.setCategoryLanguageKey("general", "config.general");
+        configuration.setCategoryLanguageKey("worldgen", "worldgen");
+
+        ConfigGeneral.doWorldGen = ConfigurationHelper.getBoolean(configuration, "WorldGen Enabled", "worldgen", ConfigGeneral.doWorldGen, "Should graves generate in the world?");
+        ConfigGeneral.genPercentage = ConfigurationHelper.getDouble(configuration, "GenPercentage", "worldgen", ConfigGeneral.genPercentage, "Percentage chance that a grave will spawn in a chunk.");
 
         // Zombie Configuration
         configuration.setCategoryLanguageKey("zombie", "config.zombie");

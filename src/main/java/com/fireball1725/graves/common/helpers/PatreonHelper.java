@@ -1,6 +1,5 @@
 package com.fireball1725.graves.common.helpers;
 
-import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -15,11 +14,11 @@ public class PatreonHelper
 {
     public static Map<String, Map<String, String>> specialText = Maps.newHashMap();
 
+    static {
+        getSpecialText();
+    }
+
     public static void getSpecialText() {
-		Map<String, Map<String, String>> specialText = Maps.newHashMap();
-		Graves.logger.info(new Gson().toJson(specialText, new TypeToken<Map<String, Map<String, String>>>()
-		{
-		}.getType()));
 		specialText.clear();
 		try
 		{
@@ -31,7 +30,6 @@ public class PatreonHelper
 		{
 			e.printStackTrace();
 		}
-        PatreonHelper.specialText = specialText;
     }
 
 	private static String readUrl(String urlString) throws Exception
@@ -41,8 +39,8 @@ public class PatreonHelper
 		{
 			URL url = new URL(urlString);
 			reader = new BufferedReader(new InputStreamReader(url.openStream()));
-			StringBuffer buffer = new StringBuffer();
-			int read;
+            StringBuilder buffer = new StringBuilder();
+            int read;
 			char[] chars = new char[1024];
 			while((read = reader.read(chars)) != -1)
 				buffer.append(chars, 0, read);
@@ -51,8 +49,12 @@ public class PatreonHelper
 		}
 		finally
 		{
-			if(reader != null)
-			{ reader.close(); }
-		}
-	}
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
 }

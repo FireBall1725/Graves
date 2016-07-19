@@ -2,6 +2,7 @@ package com.fireball1725.graves.common.world;
 
 import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.block.Blocks;
+import com.fireball1725.graves.common.configuration.ConfigGeneral;
 import com.fireball1725.graves.common.helpers.PatreonHelper;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.mojang.authlib.GameProfile;
@@ -24,7 +25,7 @@ public class WorldGeneration implements IWorldGenerator {
 
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        if (random.nextInt(16) == 1) {
+        if (ConfigGeneral.doWorldGen && random.nextDouble() <= ConfigGeneral.genPercentage) {
             BlockPos pos = world.getTopSolidOrLiquidBlock(new BlockPos((chunkX * 16) + 16 * random.nextDouble(), 0, (chunkZ * 16) + 16 * random.nextDouble()));
             if (!world.getBlockState(pos).getMaterial().isLiquid()) {
                 world.setBlockState(pos, ((BlockGrave) Blocks.BLOCK_GRAVE.block).getWorldGenState());

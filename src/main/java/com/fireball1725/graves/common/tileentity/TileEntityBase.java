@@ -1,6 +1,7 @@
 package com.fireball1725.graves.common.tileentity;
 
 import com.fireball1725.graves.common.util.ItemStackSrc;
+import com.google.common.collect.Maps;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.IInventory;
@@ -15,11 +16,11 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 public class TileEntityBase extends TileEntity {
-	private static final HashMap<Class, ItemStackSrc> myItem = new HashMap();
-	private String customName;
+    private static final Map<Class, ItemStackSrc> myItem = Maps.newHashMap();
+    private String customName;
 	private int renderedFragment = 0;
 
     public static void registerTileItem(Class c, ItemStackSrc wat) {
@@ -61,7 +62,7 @@ public class TileEntityBase extends TileEntity {
 		markForUpdate();
 	}
 
-    public void markForUpdate() {
+    private void markForUpdate() {
         if (this.renderedFragment > 0) {
             this.renderedFragment |= 0x1;
         } else if (this.worldObj != null) {
@@ -127,11 +128,11 @@ public class TileEntityBase extends TileEntity {
         this.customName = customName;
     }
 
-    public boolean hasCustomName() {
+    private boolean hasCustomName() {
         return (this.customName != null) && (this.customName.length() > 0);
     }
 
-    public String getUnlocalizedName() {
+    private String getUnlocalizedName() {
         Item item = Item.getItemFromBlock(worldObj.getBlockState(this.pos).getBlock());
         ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
 

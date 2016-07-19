@@ -13,7 +13,6 @@ import com.fireball1725.graves.common.util.TileTools;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -165,10 +164,8 @@ public class Events
 		if(grave == null)
 		{ return; }
 
-		if(!grave.isGhostDefeated() && !event.getPlayer().isCreative())
-		{
-			grave.summonGhost(event.getPlayer());
-			event.setCanceled(true);
+        if (!grave.isGhostDefeated() && !event.getPlayer().isCreative() && grave.summonGhost(event.getPlayer())) {
+            event.setCanceled(true);
 			return;
 		}
 
@@ -199,8 +196,8 @@ public class Events
             if (player != null && player instanceof EntityPlayerMP && player.hasCapability(GraveCapability.GRAVE_CAPABILITY, null)) {
                 IGraveCapability grave = player.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
                 if (!grave.hasSeenStartUp()) {
-                    if (Minecraft.getMinecraft().currentScreen == null)
-                        Graves.packetHandler.sendTo(new OpenStartupScreenPacket(), (EntityPlayerMP) player);
+                    grave.setSeenStartUp();
+                    Graves.packetHandler.sendTo(new OpenStartupScreenPacket(), (EntityPlayerMP) player);
                 }
             }
         }
