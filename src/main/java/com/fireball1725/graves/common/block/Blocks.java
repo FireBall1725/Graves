@@ -1,8 +1,10 @@
 package com.fireball1725.graves.common.block;
 
+import com.fireball1725.graves.common.reference.ModInfo;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
@@ -52,6 +54,7 @@ public enum Blocks {
 	}
 
     private void register() {
-        GameRegistry.registerBlock(block.setCreativeTab(creativeTabs).setUnlocalizedName(internalName), itemBlockClass, internalName);
+        GameRegistry.register(block.setCreativeTab(creativeTabs).setUnlocalizedName(internalName).setRegistryName(new ResourceLocation(ModInfo.MOD_ID, internalName)));
+        GameRegistry.register(new ItemBlock(block).setRegistryName(block.getRegistryName()));
     }
 }

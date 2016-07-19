@@ -20,6 +20,11 @@ public class ConfigurationFile {
 
     private static void loadConfiguration() {
         // General Configuration
+        configuration.setCategoryLanguageKey("general", "general");
+
+        ConfigGeneral.printToChat = ConfigurationHelper.getBoolean(configuration, "Death coordinates in chat", "general", ConfigGeneral.printToChat, "Should death coordinates be put in chat on death?");
+
+        // World Generation Configuration
         configuration.setCategoryLanguageKey("worldgen", "worldgen");
 
         ConfigWorldGen.showStartupMessage = ConfigurationHelper.getBoolean(configuration, "Show Loot Grave Message", "worldgen", ConfigWorldGen.showStartupMessage, "Should the loot grave message display on world creation?");

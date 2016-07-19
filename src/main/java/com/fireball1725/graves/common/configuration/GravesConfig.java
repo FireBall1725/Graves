@@ -14,8 +14,9 @@ public class GravesConfig extends GuiConfig {
     public GravesConfig(GuiScreen parentScreen) {
         super(parentScreen,
                 Arrays.asList(new IConfigElement[]{
-                        new ConfigElement(Graves.configuration.getCategory("zombie")),
+                        new ConfigElement(Graves.configuration.getCategory("general")),
                         new ConfigElement(Graves.configuration.getCategory("worldgen")),
+                        new ConfigElement(Graves.configuration.getCategory("zombie")),
                 }),
                 ModInfo.MOD_ID, false, false, "Graves Configuration");
     }

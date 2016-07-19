@@ -1,6 +1,5 @@
 package com.fireball1725.graves.common.tileentity;
 
-import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
@@ -214,8 +213,7 @@ public class TileEntityGrave extends TileEntityBase
 		return flag;
 	}
 
-	public void addItems(List<ItemStack> items)
-	{
+    public void addItems(List<ItemStack> items) {
         if (this.items == null)
             this.items = Lists.newArrayList();
         this.items.addAll(items);
@@ -223,13 +221,11 @@ public class TileEntityGrave extends TileEntityBase
 
 	public void dropItems(EntityPlayer player)
 	{
-        Graves.logger.info("dropping items");
         if (items == null || items.isEmpty()) {
             return;
         }
         for(ItemStack stack : items)
 		{
-            Graves.logger.info("Dropping Item: " + stack);
             if (!player.inventory.addItemStackToInventory(stack)) {
 				EntityItem entityItem = new EntityItem(worldObj, player.posX, player.posY, player.posZ, stack);
 				entityItem.motionX = 0;

@@ -3,6 +3,7 @@ package com.fireball1725.graves.common.event;
 import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.block.Blocks;
+import com.fireball1725.graves.common.configuration.ConfigGeneral;
 import com.fireball1725.graves.common.configuration.ConfigWorldGen;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
@@ -21,6 +22,8 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -108,12 +111,10 @@ public class Events
 			{
 				EntityPlayerZombie zombie = (EntityPlayerZombie) event.getSource().getEntity();
 				BlockPos gravePos = zombie.getGravePos();
-				TileEntityGrave graveStone = TileTools.getTileEntity(event.getEntityLiving().worldObj, gravePos, TileEntityGrave.class);
-				if (graveStone != null)
-				{
-					graveStone.addItems(itemsList);
-					spawnGrave = false;
-					//					LogHelper.info(">>> : Killed by zombie added drops to grave");
+                TileEntityGrave grave = TileTools.getTileEntity(event.getEntityLiving().worldObj, gravePos, TileEntityGrave.class);
+                if (grave != null) {
+                    grave.addItems(itemsList);
+                    spawnGrave = false;
 				}
 			}
 		}
@@ -147,8 +148,10 @@ public class Events
 			graveStoneTileEntity.setOriginalBlock(replaceableBlock);
 			graveStoneTileEntity.setProfile(player.getGameProfile());
 
-			sendTomTomPos(Graves.instance, player, pos, "Grave this way!");
-		}
+            if (ConfigGeneral.printToChat)
+                player.addChatComponentMessage(new TextComponentString(I18n.translateToLocal("death.message.coords") + String.format("[x:%s, y:%s, z:%s]", pos.getX(), pos.getY(), pos.getZ())));
+            sendTomTomPos(Graves.instance, player, pos, I18n.translateToLocal("tomtom.marker.text"));
+        }
 
 		event.getDrops().clear();
 	}
