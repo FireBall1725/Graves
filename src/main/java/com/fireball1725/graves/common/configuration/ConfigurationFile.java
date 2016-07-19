@@ -22,8 +22,9 @@ public class ConfigurationFile {
         // General Configuration
         configuration.setCategoryLanguageKey("worldgen", "worldgen");
 
-        ConfigGeneral.doWorldGen = ConfigurationHelper.getBoolean(configuration, "WorldGen Enabled", "worldgen", ConfigGeneral.doWorldGen, "Should graves generate in the world?");
-        ConfigGeneral.genPercentage = ConfigurationHelper.getDouble(configuration, "GenPercentage", "worldgen", ConfigGeneral.genPercentage, "Percentage chance that a grave will spawn in a chunk.");
+        ConfigWorldGen.showStartupMessage = ConfigurationHelper.getBoolean(configuration, "Show Loot Grave Message", "worldgen", ConfigWorldGen.showStartupMessage, "Should the loot grave message display on world creation?");
+        ConfigWorldGen.doWorldGen = ConfigurationHelper.getBoolean(configuration, "WorldGen Enabled", "worldgen", ConfigWorldGen.doWorldGen, "Should graves generate in the world?");
+        ConfigWorldGen.genPercentage = ConfigurationHelper.getDouble(configuration, "GenPercentage", "worldgen", ConfigWorldGen.genPercentage, "Percentage chance that a grave will spawn in a chunk.");
 
         // Zombie Configuration
         configuration.setCategoryLanguageKey("zombie", "config.zombie");

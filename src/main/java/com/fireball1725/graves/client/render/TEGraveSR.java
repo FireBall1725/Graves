@@ -106,7 +106,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
                                 GlStateManager.translate(2, 0, 0);
                             else
                                 GlStateManager.translate(-16, 0, 0);
-                            drawIcon(map.get("name").toLowerCase());
+                            drawIcon(profile.getId().toString());
                             GlStateManager.translate(-20, 0, 0);
                         }
                         if (patron) {
@@ -131,13 +131,15 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 
 	private void drawIcon(String icon) {
 		GlStateManager.color(1, 1, 1);
-		bindTexture(new ResourceLocation(ModInfo.MOD_ID, "textures/patrons/" + icon + ".png"));
+        bindTexture(new ResourceLocation("fusionlordspatrons:textures/patrons/" + icon + ".png"));
         Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 32, 32, 1, 1);
     }
 
 	private void drawPatronIcon() {
-		drawIcon("patreon");
-	}
+        GlStateManager.color(1, 1, 1);
+        bindTexture(new ResourceLocation(ModInfo.MOD_ID, "textures/patreon.png"));
+        Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 32, 32, 1, 1);
+    }
 
 	private void drawText(String text)
 	{
@@ -152,7 +154,8 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 		GlStateManager.popMatrix();
 	}
 
-	private void renderSkull(float x, float y, float z, GameProfile profile, int destroyStage, float animateTicks)
+    @SuppressWarnings("all")
+    private void renderSkull(float x, float y, float z, GameProfile profile, int destroyStage, float animateTicks)
 	{
 		if(destroyStage >= 0)
 		{

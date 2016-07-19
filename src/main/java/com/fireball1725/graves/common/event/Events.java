@@ -3,6 +3,7 @@ package com.fireball1725.graves.common.event;
 import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.block.Blocks;
+import com.fireball1725.graves.common.configuration.ConfigWorldGen;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
 import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
@@ -191,13 +192,15 @@ public class Events
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.END && event.player != null && ConfigWorldGen.showStartupMessage) {
             EntityPlayer player = event.player;
-            if (player != null && player instanceof EntityPlayerMP && player.hasCapability(GraveCapability.GRAVE_CAPABILITY, null)) {
-                IGraveCapability grave = player.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
-                if (!grave.hasSeenStartUp()) {
-                    grave.setSeenStartUp();
-                    Graves.packetHandler.sendTo(new OpenStartupScreenPacket(), (EntityPlayerMP) player);
+            if (player.posX != player.lastTickPosX || player.posY != player.lastTickPosY || player.posZ != player.lastTickPosZ) {
+                if (player instanceof EntityPlayerMP && player.hasCapability(GraveCapability.GRAVE_CAPABILITY, null)) {
+                    IGraveCapability grave = player.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
+                    if (!grave.hasSeenStartUp()) {
+                        grave.setSeenStartUp();
+                        Graves.packetHandler.sendTo(new OpenStartupScreenPacket(), (EntityPlayerMP) player);
+                    }
                 }
             }
         }
