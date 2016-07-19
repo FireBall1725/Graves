@@ -44,14 +44,14 @@ public class TileEntityGrave extends TileEntityBase
 
 	public GameProfile getProfile()
 	{
-        if (!profile.isComplete() || !profile.getProperties().containsKey("textures"))
-            profile = TileEntitySkull.updateGameprofile(profile);
         return profile;
 	}
 
 	public void setProfile(GameProfile profile)
 	{
         this.profile = profile;
+        if (this.profile != null && (!this.profile.isComplete() || (this.profile.getProperties() != null && !this.profile.getProperties().containsKey("textures"))))
+            this.profile = TileEntitySkull.updateGameprofile(this.profile);
     }
 
 	public void replaceItems(EntityPlayer player)

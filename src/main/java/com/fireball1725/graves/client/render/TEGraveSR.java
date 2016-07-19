@@ -100,14 +100,14 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
                         text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
                         boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
                         GlStateManager.pushMatrix();
-                        GlStateManager.translate(0, -20, 0);
+                        GlStateManager.translate(0, -18, 0);
                         if (map.containsKey("icon") && Boolean.valueOf(map.get("icon"))) {
                             if (patron)
                                 GlStateManager.translate(2, 0, 0);
                             else
-                                GlStateManager.translate(-16, 0, 0);
+                                GlStateManager.translate(-14, 0, 0);
                             drawIcon(profile.getId().toString());
-                            GlStateManager.translate(-20, 0, 0);
+                            GlStateManager.translate(-30, 0, 0);
                         }
                         if (patron) {
                             drawPatronIcon();
@@ -132,13 +132,13 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 	private void drawIcon(String icon) {
 		GlStateManager.color(1, 1, 1);
         bindTexture(new ResourceLocation("fusionlordspatrons:textures/patrons/" + icon + ".png"));
-        Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 32, 32, 1, 1);
+        Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 28, 28, 1, 1);
     }
 
 	private void drawPatronIcon() {
         GlStateManager.color(1, 1, 1);
         bindTexture(new ResourceLocation(ModInfo.MOD_ID, "textures/patreon.png"));
-        Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 32, 32, 1, 1);
+        Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 28, 28, 1, 1);
     }
 
 	private void drawText(String text)

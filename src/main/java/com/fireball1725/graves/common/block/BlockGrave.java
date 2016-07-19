@@ -1,5 +1,6 @@
 package com.fireball1725.graves.common.block;
 
+import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
 import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -57,16 +59,22 @@ public class BlockGrave extends BlockBase
 	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack)
 	{
 		super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
-		if(placer instanceof EntityPlayer)
+        if (world.isRemote) return;
+        if(placer instanceof EntityPlayer)
 		{
 			TileEntityGrave grave = TileTools.getTileEntity(world, blockPos, TileEntityGrave.class);
 			if(grave != null)
 			{
-				if (!itemStack.hasDisplayName())
-					grave.setProfile(((EntityPlayer) placer).getGameProfile());
-				else
-					grave.setProfile(new GameProfile(null, itemStack.getDisplayName()));
-				grave.setGhostDefeated(true);
+                if (itemStack != null && itemStack.hasDisplayName()) {
+                    GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(itemStack.getDisplayName());
+                    Graves.logger.info(profile);
+                    if (profile != null) {
+                        FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().addEntry(profile);
+                        grave.setProfile(profile);
+                    }
+                } else
+                    grave.setProfile(((EntityPlayer) placer).getGameProfile());
+                grave.setGhostDefeated(true);
 				grave.markDirty();
 			}
 		}
