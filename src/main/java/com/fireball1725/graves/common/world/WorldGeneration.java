@@ -22,7 +22,6 @@ import java.util.Random;
 import java.util.UUID;
 
 public class WorldGeneration implements IWorldGenerator {
-
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
         if (ConfigGeneral.doWorldGen && random.nextDouble() <= ConfigGeneral.genPercentage) {
@@ -34,17 +33,25 @@ public class WorldGeneration implements IWorldGenerator {
                     TileEntityGrave grave = (TileEntityGrave) te;
                     Iterator iterator = PatreonHelper.specialText.keySet().iterator();
                     int idx = random.nextInt(PatreonHelper.specialText.keySet().size());
+                    if (idx < 0) {
+                        setProfile(grave, world, new GameProfile(UUID.fromString("7ff65fdc-2837-4123-adfd-157b37527daf"), "FusionLord"));
+                        return;
+                    }
                     while (iterator.hasNext()) {
                         String uuid = iterator.next().toString();
                         if (idx-- == 0) {
-                            grave.setProfile(new GameProfile(UUID.fromString(uuid), PatreonHelper.specialText.get(uuid).get("name")));
-                            LootTable table = world.getLootTableManager().getLootTableFromLocation(LootTableList.CHESTS_SIMPLE_DUNGEON);
-                            grave.addItems(table.generateLootForPools(random, new LootContext.Builder((WorldServer) world).build()));
+                            setProfile(grave, world, new GameProfile(UUID.fromString(uuid), PatreonHelper.specialText.get(uuid).get("name")));
                             break;
                         }
                     }
                 }
             }
         }
+    }
+
+    private void setProfile(TileEntityGrave grave, World world, GameProfile profile) {
+        grave.setProfile(profile);
+        LootTable table = world.getLootTableManager().getLootTableFromLocation(LootTableList.CHESTS_SIMPLE_DUNGEON);
+        grave.addItems(table.generateLootForPools(world.rand, new LootContext.Builder((WorldServer) world).build()));
     }
 }

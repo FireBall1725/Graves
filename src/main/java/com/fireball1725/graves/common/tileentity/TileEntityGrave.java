@@ -1,6 +1,7 @@
 package com.fireball1725.graves.common.tileentity;
 
 import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.common.block.BlockGrave;
 import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.helpers.ItemHelper;
@@ -131,7 +132,9 @@ public class TileEntityGrave extends TileEntityBase
 			playerZombie.setLocationAndAngles(pos.getX(), pos.down().getY(), pos.getZ(), player.getHorizontalFacing().getOpposite().getHorizontalIndex() * 90f, 0f);
 			playerZombie.onInitialSpawn(worldObj.getDifficultyForLocation(new BlockPos(playerZombie)), null);
 			playerZombie.setPlayer(player);
-			worldObj.spawnEntityInWorld(playerZombie);
+            if (getBlockState().getValue(BlockGrave.WORLDGEN))
+                playerZombie.setAttackTarget(player);
+            worldObj.spawnEntityInWorld(playerZombie);
             return true;
         }
         return false;
