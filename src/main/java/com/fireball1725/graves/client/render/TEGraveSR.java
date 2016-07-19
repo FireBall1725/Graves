@@ -6,6 +6,7 @@ import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.model.ModelHumanoidHead;
@@ -115,7 +116,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
                         GlStateManager.popMatrix();
                     }
 
-                    drawText("§n" + profile.getName() + "§r" + text);
+                    drawText(ChatFormatting.UNDERLINE + profile.getName() + ChatFormatting.RESET + text);
                     GlStateManager.enableLighting();
                     GlStateManager.popMatrix();
                 }

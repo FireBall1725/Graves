@@ -4,9 +4,9 @@ import com.fireball1725.graves.common.reference.ModInfo;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import net.minecraftforge.common.config.Configuration;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 
@@ -23,8 +23,8 @@ public class PatreonHelper
 		try
 		{
             specialText = new Gson().fromJson(readUrl(ModInfo.PATRONS_INFO), new TypeToken<Map<String, Map<String, String>>>() {
-			}.getType());
-		}
+            }.getType());
+        }
 		catch(Exception e)
 		{
 			e.printStackTrace();
@@ -37,7 +37,7 @@ public class PatreonHelper
 		try
 		{
 			URL url = new URL(urlString);
-			reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            reader = new BufferedReader(new Configuration.UnicodeInputStreamReader(url.openStream(), "UTF-8"));
             StringBuilder buffer = new StringBuilder();
             int read;
 			char[] chars = new char[1024];
