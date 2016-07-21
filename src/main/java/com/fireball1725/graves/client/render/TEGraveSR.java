@@ -1,5 +1,6 @@
 package com.fireball1725.graves.client.render;
 
+import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.client.event.ClientEvents;
 import com.fireball1725.graves.common.helpers.PatreonHelper;
 import com.fireball1725.graves.common.reference.ModInfo;
@@ -62,69 +63,70 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
             GlStateManager.disableLighting();
             GlStateManager.popMatrix();
         } else {
-            if (grave.getProfile() != null) {
-                GameProfile profile = grave.getProfile();
-                GlStateManager.pushMatrix();
-                GlStateManager.enableRescaleNormal();
-                GlStateManager.enableAlpha();
-                GlStateManager.alphaFunc(516, 0.1F);
-                GlStateManager.enableBlend();
+            if (grave.getProfile() == null) return;
 
-                GlStateManager.translate(0, .5, 0);
-                rand.setSeed(grave.getPos().toLong());
+            GameProfile profile = grave.getProfile();
+            String text = "";
+            boolean patron = false, icon = false;
+            rand.setSeed(grave.getPos().toLong());
+            if (PatreonHelper.specialText.containsKey(profile.getId().toString())) {
+                Map<String, String> map = PatreonHelper.specialText.get(profile.getId().toString());
+                patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
+                icon = Graves.isPatronsLoaded() && map.containsKey("icon") && Boolean.valueOf(map.get("icon"));
+                text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
+            }
 
-                int dir = rand.nextBoolean() ? 1 : -1;
+            GlStateManager.pushMatrix();
+            GlStateManager.enableRescaleNormal();
+            GlStateManager.enableAlpha();
+            GlStateManager.alphaFunc(516, 0.1F);
+            GlStateManager.enableBlend();
+
+            GlStateManager.translate(0, .5, 0);
+
+            int dir = rand.nextBoolean() ? 1 : -1;
+            GlStateManager.pushMatrix();
+            if (profile.getId().toString().equals("4f3a8d1e-33c1-44e7-bce8-e683027c7dac")) {
+                GlStateManager.rotate(ClientEvents.getTick() * 10, 0, dir, 0);
+            } else {
+                GlStateManager.rotate(ClientEvents.getTick(), 0, dir, 0);
+            }
+            GlStateManager.rotate(rand.nextFloat() * 360f, 0, 1, 0);
+
+            GlStateManager.scale(.65, .65, .65);
+            GlStateManager.color(1, 1, 1, .8f);
+            renderSkull(-.5f, .0001f, -.5f, grave.getProfile(), destroyStage, partialTicks);
+            GlStateManager.popMatrix();
+
+            for (EnumFacing facing : EnumFacing.HORIZONTALS) {
                 GlStateManager.pushMatrix();
-                if (profile.getId().toString().equals("4f3a8d1e-33c1-44e7-bce8-e683027c7dac")) {
-                    GlStateManager.rotate(ClientEvents.getTick() * 10, 0, dir, 0);
-                } else {
-                    GlStateManager.rotate(ClientEvents.getTick(), 0, dir, 0);
+                GlStateManager.disableLighting();
+                GlStateManager.rotate(180, 0, 0, 1);
+                GlStateManager.rotate((facing.getHorizontalIndex() * 90), 0, 1, 0);
+                GlStateManager.translate(0, .55, -.38);
+                GlStateManager.scale(.00625, .00625, .00625);
+                GlStateManager.pushMatrix();
+                GlStateManager.translate(-16, -18, 0);
+                if (patron && icon)
+                    GlStateManager.translate(-18, 0, 0);
+                if (patron) {
+                    drawPatronIcon();
                 }
-                if (Minecraft.getMinecraft().gameSettings.fancyGraphics) {
-                    GlStateManager.rotate(rand.nextFloat() * 360f, 0, 1, 0);
+                if (patron && icon)
+                    GlStateManager.translate(34, 0, 0);
+                if (icon) {
+                    drawIcon(profile.getId().toString());
                 }
-                GlStateManager.scale(.65, .65, .65);
-                GlStateManager.color(1, 1, 1, .8f);
-                renderSkull(-.5f, .0001f, -.5f, grave.getProfile(), destroyStage, partialTicks);
                 GlStateManager.popMatrix();
 
-                for (EnumFacing facing : EnumFacing.HORIZONTALS) {
-                    GlStateManager.pushMatrix();
-                    GlStateManager.disableLighting();
-                    GlStateManager.rotate(180, 0, 0, 1);
-                    GlStateManager.rotate((facing.getHorizontalIndex() * 90), 0, 1, 0);
-                    GlStateManager.translate(0, .55, -.38);
-                    GlStateManager.scale(.00625, .00625, .00625);
-                    String text = "";
-                    if (PatreonHelper.specialText.containsKey(profile.getId().toString())) {
-                        Map<String, String> map = PatreonHelper.specialText.get(profile.getId().toString());
-                        text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
-                        boolean patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
-                        GlStateManager.pushMatrix();
-                        GlStateManager.translate(0, -18, 0);
-                        if (map.containsKey("icon") && Boolean.valueOf(map.get("icon"))) {
-                            if (patron)
-                                GlStateManager.translate(2, 0, 0);
-                            else
-                                GlStateManager.translate(-14, 0, 0);
-                            drawIcon(profile.getId().toString());
-                            GlStateManager.translate(-30, 0, 0);
-                        }
-                        if (patron) {
-                            drawPatronIcon();
-                        }
-                        GlStateManager.popMatrix();
-                    }
-
-                    drawText(ChatFormatting.UNDERLINE + profile.getName() + ChatFormatting.RESET + text);
-                    GlStateManager.enableLighting();
-                    GlStateManager.popMatrix();
-                }
-                GlStateManager.disableBlend();
-                GlStateManager.disableAlpha();
-                GlStateManager.disableRescaleNormal();
+                drawText(ChatFormatting.UNDERLINE + profile.getName() + ChatFormatting.RESET + text);
+                GlStateManager.enableLighting();
                 GlStateManager.popMatrix();
             }
+            GlStateManager.disableBlend();
+            GlStateManager.disableAlpha();
+            GlStateManager.disableRescaleNormal();
+            GlStateManager.popMatrix();
         }
         GlStateManager.popMatrix();
         GlStateManager.popMatrix();
@@ -138,7 +140,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
 
 	private void drawPatronIcon() {
         GlStateManager.color(1, 1, 1);
-        bindTexture(new ResourceLocation(ModInfo.MOD_ID, "textures/patreon.png"));
+        bindTexture(new ResourceLocation(ModInfo.MOD_ID, "textures/patron.png"));
         Gui.drawScaledCustomSizeModalRect(0, 0, 0, 0, 1, 1, 28, 28, 1, 1);
     }
 

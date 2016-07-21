@@ -5,6 +5,7 @@ import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.proxy.IProxy;
 import com.google.common.base.Stopwatch;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -26,6 +27,11 @@ public class Graves {
 
     public static Configuration configuration;
     public static PacketHandler packetHandler;
+    private static boolean isPatronsLoaded = false;
+
+    public static boolean isPatronsLoaded() {
+        return isPatronsLoaded;
+    }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -50,8 +56,9 @@ public class Graves {
 
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-		final Stopwatch stopWatch = Stopwatch.createStarted();
-		logger.info("Post-Initialization ( started )");
+        isPatronsLoaded = Loader.isModLoaded("fusionlordspatrons");
+        final Stopwatch stopWatch = Stopwatch.createStarted();
+        logger.info("Post-Initialization ( started )");
 		proxy.postInit(event);
 		logger.info("Post-Initialization ( ended after " + stopWatch.elapsed(TimeUnit.MILLISECONDS) + "ms )");
 	}
