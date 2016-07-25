@@ -63,7 +63,11 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
             GlStateManager.disableLighting();
             GlStateManager.popMatrix();
         } else {
-            if (grave.getProfile() == null) return;
+            if (grave.getProfile() == null) {
+                GlStateManager.popMatrix();
+                GlStateManager.popMatrix();
+                return;
+            }
 
             GameProfile profile = grave.getProfile();
             String text = "";
