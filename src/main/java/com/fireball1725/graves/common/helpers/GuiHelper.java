@@ -1,7 +1,5 @@
 package com.fireball1725.graves.common.helpers;
 
-import com.fireball1725.graves.client.gui.GuiStartUp;
-import com.fireball1725.graves.common.configuration.ConfigWorldGen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
@@ -19,9 +17,6 @@ public class GuiHelper implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         switch (ID) {
-            case 0:
-                if (ConfigWorldGen.showStartupMessage) return new GuiStartUp();
-                else break;
         }
         return null;
     }

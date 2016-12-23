@@ -1,13 +1,11 @@
 package com.fireball1725.graves.proxy;
 
 import com.fireball1725.graves.client.event.ClientEvents;
-import com.fireball1725.graves.client.gui.GuiStartUp;
 import com.fireball1725.graves.client.render.TEGraveSR;
 import com.fireball1725.graves.client.render.entity.EntityRenderer;
 import com.fireball1725.graves.client.render.entity.RenderPlayerZombie;
 import com.fireball1725.graves.common.block.Blocks;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
-import com.fireball1725.graves.common.helpers.GuiHelper;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import net.minecraft.client.Minecraft;
@@ -64,9 +62,6 @@ public class ClientProxy extends CommonProxy {
     public void openGui(int guiID) {
         GuiScreen screen = null;
         switch (guiID) {
-            case GuiHelper.STARTUPSCREEN:
-                screen = new GuiStartUp();
-                break;
         }
         if (screen != null)
             Minecraft.getMinecraft().displayGuiScreen(screen);

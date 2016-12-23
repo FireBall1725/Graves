@@ -122,8 +122,8 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
                     drawIcon(profile.getId().toString());
                 }
                 GlStateManager.popMatrix();
-
-                drawText(ChatFormatting.UNDERLINE + profile.getName() + ChatFormatting.RESET + text);
+                if (Minecraft.getMinecraft().thePlayer.getPosition().distanceSq(grave.getPos()) <= 100D)
+                    drawText(ChatFormatting.UNDERLINE + profile.getName() + ChatFormatting.RESET + text);
                 GlStateManager.enableLighting();
                 GlStateManager.popMatrix();
             }

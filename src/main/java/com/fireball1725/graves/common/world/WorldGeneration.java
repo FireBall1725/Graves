@@ -24,25 +24,25 @@ import java.util.UUID;
 public class WorldGeneration implements IWorldGenerator {
     @Override
     public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-        if (ConfigWorldGen.doWorldGen && random.nextDouble() <= ConfigWorldGen.genPercentage) {
+        if (!ConfigWorldGen.doWorldGen) return;
+        if (random.nextDouble() <= ConfigWorldGen.genPercentage) {
             BlockPos pos = world.getTopSolidOrLiquidBlock(new BlockPos((chunkX * 16) + 16 * random.nextDouble(), 0, (chunkZ * 16) + 16 * random.nextDouble()));
-            if (!world.getBlockState(pos).getMaterial().isLiquid()) {
-                world.setBlockState(pos, ((BlockGrave) Blocks.BLOCK_GRAVE.block).getWorldGenState());
-                TileEntity te = world.getTileEntity(pos);
-                if (te != null && te instanceof TileEntityGrave) {
-                    TileEntityGrave grave = (TileEntityGrave) te;
-                    Iterator iterator = PatreonHelper.specialText.keySet().iterator();
-                    int idx = random.nextInt(PatreonHelper.specialText.keySet().size());
-                    if (idx < 0) {
-                        setProfile(grave, world, new GameProfile(UUID.fromString("7ff65fdc-2837-4123-adfd-157b37527daf"), "FusionLord"));
-                        return;
-                    }
-                    while (iterator.hasNext()) {
-                        String uuid = iterator.next().toString();
-                        if (idx-- == 0) {
-                            setProfile(grave, world, new GameProfile(UUID.fromString(uuid), PatreonHelper.specialText.get(uuid).get("name")));
-                            break;
-                        }
+            if (world.getBlockState(pos).getMaterial().isLiquid()) return;
+            world.setBlockState(pos, ((BlockGrave) Blocks.BLOCK_GRAVE.block).getWorldGenState());
+            TileEntity te = world.getTileEntity(pos);
+            if (te != null && te instanceof TileEntityGrave) {
+                TileEntityGrave grave = (TileEntityGrave) te;
+                Iterator iterator = PatreonHelper.specialText.keySet().iterator();
+                int idx = random.nextInt(PatreonHelper.specialText.keySet().size());
+                if (idx < 0) {
+                    setProfile(grave, world, new GameProfile(UUID.fromString("7ff65fdc-2837-4123-adfd-157b37527daf"), "FusionLord"));
+                    return;
+                }
+                while (iterator.hasNext()) {
+                    String uuid = iterator.next().toString();
+                    if (idx-- == 0) {
+                        setProfile(grave, world, new GameProfile(UUID.fromString(uuid), PatreonHelper.specialText.get(uuid).get("name")));
+                        break;
                     }
                 }
             }

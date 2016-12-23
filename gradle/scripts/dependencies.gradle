@@ -39,16 +39,21 @@ repositories {
         name "BuildCraft"
         artifactPattern "http://www.mod-buildcraft.com/releases/BuildCraft/[revision]/[module]-[revision]-[classifier].[ext]"
     }
+
+    mavenCentral()
+    maven {
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
 }
 
 configurations {
     mods
     shade
-    compile.extendsFrom shade
+    //compile.extendsFrom shade
 }
 
 dependencies {
     //mods "com.fireball1725.devworld:devworld:1.9-b10-universal"
     //mods(group: 'journeymap', name: 'journeymap', version: '1.8.8-5.1.3')
-    //compile(group: 'journeymap-api', name: 'journeymap-api', version: '1.8.9-0.9')
+    compile(group: "info.journeymap", name: "journeymap-api", version: journeymap_api_version, changing: true)
 }

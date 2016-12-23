@@ -1,5 +1,6 @@
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: 'java'
 
 apply from: 'gradle/scripts/dependencies.gradle'
 apply from: 'gradle/scripts/integration.gradle'
