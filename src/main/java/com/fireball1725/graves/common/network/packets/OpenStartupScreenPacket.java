@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class OpenStartupScreenPacket implements IMessage {
     @Override
@@ -25,10 +26,15 @@ public class OpenStartupScreenPacket implements IMessage {
         @Override
         public OpenStartupScreenPacket onMessage(OpenStartupScreenPacket message, MessageContext ctx) {
             if (ctx.side == Side.CLIENT) {
-                Minecraft.getMinecraft().guiAchievement.displayAchievement(new Achievement("Graves Mod", "gravesmod", 0, 0, Blocks.BLOCK_GRAVE.block, AchievementList.ACQUIRE_IRON));
-                Minecraft.getMinecraft().thePlayer.addChatMessage(new TextComponentString("Random Graves spawn for loot!"));
+                handleClient();
             }
             return null;
+        }
+
+        @SideOnly(Side.CLIENT)
+        private void handleClient() {
+            Minecraft.getMinecraft().guiAchievement.displayAchievement(new Achievement("Graves Mod", "gravesmod", 0, 0, Blocks.BLOCK_GRAVE.block, AchievementList.ACQUIRE_IRON));
+            Minecraft.getMinecraft().player.sendMessage(new TextComponentString("Random Graves spawn for loot!"));
         }
     }
 }

@@ -44,7 +44,7 @@ public class GraveCapDefaultImpl implements IGraveCapability
 	public void deserializeNBT(NBTTagCompound tagCompound)
 	{
         if (tagCompound.hasKey("displayTag"))
-            displayStack = ItemStack.loadItemStackFromNBT(tagCompound);
+            displayStack = new ItemStack(tagCompound);
         if (tagCompound.hasKey("hasSeenStartUp"))
             hasSeenStartUp = tagCompound.getBoolean("hasSeenStartUp");
     }

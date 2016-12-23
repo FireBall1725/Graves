@@ -56,7 +56,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-            IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(stack, mc.theWorld, mc.thePlayer);
+            IBakedModel model = mc.getRenderItem().getItemModelWithOverrides(stack, mc.world, mc.player);
             mc.getRenderItem().renderItem(stack, model);
             GlStateManager.disableAlpha();
             GlStateManager.disableRescaleNormal();
@@ -122,7 +122,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
                     drawIcon(profile.getId().toString());
                 }
                 GlStateManager.popMatrix();
-                if (Minecraft.getMinecraft().thePlayer.getPosition().distanceSq(grave.getPos()) <= 100D)
+                if (Minecraft.getMinecraft().player.getPosition().distanceSq(grave.getPos()) <= 100D)
                     drawText(ChatFormatting.UNDERLINE + profile.getName() + ChatFormatting.RESET + text);
                 GlStateManager.enableLighting();
                 GlStateManager.popMatrix();

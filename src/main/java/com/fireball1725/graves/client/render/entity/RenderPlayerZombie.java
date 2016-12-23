@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
@@ -21,7 +22,7 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     private static final ModelPlayer ALEX = new ModelPlayer(0, true);
 
     public RenderPlayerZombie(RenderManager renderManager) {
-        super(renderManager, STEVE, 0.5F, 1.0F);
+        super(renderManager, STEVE, 0.5F);
 
         addLayer(new LayerBipedArmor(this));
         addLayer(new LayerHeldItem(this));
@@ -44,8 +45,9 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     public void doRender(EntityPlayerZombie entity, double x, double y, double z, float f0, float partialTickTime) {
         setModel(entity);
 
-		if(entity.getHeldItem(EnumHand.MAIN_HAND) != null && entity.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemBow)
-		{ modelBipedMain.rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW; }
+        if (entity.getHeldItem(EnumHand.MAIN_HAND) != ItemStack.EMPTY && entity.getHeldItem(EnumHand.MAIN_HAND).getItem() instanceof ItemBow) {
+            getMainModel().rightArmPose = ModelBiped.ArmPose.BOW_AND_ARROW;
+        }
 
         super.doRender(entity, x, y, z, f0, partialTickTime);
     }
@@ -66,6 +68,6 @@ public class RenderPlayerZombie extends RenderBiped<EntityPlayerZombie> {
     private void setModel(EntityPlayerZombie playerZombie) {
         String type = TextureUtils.getPlayerSkinType(playerZombie.getProfile());
         boolean isAlex = "slim".equals(type);
-        mainModel = modelBipedMain = isAlex ? ALEX : STEVE;
+        mainModel = isAlex ? ALEX : STEVE;
     }
 }

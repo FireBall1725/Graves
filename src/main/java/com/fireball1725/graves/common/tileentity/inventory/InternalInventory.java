@@ -19,6 +19,8 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
     public InternalInventory(IInventoryHandler inventory, int size) {
         this.size = size;
         this.inventory = new ItemStack[size];
+        for (int i = 0; i < size; i++)
+            this.inventory[i] = ItemStack.EMPTY;
         this.inventoryHandler = inventory;
         this.maxSize = 64;
     }
@@ -52,7 +54,7 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
             ItemStack split = this.getStackInSlot(slot);
             ItemStack newStack = null;
 
-            if (qty >= split.stackSize) {
+            if (qty >= split.getCount()) {
                 newStack = this.inventory[slot];
                 this.inventory[slot] = null;
             } else {
@@ -85,12 +87,12 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
             ItemStack added = itemStack;
 
             if (oldStack != null && itemStack != null && Platform.isSameItem(oldStack, itemStack)) {
-                if (oldStack.stackSize > itemStack.stackSize) {
+                if (oldStack.getCount() > itemStack.getCount()) {
                     removed = removed.copy();
-                    removed.stackSize -= itemStack.stackSize;
-                } else if (oldStack.stackSize < itemStack.stackSize) {
+                    removed.setCount(removed.getCount() - itemStack.getCount());
+                } else if (oldStack.getCount() < itemStack.getCount()) {
                     added = added.copy();
-                    added.stackSize -= oldStack.stackSize;
+                    added.setCount(added.getCount() - oldStack.getCount());
                     removed = null;
                 } else {
                     removed = added = null;
@@ -115,15 +117,15 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
         }
     }
 
+    @Override
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        return true;
+    }
+
     public void markDirty(int slotIndex) {
         if (this.inventoryHandler != null && this.eventsEnabled()) {
             this.inventoryHandler.onChangeInventory(this, slotIndex, InventoryOperation.markDirty, null, null);
         }
-    }
-
-    @Override
-    public boolean isUseableByPlayer(EntityPlayer p_70300_1_) {
-        return true;
     }
 
     @Override

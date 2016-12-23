@@ -22,14 +22,14 @@ public class TileEntityGraveStone extends TileEntity implements ITickable
 		{
 			if(block.getPos().equals(getPos()))
 			{ continue; }
-			block.placeBlock(worldObj);
-		}
-		worldObj.setBlockState(getPos(), Blocks.BLOCK_GRAVE.block.getDefaultState(), 3);
-		worldObj.removeTileEntity(getPos());
-		TileEntityGrave grave = new TileEntityGrave();
-		grave.readFromNBT(tagCompound);
-		worldObj.setTileEntity(getPos(), grave);
-	}
+            block.placeBlock(world);
+        }
+        world.setBlockState(getPos(), Blocks.BLOCK_GRAVE.block.getDefaultState(), 3);
+        world.removeTileEntity(getPos());
+        TileEntityGrave grave = new TileEntityGrave();
+        grave.readFromNBT(tagCompound);
+        world.setTileEntity(getPos(), grave);
+    }
 
 	@Override
 	public void readFromNBT(NBTTagCompound compound)

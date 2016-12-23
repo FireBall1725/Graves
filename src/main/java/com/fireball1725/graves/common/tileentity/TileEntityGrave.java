@@ -18,6 +18,8 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -30,6 +32,13 @@ public class TileEntityGrave extends TileEntityBase
 	private GameProfile profile;
 	private ReplaceableBlock originalBlock;
 	private boolean ghostDefeated;
+
+    public TileEntityGrave() {
+        super();
+        for (int i = 0; i < InventoryPlayer.getHotbarSize(); i++) {
+            hotbar[i] = ItemStack.EMPTY;
+        }
+    }
 
 	public ItemStack getDisplayStack()
 	{
@@ -57,32 +66,28 @@ public class TileEntityGrave extends TileEntityBase
 	{
 		InventoryPlayer inventory = player.inventory;
 		List<ItemStack> remaining = Lists.newArrayList();
-		for(int i = 0; i < inventory.mainInventory.length; i++)
-		{
-			if(i >= hotbar.length)
+        for (int i = 0; i < inventory.mainInventory.size(); i++) {
+            if(i >= hotbar.length)
 			{ break; }
-			ItemStack currentItem = inventory.mainInventory[i];
-			ItemStack replaceItem = hotbar[i];
-			if(InventoryPlayer.isHotbar(i) && currentItem == null && replaceItem != null)
-			{
-				inventory.mainInventory[i] = replaceItem;
-			}
-			else
+            ItemStack currentItem = inventory.mainInventory.get(i);
+            ItemStack replaceItem = hotbar[i];
+            if (InventoryPlayer.isHotbar(i) && currentItem == ItemStack.EMPTY && replaceItem != ItemStack.EMPTY) {
+                inventory.mainInventory.set(i, replaceItem);
+            } else
 			{
 				remaining.add(replaceItem);
 			}
 		}
 		for(ItemStack remainingStack : remaining)
 		{
-			if(!inventory.addItemStackToInventory(remainingStack) && remainingStack != null && remainingStack.stackSize >= 1)
-			{
-				EntityItem entityItem = new EntityItem(worldObj, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), remainingStack);
-				entityItem.motionX = 0;
-				entityItem.motionY = 0;
+            if (!inventory.addItemStackToInventory(remainingStack) && remainingStack != ItemStack.EMPTY && remainingStack.getCount() >= 1) {
+                EntityItem entityItem = new EntityItem(world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), remainingStack);
+                entityItem.motionX = 0;
+                entityItem.motionY = 0;
 				entityItem.motionZ = 0;
-				worldObj.spawnEntityInWorld(entityItem);
-			}
-		}
+                world.spawnEntity(entityItem);
+            }
+        }
 		inventory.markDirty();
 	}
 
@@ -91,8 +96,8 @@ public class TileEntityGrave extends TileEntityBase
 
 		int spawnChance = 40;
 
-		boolean hardcoreEnabled = worldObj.getWorldInfo().isHardcoreModeEnabled();
-		EnumDifficulty gameDifficulty = worldObj.getDifficulty();
+        boolean hardcoreEnabled = world.getWorldInfo().isHardcoreModeEnabled();
+        EnumDifficulty gameDifficulty = world.getDifficulty();
 
 		switch(gameDifficulty)
 		{
@@ -116,7 +121,7 @@ public class TileEntityGrave extends TileEntityBase
 
 		if(spawnChance > 0)
 		{
-			int rng = worldObj.rand.nextInt(100);
+            int rng = world.rand.nextInt(100);
 
 			if(rng <= spawnChance)
 			{ spawnPlayerZombie = true; }
@@ -124,16 +129,16 @@ public class TileEntityGrave extends TileEntityBase
 
 		if(spawnPlayerZombie && ConfigZombie.configZombieEnabled)
 		{
-			EntityPlayerZombie playerZombie = new EntityPlayerZombie(worldObj, pos);
+            EntityPlayerZombie playerZombie = new EntityPlayerZombie(world, pos);
 
 			playerZombie.setProfile(profile);
 
 			playerZombie.setLocationAndAngles(pos.getX(), pos.down().getY(), pos.getZ(), player.getHorizontalFacing().getOpposite().getHorizontalIndex() * 90f, 0f);
-			playerZombie.onInitialSpawn(worldObj.getDifficultyForLocation(new BlockPos(playerZombie)), null);
-			playerZombie.setPlayer(player);
+            playerZombie.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(playerZombie)), null);
+            playerZombie.setPlayer(player);
             if (getBlockState().getValue(BlockGrave.WORLDGEN))
                 playerZombie.setAttackTarget(player);
-            worldObj.spawnEntityInWorld(playerZombie);
+            world.spawnEntity(playerZombie);
             return true;
         }
         return false;
@@ -161,7 +166,7 @@ public class TileEntityGrave extends TileEntityBase
 
 	public void addGraveItemsWithHotbar(InventoryPlayer inventory, List<ItemStack> items)
 	{
-		System.arraycopy(inventory.mainInventory, 0, hotbar, 0, InventoryPlayer.getHotbarSize());
+        System.arraycopy(inventory.mainInventory.toArray(), 0, hotbar, 0, InventoryPlayer.getHotbarSize());
 
 		rItems:
 		for(ItemStack stack : hotbar)
@@ -199,9 +204,8 @@ public class TileEntityGrave extends TileEntityBase
 	private boolean areItemEqual(ItemStack stack, ItemStack stack1)
 	{
 		boolean flag = ItemStack.areItemsEqual(stack, stack1);
-		if(stack != null && stack1 != null)
-		{
-			if((stack.hasTagCompound() && !stack1.hasTagCompound()) || (!stack.hasTagCompound() && stack1.hasTagCompound()))
+        if (stack != ItemStack.EMPTY && stack1 != ItemStack.EMPTY) {
+            if((stack.hasTagCompound() && !stack1.hasTagCompound()) || (!stack.hasTagCompound() && stack1.hasTagCompound()))
 			{
 				return false;
 			}
@@ -227,13 +231,13 @@ public class TileEntityGrave extends TileEntityBase
         for(ItemStack stack : items)
 		{
             if (!player.inventory.addItemStackToInventory(stack)) {
-				EntityItem entityItem = new EntityItem(worldObj, player.posX, player.posY, player.posZ, stack);
-				entityItem.motionX = 0;
-				entityItem.motionY = 0;
+                EntityItem entityItem = new EntityItem(world, player.posX, player.posY, player.posZ, stack);
+                entityItem.motionX = 0;
+                entityItem.motionY = 0;
 				entityItem.motionZ = 0;
-				worldObj.spawnEntityInWorld(entityItem);
-			}
-		}
+                world.spawnEntity(entityItem);
+            }
+        }
 	}
 
 	@Override
@@ -242,8 +246,9 @@ public class TileEntityGrave extends TileEntityBase
 		return new SPacketUpdateTileEntity(getPos(), getBlockMetadata(), serializeNBT());
 	}
 
-	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity sPacketUpdateTileEntity)
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity sPacketUpdateTileEntity)
 	{
 		deserializeNBT(sPacketUpdateTileEntity.getNbtCompound());
 	}
@@ -293,10 +298,10 @@ public class TileEntityGrave extends TileEntityBase
 	{
 		super.readFromNBT(nbtTagCompound);
 		displayStack = null;
-		if(nbtTagCompound.hasKey("displayStack"))
-		{ displayStack = ItemStack.loadItemStackFromNBT(nbtTagCompound.getCompoundTag("displayStack")); }
-		if(nbtTagCompound.hasKey("isGhostDefeated"))
-		{ ghostDefeated = nbtTagCompound.getBoolean("isGhostDefeated"); }
+        if (nbtTagCompound.hasKey("displayStack")) {
+            displayStack = new ItemStack(nbtTagCompound.getCompoundTag("displayStack"));
+        }
+        if (nbtTagCompound.hasKey("isGhostDefeated")) { ghostDefeated = nbtTagCompound.getBoolean("isGhostDefeated"); }
 		if(nbtTagCompound.hasKey("profileTag"))
 		{ setProfile(NBTUtil.readGameProfileFromNBT(nbtTagCompound.getCompoundTag("profileTag"))); }
 		if(nbtTagCompound.hasKey("itemsTag"))
@@ -305,9 +310,9 @@ public class TileEntityGrave extends TileEntityBase
 			NBTTagCompound itemsTag = nbtTagCompound.getCompoundTag("itemsTag");
 			for(int i = 0; i < itemsTag.getInteger("itemCount"); i++)
 			{
-				items.add(ItemStack.loadItemStackFromNBT(itemsTag.getCompoundTag(String.valueOf(i))));
-			}
-		}
+                items.add(new ItemStack(itemsTag.getCompoundTag(String.valueOf(i))));
+            }
+        }
 		if(nbtTagCompound.hasKey("hotbarTag"))
 		{
 			NBTTagCompound hotbarTag = nbtTagCompound.getCompoundTag("hotbarTag");
@@ -316,9 +321,9 @@ public class TileEntityGrave extends TileEntityBase
 			{
 				if(hotbarTag.hasKey(String.valueOf(i)))
 				{
-					hotbar[i] = ItemStack.loadItemStackFromNBT(hotbarTag.getCompoundTag(String.valueOf(i)));
-				}
-			}
+                    hotbar[i] = new ItemStack(hotbarTag.getCompoundTag(String.valueOf(i)));
+                }
+            }
 		}
 		//Legacy Support
 		boolean isLegacy = nbtTagCompound.hasKey("hasLid");
@@ -352,9 +357,9 @@ public class TileEntityGrave extends TileEntityBase
 				{
 					if(tag.hasKey("item:" + i))
 					{
-						replaceableItems[i] = ItemStack.loadItemStackFromNBT(tag.getCompoundTag("item:" + i));
-					}
-				}
+                        replaceableItems[i] = new ItemStack(tag.getCompoundTag("item:" + i));
+                    }
+                }
 			}
 			int invSize = 0;
 			if(nbtTagCompound.hasKey("inventorySize"))
@@ -366,9 +371,9 @@ public class TileEntityGrave extends TileEntityBase
 				for(int i = 0; i < invSize; i++)
 				{
 					NBTTagCompound item = tagCompound.getCompoundTag("item" + i);
-					items.add(ItemStack.loadItemStackFromNBT(item));
-				}
-			}
+                    items.add(new ItemStack(item));
+                }
+            }
 		} // End of Legacy Support
 	}
 

@@ -1,7 +1,9 @@
 package com.fireball1725.graves.common.entity;
 
 import com.fireball1725.graves.Graves;
+import com.fireball1725.graves.common.reference.ModInfo;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public enum Entities
@@ -29,7 +31,7 @@ public enum Entities
 		int count = 0;
 		for(Entities entity : values())
 		{
-			EntityRegistry.registerModEntity(entity.entityClass.asSubclass(Entity.class), entity.entityStringID, count++, Graves.instance, entity.trackingRange, entity.updateFrequency, entity.sendsVelocityUpdates);
-		}
-	}
+            EntityRegistry.registerModEntity(new ResourceLocation(ModInfo.MOD_ID, "playerzombie"), entity.entityClass.asSubclass(Entity.class), entity.entityStringID, count++, Graves.instance, entity.trackingRange, entity.updateFrequency, entity.sendsVelocityUpdates);
+        }
+    }
 }

@@ -30,9 +30,9 @@ public abstract class TileEntityInventoryBase extends TileEntityBase implements 
 			for(int i = 0; i < inventory.getSizeInventory(); i++)
 			{
 				NBTTagCompound item = tagCompound.getCompoundTag("item" + i);
-				inventory.setInventorySlotContents(i, ItemStack.loadItemStackFromNBT(item));
-			}
-		}
+                inventory.setInventorySlotContents(i, new ItemStack(item));
+            }
+        }
 	}
 
 	@Override
@@ -91,16 +91,14 @@ public abstract class TileEntityInventoryBase extends TileEntityBase implements 
 		return 64;
 	}
 
-	@Override
-	public boolean isUseableByPlayer(EntityPlayer player)
-	{
-		final double squaredMCReach = 64.0D;
-		return this.worldObj.getTileEntity(this.pos) == this && player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.getPos().getZ() + 0.5D) <= squaredMCReach;
-	}
+    @Override
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        final double squaredMCReach = 64.0D;
+        return world.getTileEntity(this.pos) == this && player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.getPos().getZ() + 0.5D) <= squaredMCReach;
+    }
 
-	@Override
-	public void openInventory(EntityPlayer player)
-	{
+    @Override
+    public void openInventory(EntityPlayer player) {
 
 	}
 

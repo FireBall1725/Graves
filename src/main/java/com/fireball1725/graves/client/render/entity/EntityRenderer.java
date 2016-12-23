@@ -5,6 +5,8 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityRenderer
 {
@@ -22,8 +24,9 @@ public class EntityRenderer
 			this.renderClass = renderClass;
 		}
 
-		@Override
-		public Render<E> createRenderFor(RenderManager manager)
+        @SideOnly(Side.CLIENT)
+        @Override
+        public Render<E> createRenderFor(RenderManager manager)
 		{
 			Render<E> renderer = null;
 

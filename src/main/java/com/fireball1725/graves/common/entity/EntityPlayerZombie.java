@@ -156,9 +156,8 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 		capeZ += z * 0.25;
 		capeY += y * 0.25;
 
-		if(worldObj.isRemote)
-		{
-			float w = dataManager.get(WIDTH);
+        if (world.isRemote) {
+            float w = dataManager.get(WIDTH);
 			if(w != width)
 				width = w;
 			float h = dataManager.get(HEIGHT);
@@ -231,9 +230,8 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	@Override
 	public void setDead()
 	{
-		TileEntityGrave grave = TileTools.getTileEntity(worldObj, gravePos, TileEntityGrave.class);
-		if(grave != null)
-		{
+        TileEntityGrave grave = TileTools.getTileEntity(world, gravePos, TileEntityGrave.class);
+        if (grave != null) {
 			grave.setGhostDefeated(true);
 		}
 		super.setDead();
@@ -244,9 +242,8 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	{
 		super.setEquipmentBasedOnDifficulty(difficulty);
 
-		if(rand.nextFloat() < (worldObj.getDifficulty() == EnumDifficulty.HARD ? 0.1F : 0.05F))
-		{
-			int i = rand.nextInt(3);
+        if (rand.nextFloat() < (world.getDifficulty() == EnumDifficulty.HARD ? 0.1F : 0.05F)) {
+            int i = rand.nextInt(3);
 
 			if(i == 0)
 			{ setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD)); }
@@ -266,16 +263,16 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	{
 		ItemStack stack = new ItemStack(Items.SPAWN_EGG);
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setString("entity_name", EntityList.CLASS_TO_NAME.get(getClass()));
-		stack.setTagCompound(nbt);
-		return stack;
+        nbt.setString("entity_name", EntityList.getEntityString(this));
+        stack.setTagCompound(nbt);
+        return stack;
 	}
 
 	@Override
 	public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
 	{
-		boolean hardcoreEnabled = worldObj.getWorldInfo().isHardcoreModeEnabled();
-		EnumDifficulty gameDifficulty = worldObj.getDifficulty();
+        boolean hardcoreEnabled = world.getWorldInfo().isHardcoreModeEnabled();
+        EnumDifficulty gameDifficulty = world.getDifficulty();
 
 		setEquipmentBasedOnDifficulty(difficulty);
 		setEnchantmentBasedOnDifficulty(difficulty);
@@ -544,9 +541,8 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 	{
 		if(profile == null)
 		{
-			TileEntityGrave grave = TileTools.getTileEntity(worldObj, gravePos, TileEntityGrave.class);
-			if(grave != null)
-			{ setProfile(grave.getProfile()); }
+            TileEntityGrave grave = TileTools.getTileEntity(world, gravePos, TileEntityGrave.class);
+            if (grave != null) { setProfile(grave.getProfile()); }
 		}
 		return profile;
 	}
@@ -692,7 +688,7 @@ public class EntityPlayerZombie extends EntityFlying implements IDeadPlayerEntit
 			this.distY = this.posY - this.playerZombie.posY;
 			this.distZ = this.posZ - this.playerZombie.posZ;
 
-			this.dist = (double) MathHelper.sqrt_double(this.distX * this.distX + this.distY * this.distY + this.distZ * this.distZ);
+            this.dist = (double) MathHelper.sqrt(this.distX * this.distX + this.distY * this.distY + this.distZ * this.distZ);
 
 			// (aimX,aimY,aimZ) is a unit vector in the direction we want to go
 			if(this.dist == 0.0D)

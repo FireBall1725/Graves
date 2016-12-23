@@ -110,32 +110,32 @@ public class BlockGrave extends BlockBase
 		worldIn.setBlockToAir(pos);
 	}
 
-	@Override
-	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
-	{
-		if(worldIn.isRemote)
-		{ return true; }
+    @Override
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
-		if(heldItem == null || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits")))
-		{
-			final IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
-			if(grave != null)
-			{
-				grave.setGraveItemStack(heldItem);
-				TileEntity te = worldIn.getTileEntity(pos);
-				if(te instanceof TileEntityGrave)
-				{
-					((TileEntityGrave) te).setDisplayStack(heldItem);
-					te.markDirty();
-					worldIn.notifyBlockUpdate(pos, state, ((TileEntityGrave) te).getBlockState(), 3);
-					worldIn.notifyBlockOfStateChange(pos, state.getBlock());
-					worldIn.markChunkDirty(pos, te);
-				}
-				return true;
-			}
-		}
-		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
-	}
+        if (worldIn.isRemote) {
+            return true;
+        }
+
+        ItemStack heldItem = playerIn.getHeldItem(hand);
+
+        if (heldItem == ItemStack.EMPTY || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits"))) {
+            final IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
+            if (grave != null) {
+                grave.setGraveItemStack(heldItem);
+                TileEntity te = worldIn.getTileEntity(pos);
+                if (te instanceof TileEntityGrave) {
+                    ((TileEntityGrave) te).setDisplayStack(heldItem);
+                    te.markDirty();
+                    worldIn.notifyBlockUpdate(pos, state, ((TileEntityGrave) te).getBlockState(), 3);
+                    worldIn.notifyNeighborsOfStateChange(pos, state.getBlock(), true);
+                    worldIn.markChunkDirty(pos, te);
+                }
+                return true;
+            }
+        }
+        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    }
 
 	@Override
 	protected BlockStateContainer createBlockState()

@@ -74,9 +74,8 @@ public class Events
 	@SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
 	public void onPlayerDrops(PlayerDropsEvent event)
 	{
-		World world = event.getEntityPlayer().worldObj;
-		if(world.isRemote)
-		{ return; }
+        World world = event.getEntityPlayer().world;
+        if (world.isRemote) { return; }
 
 		if(event.isCanceled())
 		{
@@ -111,7 +110,7 @@ public class Events
 			{
 				EntityPlayerZombie zombie = (EntityPlayerZombie) event.getSource().getEntity();
 				BlockPos gravePos = zombie.getGravePos();
-                TileEntityGrave grave = TileTools.getTileEntity(event.getEntityLiving().worldObj, gravePos, TileEntityGrave.class);
+                TileEntityGrave grave = TileTools.getTileEntity(((EntityPlayer) event.getEntityLiving()).world, gravePos, TileEntityGrave.class);
                 if (grave != null) {
                     grave.addItems(itemsList);
                     spawnGrave = false;
@@ -142,14 +141,15 @@ public class Events
 			world.setBlockState(pos, state);
 
 			TileEntityGrave graveStoneTileEntity = TileTools.getTileEntity(world, pos, TileEntityGrave.class);
-			if(graveStoneTileEntity.getWorld() == null)
-			{ graveStoneTileEntity.setWorldObj(world); }
-			graveStoneTileEntity.addGraveItemsWithHotbar(inventories.remove(player.getPersistentID()), itemsList);
-			graveStoneTileEntity.setOriginalBlock(replaceableBlock);
+            if (graveStoneTileEntity.getWorld() == null) {
+                graveStoneTileEntity.setWorld(world);
+            }
+            graveStoneTileEntity.addGraveItemsWithHotbar(inventories.remove(player.getPersistentID()), itemsList);
+            graveStoneTileEntity.setOriginalBlock(replaceableBlock);
 			graveStoneTileEntity.setProfile(player.getGameProfile());
 
             if (ConfigGeneral.printToChat)
-                player.addChatComponentMessage(new TextComponentString(I18n.translateToLocal("death.message.coords") + String.format("[x:%s, y:%s, z:%s]", pos.getX(), pos.getY(), pos.getZ())));
+                player.sendMessage(new TextComponentString(I18n.translateToLocal("death.message.coords") + String.format("[x:%s, y:%s, z:%s]", pos.getX(), pos.getY(), pos.getZ())));
             sendTomTomPos(Graves.instance, player, pos, I18n.translateToLocal("tomtom.marker.text"));
         }
 
@@ -178,10 +178,11 @@ public class Events
 		if(!event.getPlayer().isCreative())
 		{
 			grave.dropItems(event.getPlayer());
-			if(Blocks.BLOCK_GRAVE.block.canHarvestBlock(world, event.getPos(), event.getPlayer()))
-			{ world.spawnEntityInWorld(new EntityItem(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), new ItemStack(Blocks.BLOCK_GRAVE.block))); }
-		}
-		ReplaceableBlock block = null;
+            if (Blocks.BLOCK_GRAVE.block.canHarvestBlock(world, event.getPos(), event.getPlayer())) {
+                world.spawnEntity(new EntityItem(world, event.getPos().getX(), event.getPos().getY(), event.getPos().getZ(), new ItemStack(Blocks.BLOCK_GRAVE.block)));
+            }
+        }
+        ReplaceableBlock block = null;
 		if(grave.getOriginalBlock() != null)
 		{ block = grave.getOriginalBlock().copy(); }
 

@@ -13,6 +13,8 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,12 +38,13 @@ public class TileEntityBase extends TileEntity {
 		return new SPacketUpdateTileEntity(this.pos, 1, data);
 	}
 
-	@Override
-	public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity sPacketUpdateTileEntity)
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void onDataPacket(NetworkManager networkManager, SPacketUpdateTileEntity sPacketUpdateTileEntity)
 	{
 		readFromNBT(sPacketUpdateTileEntity.getNbtCompound());
-		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
-		markForUpdate();
+        world.markBlockRangeForRenderUpdate(this.pos, this.pos);
+        markForUpdate();
     }
 
 	@Override
@@ -58,28 +61,28 @@ public class TileEntityBase extends TileEntity {
 	public void handleUpdateTag(NBTTagCompound tag)
 	{
 		readFromNBT(tag);
-		worldObj.markBlockRangeForRenderUpdate(this.pos, this.pos);
-		markForUpdate();
-	}
+        world.markBlockRangeForRenderUpdate(this.pos, this.pos);
+        markForUpdate();
+    }
 
     private void markForUpdate() {
         if (this.renderedFragment > 0) {
             this.renderedFragment |= 0x1;
-        } else if (this.worldObj != null) {
-			this.worldObj.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 0);
+        } else if (this.world != null) {
+            world.notifyBlockUpdate(this.pos, this.getBlockState(), this.getBlockState(), 0);
 
-            Block block = worldObj.getBlockState(this.pos).getBlock();
+            Block block = world.getBlockState(this.pos).getBlock();
 
             int xCoord = this.pos.getX();
             int yCoord = this.pos.getY();
             int zCoord = this.pos.getZ();
 
-            this.worldObj.notifyBlockOfStateChange(new BlockPos(xCoord, yCoord - 1, zCoord), block);
-            this.worldObj.notifyBlockOfStateChange(new BlockPos(xCoord, yCoord + 1, zCoord), block);
-            this.worldObj.notifyBlockOfStateChange(new BlockPos(xCoord - 1, yCoord, zCoord), block);
-            this.worldObj.notifyBlockOfStateChange(new BlockPos(xCoord + 1, yCoord, zCoord), block);
-            this.worldObj.notifyBlockOfStateChange(new BlockPos(xCoord, yCoord - 1, zCoord - 1), block);
-            this.worldObj.notifyBlockOfStateChange(new BlockPos(xCoord, yCoord - 1, zCoord + 1), block);
+            world.notifyNeighborsOfStateChange(new BlockPos(xCoord, yCoord - 1, zCoord), block, true);
+            world.notifyNeighborsOfStateChange(new BlockPos(xCoord, yCoord + 1, zCoord), block, true);
+            world.notifyNeighborsOfStateChange(new BlockPos(xCoord - 1, yCoord, zCoord), block, true);
+            world.notifyNeighborsOfStateChange(new BlockPos(xCoord + 1, yCoord, zCoord), block, true);
+            world.notifyNeighborsOfStateChange(new BlockPos(xCoord, yCoord - 1, zCoord - 1), block, true);
+            world.notifyNeighborsOfStateChange(new BlockPos(xCoord, yCoord - 1, zCoord + 1), block, true);
         }
     }
 
@@ -133,7 +136,7 @@ public class TileEntityBase extends TileEntity {
     }
 
     private String getUnlocalizedName() {
-        Item item = Item.getItemFromBlock(worldObj.getBlockState(this.pos).getBlock());
+        Item item = Item.getItemFromBlock(world.getBlockState(this.pos).getBlock());
         ItemStack itemStack = new ItemStack(item, 1, getBlockMetadata());
 
         return itemStack.getUnlocalizedName() + ".name";
@@ -164,6 +167,6 @@ public class TileEntityBase extends TileEntity {
     }
 
     public IBlockState getBlockState() {
-		return worldObj.getBlockState(pos).getActualState(worldObj, pos);
-	}
+        return world.getBlockState(pos).getActualState(world, pos);
+    }
 }

@@ -47,9 +47,9 @@ public class ReplaceableBlock
 		Block block = state.getBlock();
 		if (block instanceof ITileEntityProvider && tagCompound != null)
 		{
-			world.setTileEntity(pos, TileEntity.func_190200_a(world, tagCompound));
-		}
-		return true;
+            world.setTileEntity(pos, TileEntity.create(world, tagCompound));
+        }
+        return true;
 	}
 
 	public NBTTagCompound writeNBT()
