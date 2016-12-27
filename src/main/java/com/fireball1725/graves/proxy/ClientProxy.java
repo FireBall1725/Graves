@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.item.Item;
+import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -26,8 +27,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
 
-	@Override
-	public void preInit(FMLPreInitializationEvent event)
+    @Override
+    public World getWorld() {
+        return Minecraft.getMinecraft().world;
+    }
+
+    @Override
+    public void preInit(FMLPreInitializationEvent event)
 	{
 		super.preInit(event);
 		//Register Block Rendering

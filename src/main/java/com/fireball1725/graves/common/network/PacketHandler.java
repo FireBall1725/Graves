@@ -1,7 +1,7 @@
 package com.fireball1725.graves.common.network;
 
 import com.fireball1725.graves.common.network.packets.OpenStartupScreenPacket;
-import com.fireball1725.graves.common.network.packets.PacketStartup;
+import com.fireball1725.graves.common.network.packets.SyncHeadstonesToClients;
 import com.fireball1725.graves.common.reference.ModInfo;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -16,8 +16,7 @@ public class PacketHandler extends SimpleNetworkWrapper {
     }
 
     public void init() {
-        registerMessage(PacketStartup.HANDLER.class, PacketStartup.class, Side.SERVER);
-        registerMessage(OpenStartupScreenPacket.HANDLER.class, OpenStartupScreenPacket.class, Side.SERVER);
+        registerMessage(SyncHeadstonesToClients.HANDLER.class, SyncHeadstonesToClients.class, Side.CLIENT);
         registerMessage(OpenStartupScreenPacket.HANDLER.class, OpenStartupScreenPacket.class, Side.CLIENT);
     }
 

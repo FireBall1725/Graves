@@ -5,6 +5,7 @@ import com.fireball1725.graves.common.configuration.ConfigZombie;
 import com.fireball1725.graves.common.entity.EntityPlayerZombie;
 import com.fireball1725.graves.common.helpers.ItemHelper;
 import com.fireball1725.graves.common.structure.ReplaceableBlock;
+import com.fireball1725.graves.common.util.Headstones;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.item.EntityItem;
@@ -26,7 +27,6 @@ import java.util.ListIterator;
 
 public class TileEntityGrave extends TileEntityBase
 {
-	private ItemStack displayStack = null;
 	private List<ItemStack> items;
 	private ItemStack[] hotbar = new ItemStack[InventoryPlayer.getHotbarSize()];
 	private GameProfile profile;
@@ -40,31 +40,25 @@ public class TileEntityGrave extends TileEntityBase
         }
     }
 
-	public ItemStack getDisplayStack()
-	{
-		return displayStack;
-	}
-
-	public void setDisplayStack(ItemStack displayStack)
-	{
-		this.displayStack = displayStack;
-	}
+    public ItemStack getDisplayStack() {
+        if (profile == null)
+            return ItemStack.EMPTY;
+        return Headstones.get(world).getHeadstone(profile.getId());
+    }
 
 	public GameProfile getProfile()
 	{
         return profile;
 	}
 
-	public void setProfile(GameProfile profile)
-	{
+    public void setProfile(GameProfile profile) {
         this.profile = profile;
         if (this.profile != null && (!this.profile.isComplete() || (this.profile.getProperties() != null && !this.profile.getProperties().containsKey("textures"))))
-            this.profile = TileEntitySkull.updateGameprofile(this.profile);
+            updateProfile();
     }
 
-	public void replaceItems(EntityPlayer player)
-	{
-		InventoryPlayer inventory = player.inventory;
+    public void replaceItems(EntityPlayer player) {
+        InventoryPlayer inventory = player.inventory;
 		List<ItemStack> remaining = Lists.newArrayList();
         for (int i = 0; i < inventory.mainInventory.size(); i++) {
             if(i >= hotbar.length)
@@ -258,8 +252,6 @@ public class TileEntityGrave extends TileEntityBase
 	{
 		super.writeToNBT(nbtTagCompound);
 		//Save Display Stack
-		if(displayStack != null)
-		{ nbtTagCompound.setTag("displayStack", displayStack.serializeNBT()); }
 		nbtTagCompound.setBoolean("isGhostDefeated", isGhostDefeated());
 		//Save Profile
 		if(profile != null)
@@ -297,10 +289,6 @@ public class TileEntityGrave extends TileEntityBase
 	public void readFromNBT(NBTTagCompound nbtTagCompound)
 	{
 		super.readFromNBT(nbtTagCompound);
-		displayStack = null;
-        if (nbtTagCompound.hasKey("displayStack")) {
-            displayStack = new ItemStack(nbtTagCompound.getCompoundTag("displayStack"));
-        }
         if (nbtTagCompound.hasKey("isGhostDefeated")) { ghostDefeated = nbtTagCompound.getBoolean("isGhostDefeated"); }
 		if(nbtTagCompound.hasKey("profileTag"))
 		{ setProfile(NBTUtil.readGameProfileFromNBT(nbtTagCompound.getCompoundTag("profileTag"))); }

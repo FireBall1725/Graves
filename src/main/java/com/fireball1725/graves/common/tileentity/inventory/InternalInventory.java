@@ -52,7 +52,7 @@ public class InternalInventory implements IInventory, Iterable<ItemStack> {
     public ItemStack decrStackSize(int slot, int qty) {
         if (this.inventory[slot] != null) {
             ItemStack split = this.getStackInSlot(slot);
-            ItemStack newStack = null;
+            ItemStack newStack;
 
             if (qty >= split.getCount()) {
                 newStack = this.inventory[slot];

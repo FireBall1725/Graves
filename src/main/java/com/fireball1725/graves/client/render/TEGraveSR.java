@@ -1,8 +1,8 @@
 package com.fireball1725.graves.client.render;
 
-import com.fireball1725.graves.Graves;
 import com.fireball1725.graves.client.event.ClientEvents;
 import com.fireball1725.graves.common.helpers.PatreonHelper;
+import com.fireball1725.graves.common.integration.IsLoaded;
 import com.fireball1725.graves.common.reference.ModInfo;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
 import com.mojang.authlib.GameProfile;
@@ -20,6 +20,8 @@ import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -45,7 +47,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + .5, y + .5, z + .5);
         GlStateManager.pushMatrix();
-        if (grave.getDisplayStack() != null) {
+        if (grave.getDisplayStack().getItem() != Item.getItemFromBlock(Blocks.AIR) && IsLoaded.CHISELSANDBITS) {
             ItemStack stack = grave.getDisplayStack();
             GlStateManager.pushMatrix();
             GlStateManager.enableLighting();
@@ -76,7 +78,7 @@ public class TEGraveSR extends TileEntitySpecialRenderer<TileEntityGrave> implem
             if (PatreonHelper.specialText.containsKey(profile.getId().toString())) {
                 Map<String, String> map = PatreonHelper.specialText.get(profile.getId().toString());
                 patron = map.containsKey("patron") && Boolean.valueOf(map.get("patron"));
-                icon = Graves.isPatronsLoaded() && map.containsKey("icon") && Boolean.valueOf(map.get("icon"));
+                icon = IsLoaded.FUSIONSPATRONS && map.containsKey("icon") && Boolean.valueOf(map.get("icon"));
                 text = "\\n" + map.get("text").replace("%n%", String.valueOf(rand.nextInt(Integer.MAX_VALUE)));
             }
 

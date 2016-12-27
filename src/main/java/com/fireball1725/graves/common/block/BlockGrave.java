@@ -1,9 +1,9 @@
 package com.fireball1725.graves.common.block;
 
-import com.fireball1725.graves.Graves;
-import com.fireball1725.graves.common.entity.capabilities.GraveCapability;
-import com.fireball1725.graves.common.entity.capabilities.IGraveCapability;
+import com.fireball1725.graves.common.integration.ChiselsAndBits;
+import com.fireball1725.graves.common.integration.IsLoaded;
 import com.fireball1725.graves.common.tileentity.TileEntityGrave;
+import com.fireball1725.graves.common.util.Headstones;
 import com.fireball1725.graves.common.util.TileTools;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.material.Material;
@@ -13,7 +13,8 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -25,14 +26,15 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BlockGrave extends BlockBase
 {
-	public static final PropertyBool RENDER = PropertyBool.create("render");
+    public static final AxisAlignedBB DEFAULTBB = new AxisAlignedBB(0.0625f, 0f, 0.062f, 0.9375f, 1f, 0.9375f);
+    public static final int DEFAULTLL = 15;
+    public static final PropertyBool RENDER = PropertyBool.create("render");
     public static final PropertyBool WORLDGEN = PropertyBool.create("worldgen");
 
 	protected BlockGrave()
@@ -56,29 +58,34 @@ public class BlockGrave extends BlockBase
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack)
-	{
-		super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
+    public void onBlockPlacedBy(World world, BlockPos blockPos, IBlockState state, EntityLivingBase placer, ItemStack itemStack) {
         if (world.isRemote) return;
         if(placer instanceof EntityPlayer)
 		{
-			TileEntityGrave grave = TileTools.getTileEntity(world, blockPos, TileEntityGrave.class);
+            EntityPlayer player = (EntityPlayer) placer;
+            TileEntityGrave grave = TileTools.getTileEntity(world, blockPos, TileEntityGrave.class);
 			if(grave != null)
 			{
-                if (itemStack != null && itemStack.hasDisplayName()) {
+                if (grave.getDisplayStack().getItem() != Item.getItemFromBlock(net.minecraft.init.Blocks.AIR))
+                    state = state.withProperty(RENDER, false);
+
+                if (itemStack != ItemStack.EMPTY && itemStack.hasDisplayName()) {
                     GameProfile profile = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().getGameProfileForUsername(itemStack.getDisplayName());
-                    Graves.logger.info(profile);
                     if (profile != null) {
                         FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerProfileCache().addEntry(profile);
                         grave.setProfile(profile);
                     }
-                } else
+                } else {
                     grave.setProfile(((EntityPlayer) placer).getGameProfile());
+                }
                 grave.setGhostDefeated(true);
-				grave.markDirty();
-			}
+                world.markChunkDirty(blockPos, grave);
+                world.markBlockRangeForRenderUpdate(blockPos, blockPos);
+                world.checkLight(blockPos);
+            }
 		}
-	}
+        super.onBlockPlacedBy(world, blockPos, state, placer, itemStack);
+    }
 
 	@Override
 	public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
@@ -118,20 +125,20 @@ public class BlockGrave extends BlockBase
         }
 
         ItemStack heldItem = playerIn.getHeldItem(hand);
-
-        if (heldItem == ItemStack.EMPTY || (heldItem.getItem() instanceof ItemBlock && ForgeRegistries.BLOCKS.getKey(((ItemBlock) heldItem.getItem()).block).getResourceDomain().equals("chiselsandbits"))) {
-            final IGraveCapability grave = playerIn.getCapability(GraveCapability.GRAVE_CAPABILITY, null);
-            if (grave != null) {
-                grave.setGraveItemStack(heldItem);
-                TileEntity te = worldIn.getTileEntity(pos);
-                if (te instanceof TileEntityGrave) {
-                    ((TileEntityGrave) te).setDisplayStack(heldItem);
-                    te.markDirty();
-                    worldIn.notifyBlockUpdate(pos, state, ((TileEntityGrave) te).getBlockState(), 3);
-                    worldIn.notifyNeighborsOfStateChange(pos, state.getBlock(), true);
-                    worldIn.markChunkDirty(pos, te);
+        TileEntity te = worldIn.getTileEntity(pos);
+        if (te instanceof TileEntityGrave) {
+            TileEntityGrave grave = (TileEntityGrave) te;
+            if (grave.getProfile().getId().equals(playerIn.getUniqueID())) {
+                if (IsLoaded.CHISELSANDBITS) {
+                    if (heldItem.getItem() != Items.AIR && !ChiselsAndBits.isItemBlockChiseled(heldItem)) return false;
+                    Headstones.get(worldIn).setHeadstone(playerIn, heldItem);
+                    worldIn.notifyBlockUpdate(pos, state, state.withProperty(RENDER, heldItem.getItem() == Items.AIR), 3);
+                    grave.markDirty();
+                    worldIn.markChunkDirty(pos, grave);
+                    worldIn.markBlockRangeForRenderUpdate(pos, pos);
+                    worldIn.checkLight(pos);
+                    return true;
                 }
-                return true;
             }
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
@@ -162,28 +169,37 @@ public class BlockGrave extends BlockBase
 	}
 
 	@Override
-	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
-	{
-		TileEntity te = worldIn.getTileEntity(pos);
-		if(te instanceof TileEntityGrave)
-		{
-			TileEntityGrave headStone = (TileEntityGrave) te;
-			return state.withProperty(RENDER, headStone.getDisplayStack() == null);
-		}
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        TileEntity te = worldIn.getTileEntity(pos);
+        if (te instanceof TileEntityGrave) {
+            TileEntityGrave grave = (TileEntityGrave) te;
+            return state.withProperty(RENDER, grave.getDisplayStack().getItem() == Item.getItemFromBlock(net.minecraft.init.Blocks.AIR));
+        }
 		return state;
 	}
 
 	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity p_185477_6_)
-	{
-		addCollisionBoxToList(pos, mask, list, getBoundingBox(state, worldIn, pos));
-	}
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity p_185477_6_) {
+        TileEntityGrave te = TileTools.getTileEntity(worldIn, pos, TileEntityGrave.class);
+        boolean flag = state.getValue(RENDER) && !IsLoaded.CHISELSANDBITS || te == null;
+        if (flag) {
+            addCollisionBoxToList(pos, mask, list, getBoundingBox(state, worldIn, pos));
+        } else {
+            ChiselsAndBits.getCollisionBoxes(te.getDisplayStack(), DEFAULTBB).forEach((bb) -> addCollisionBoxToList(pos, mask, list, bb));
+        }
+    }
 
 	@Override
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
-	{
-		return new AxisAlignedBB(0.0625f, 0f, 0.062f, 0.9375f, 1f, 0.9375f);
-	}
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        TileEntityGrave te = TileTools.getTileEntity(source, pos, TileEntityGrave.class);
+        if (te == null) return DEFAULTBB;
+        ItemStack stack = te.getDisplayStack();
+        boolean flag = state.getValue(RENDER) && !IsLoaded.CHISELSANDBITS;
+        if (flag)
+            return DEFAULTBB;
+        else
+            return ChiselsAndBits.getBoundingBox(pos, stack, DEFAULTBB);
+    }
 
 	@Override
 	public int getMetaFromState(IBlockState state)
@@ -198,13 +214,14 @@ public class BlockGrave extends BlockBase
     }
 
 	@Override
-	public void onBlockExploded(World world, BlockPos pos, Explosion explosion)
-	{
-	}
+    public void onBlockExploded(World world, BlockPos pos, Explosion explosion) {
+    }
 
-	@Override
-	public int getLightValue(IBlockState state)
-	{
-		return 15;
-	}
+    @Override
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntityGrave te = TileTools.getTileEntity(world, pos, TileEntityGrave.class);
+        ItemStack stack = te.getDisplayStack();
+        boolean flag = te.getBlockState().getValue(RENDER) && !IsLoaded.CHISELSANDBITS;
+        return flag ? DEFAULTLL : ChiselsAndBits.getLightLevel(stack, DEFAULTLL);
+    }
 }
